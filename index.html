@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liham Pahintulot Online - Login</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <style>
+    :root {
+      --pandayan-burgundy: #800020;
+      --pandayan-yellow: #FFD700;
+    }
+    body {
+      background-color: var(--pandayan-yellow);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
+    .auth-card {
+      background: white;
+      border-radius: 20px;
+      border: 3px solid var(--pandayan-burgundy);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 420px;
+      overflow: hidden;
+    }
+    .auth-header {
+      background-color: var(--pandayan-burgundy);
+      color: white;
+      padding: 25px 20px;
+      text-align: center;
+      border-bottom: 5px solid var(--pandayan-yellow);
+    }
+    .auth-header h3 {
+      font-weight: 800;
+      margin: 0;
+      font-size: 1.5rem;
+      letter-spacing: 1px;
+    }
+    .btn-pandayan {
+      background-color: var(--pandayan-burgundy);
+      color: white;
+      font-weight: bold;
+      border: 2px solid #0000FF;
+      padding: 12px;
+      border-radius: 8px;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+    .btn-pandayan:hover {
+      background-color: #0000FF;
+      color: white;
+    }
+    .btn-manual {
+      background-color: #198754;
+      color: white;
+      font-weight: bold;
+      border-radius: 8px;
+      padding: 10px;
+      text-decoration: none;
+      display: block;
+      text-align: center;
+      margin-top: 15px;
+    }
+    .btn-manual:hover {
+      background-color: #146c43;
+      color: white;
+    }
+    .form-control:focus {
+      border-color: var(--pandayan-burgundy);
+      box-shadow: 0 0 0 0.25rem rgba(128, 0, 32, 0.25);
+    }
+    .link-toggle {
+      color: var(--pandayan-burgundy);
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-card">
+    <div class="auth-header">
+      <h3>LIHAM PAHINTULOT ONLINE</h3>
+      <small class="text-warning">Pandayan Superstores, Inc.</small>
+    </div>
+    
+    <div class="p-4">
+      <form id="loginForm">
+        <h5 class="text-center mb-3 fw-bold" style="color: var(--pandayan-burgundy);">Mag-log In</h5>
+        
+        <div class="mb-3">
+          <label class="form-label fw-bold">Username</label>
+          <input type="text" id="loginUsername" class="form-control" placeholder="Ilagay ang iyong username" required>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label fw-bold">Password</label>
+          <input type="password" id="loginPassword" class="form-control" placeholder="Ilagay ang iyong password" required>
+        </div>
+        
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="rememberMe">
+          <label class="form-check-label small fw-bold" for="rememberMe">
+            Tandaan ako sa device na ito (Remember Me)
+          </label>
+        </div>
+        
+        <button type="submit" class="btn btn-pandayan shadow-sm" id="loginBtn">LOG IN</button>
+      </form>
+
+      <form id="registerForm" style="display: none;">
+        <h5 class="text-center mb-3 fw-bold" style="color: var(--pandayan-burgundy);">Gumawa ng Account</h5>
+        
+        <div class="mb-3">
+          <label class="form-label fw-bold">Kapwa Name</label>
+          <input type="text" id="regKapwaName" class="form-control" placeholder="Pangalan (hal. Kapwa Juan)" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Username</label>
+          <input type="text" id="regUsername" class="form-control" placeholder="Pumili ng Username" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Password</label>
+          <input type="password" id="regPassword" class="form-control" placeholder="Pumili ng Password" required>
+        </div>
+
+        <button type="submit" class="btn btn-pandayan shadow-sm" id="regBtn">MAG-REGISTER</button>
+      </form>
+
+      <hr class="my-4">
+
+      <div class="text-center small">
+        <p id="toggleToRegister" class="m-0">Wala pang account? <span class="link-toggle" onclick="showRegister()">Gumawa ng Account</span></p>
+        <p id="toggleToLogin" class="m-0" style="display: none;">May account na? <span class="link-toggle" onclick="showLogin()">Mag-log In</span></p>
+      </div>
+
+      <a href="https://www.canva.com/design/DAHO99_dbI4/uEJq-K6hj4-9IilTL0TYQA/view?utm_content=DAHO99_dbI4&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=ha0ebe4be46#12" target="_blank" class="btn-manual shadow-sm">
+        📖 Paano gamitin ang App? (User Manual)
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // PALITAN ITO NG IYONG DEPLOYED WEB APP URL MULA SA APPS SCRIPT
+    const API_URL = " https://script.google.com/macros/s/AKfycbwxzEOakS1W34gK4R1JuufMM-pjLGdXnxjdryvqCp44AXkAohKu6BknVNgA4Yf4Wa3l/exec";
+
+    // AUTO-LOGIN CHECKER (REMEMBER ME FEATURE)
+    window.onload = function() {
+      const savedUser = localStorage.getItem("pandayan_user_session");
+      if (savedUser) {
+        // Naka-login na! I-redirect na sa Dashboard (Phase 3)
+        window.location.href = "dashboard.html";
+      }
+    };
+
+    function showRegister() {
+      document.getElementById("loginForm").style.display = "none";
+      document.getElementById("registerForm").style.display = "block";
+      document.getElementById("toggleToRegister").style.display = "none";
+      document.getElementById("toggleToLogin").style.display = "block";
+    }
+
+    function showLogin() {
+      document.getElementById("registerForm").style.display = "none";
+      document.getElementById("loginForm").style.display = "block";
+      document.getElementById("toggleToLogin").style.display = "none";
+      document.getElementById("toggleToRegister").style.display = "block";
+    }
+
+    // LOGIN PROCESS
+    document.getElementById("loginForm").onsubmit = function(e) {
+      e.preventDefault();
+      const u = document.getElementById("loginUsername").value.trim();
+      const p = document.getElementById("loginPassword").value.trim();
+      const remember = document.getElementById("rememberMe").checked;
+
+      document.getElementById("loginBtn").disabled = true;
+      document.getElementById("loginBtn").innerText = "Chine-check...";
+
+      fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "login",
+          payload: { username: u, password: p }
+        })
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.status === "success") {
+          // Kapag kinilick ang Remember Me, i-sa-save sa browser storage
+          if (remember) {
+            localStorage.setItem("pandayan_user_session", JSON.stringify(res.user));
+          } else {
+            sessionStorage.setItem("pandayan_user_session", JSON.stringify(res.user));
+          }
+
+          Swal.fire({
+            title: "Mabuhay!",
+            text: "Maligayang pagbabalik, " + res.user.kapwaName + "!",
+            icon: "success",
+            confirmButtonColor: "#800020"
+          }).then(() => {
+            window.location.href = "dashboard.html";
+          });
+        } else {
+          Swal.fire("Login Failed", res.message, "error");
+          document.getElementById("loginBtn").disabled = false;
+          document.getElementById("loginBtn").innerText = "LOG IN";
+        }
+      })
+      .catch(err => {
+        Swal.fire("Error", "Hindi makakonekta sa server.", "error");
+        document.getElementById("loginBtn").disabled = false;
+        document.getElementById("loginBtn").innerText = "LOG IN";
+      });
+    };
+
+    // REGISTER PROCESS
+    document.getElementById("registerForm").onsubmit = function(e) {
+      e.preventDefault();
+      const k = document.getElementById("regKapwaName").value.trim();
+      const u = document.getElementById("regUsername").value.trim();
+      const p = document.getElementById("regPassword").value.trim();
+
+      document.getElementById("regBtn").disabled = true;
+      document.getElementById("regBtn").innerText = "Ipinapadala...";
+
+      fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "register",
+          payload: { kapwaName: k, username: u, password: p }
+        })
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.status === "success") {
+          Swal.fire({
+            title: "Account Created!",
+            text: res.message,
+            icon: "success",
+            confirmButtonColor: "#800020"
+          }).then(() => {
+            document.getElementById("registerForm").reset();
+            showLogin();
+          });
+        } else {
+          Swal.fire("Registration Error", res.message, "error");
+        }
+        document.getElementById("regBtn").disabled = false;
+        document.getElementById("regBtn").innerText = "MAG-REGISTER";
+      })
+      .catch(err => {
+        Swal.fire("Error", "Hindi makakonekta sa server.", "error");
+        document.getElementById("regBtn").disabled = false;
+        document.getElementById("regBtn").innerText = "MAG-REGISTER";
+      });
+    };
+  </script>
+</body>
+</html>
