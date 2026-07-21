@@ -11,6 +11,8 @@
     :root {
       --pandayan-burgundy: #800020;
       --pandayan-yellow: #FFD700;
+      --pandayan-blue: #0000FF;
+      --pandayan-white: #FFFFFF;
     }
     body {
       background-color: var(--pandayan-yellow);
@@ -25,7 +27,7 @@
       background: white;
       border-radius: 20px;
       border: 3px solid var(--pandayan-burgundy);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
       width: 100%;
       max-width: 420px;
       overflow: hidden;
@@ -40,21 +42,21 @@
     .auth-header h3 {
       font-weight: 800;
       margin: 0;
-      font-size: 1.5rem;
-      letter-spacing: 1px;
+      font-size: 1.4rem;
+      letter-spacing: 0.5px;
     }
     .btn-pandayan {
       background-color: var(--pandayan-burgundy);
       color: white;
       font-weight: bold;
-      border: 2px solid #0000FF;
+      border: 2px solid var(--pandayan-blue);
       padding: 12px;
       border-radius: 8px;
       width: 100%;
       transition: all 0.3s ease;
     }
     .btn-pandayan:hover {
-      background-color: #0000FF;
+      background-color: var(--pandayan-blue);
       color: white;
     }
     .btn-manual {
@@ -67,6 +69,7 @@
       display: block;
       text-align: center;
       margin-top: 15px;
+      border: 2px solid #146c43;
     }
     .btn-manual:hover {
       background-color: #146c43;
@@ -82,19 +85,33 @@
       cursor: pointer;
       text-decoration: underline;
     }
+
+    /* LOADING OVERLAY SPINNER */
+    #loadingOverlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(128, 0, 32, 0.85); z-index: 9999;
+      display: none; flex-direction: column; justify-content: center; align-items: center; color: white;
+    }
+    .spinner-border-pandayan { width: 3.5rem; height: 3.5rem; color: var(--pandayan-yellow); }
   </style>
 </head>
 <body>
 
+  <div id="loadingOverlay">
+    <div class="spinner-border spinner-border-pandayan mb-3" role="status"></div>
+    <h5 class="fw-bold text-warning mb-1" id="loadingText">PRO-PROSESO...</h5>
+    <small class="text-white">Mangyaring maghintay nang ilang sandali.</small>
+  </div>
+
   <div class="auth-card">
     <div class="auth-header">
       <h3>LIHAM PAHINTULOT ONLINE</h3>
-      <small class="text-warning">Pandayan Superstores, Inc.</small>
+      <small class="text-warning fw-bold">Pandayan Superstores, Inc.</small>
     </div>
     
     <div class="p-4">
       <form id="loginForm">
-        <h5 class="text-center mb-3 fw-bold" style="color: var(--pandayan-burgundy);">Log In</h5>
+        <h5 class="text-center mb-3 fw-bold" style="color: var(--pandayan-burgundy);">Mag-log In</h5>
         
         <div class="mb-3">
           <label class="form-label fw-bold">Username</label>
@@ -141,7 +158,7 @@
 
       <div class="text-center small">
         <p id="toggleToRegister" class="m-0">Wala pang account? <span class="link-toggle" onclick="showRegister()">Gumawa ng Account</span></p>
-        <p id="toggleToLogin" class="m-0" style="display: none;">May account na? <span class="link-toggle" onclick="showLogin()">Log In</span></p>
+        <p id="toggleToLogin" class="m-0" style="display: none;">May account na? <span class="link-toggle" onclick="showLogin()">Mag-log In</span></p>
       </div>
 
       <a href="https://www.canva.com/design/DAHO99_dbI4/uEJq-K6hj4-9IilTL0TYQA/view?utm_content=DAHO99_dbI4&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=ha0ebe4be46#12" target="_blank" class="btn-manual shadow-sm">
@@ -151,14 +168,20 @@
   </div>
 
   <script>
-    // PALITAN ITO NG IYONG DEPLOYED WEB APP URL MULA SA APPS SCRIPT
-    const API_URL = " https://script.google.com/macros/s/AKfycbwxzEOakS1W34gK4R1JuufMM-pjLGdXnxjdryvqCp44AXkAohKu6BknVNgA4Yf4Wa3l/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbzEbUc4c6dmHnNbqk9vq7Y4YSuSzyumMTw2dhrTkAJjCfu7hr84iJbTFotzcXtlngtI/exec";
 
-    // AUTO-LOGIN CHECKER (REMEMBER ME FEATURE)
+    function showSpinner(text = "PRO-PROSESO...") {
+      document.getElementById("loadingText").innerText = text;
+      document.getElementById("loadingOverlay").style.display = "flex";
+    }
+    function hideSpinner() {
+      document.getElementById("loadingOverlay").style.display = "none";
+    }
+
+    // AUTO-LOGIN CHECKER
     window.onload = function() {
       const savedUser = localStorage.getItem("pandayan_user_session");
       if (savedUser) {
-        // Naka-login na! I-redirect na sa Dashboard (Phase 3)
         window.location.href = "dashboard.html";
       }
     };
@@ -184,8 +207,7 @@
       const p = document.getElementById("loginPassword").value.trim();
       const remember = document.getElementById("rememberMe").checked;
 
-      document.getElementById("loginBtn").disabled = true;
-      document.getElementById("loginBtn").innerText = "Chine-check...";
+      showSpinner("CHINE-CHECK ANG ACCOUNT...");
 
       fetch(API_URL, {
         method: "POST",
@@ -196,8 +218,8 @@
       })
       .then(res => res.json())
       .then(res => {
+        hideSpinner();
         if (res.status === "success") {
-          // Kapag kinilick ang Remember Me, i-sa-save sa browser storage
           if (remember) {
             localStorage.setItem("pandayan_user_session", JSON.stringify(res.user));
           } else {
@@ -214,14 +236,11 @@
           });
         } else {
           Swal.fire("Login Failed", res.message, "error");
-          document.getElementById("loginBtn").disabled = false;
-          document.getElementById("loginBtn").innerText = "LOG IN";
         }
       })
       .catch(err => {
+        hideSpinner();
         Swal.fire("Error", "Hindi makakonekta sa server.", "error");
-        document.getElementById("loginBtn").disabled = false;
-        document.getElementById("loginBtn").innerText = "LOG IN";
       });
     };
 
@@ -232,8 +251,7 @@
       const u = document.getElementById("regUsername").value.trim();
       const p = document.getElementById("regPassword").value.trim();
 
-      document.getElementById("regBtn").disabled = true;
-      document.getElementById("regBtn").innerText = "Ipinapadala...";
+      showSpinner("IPINAPADALA ANG ACCOUNT...");
 
       fetch(API_URL, {
         method: "POST",
@@ -244,6 +262,7 @@
       })
       .then(res => res.json())
       .then(res => {
+        hideSpinner();
         if (res.status === "success") {
           Swal.fire({
             title: "Account Created!",
@@ -257,13 +276,10 @@
         } else {
           Swal.fire("Registration Error", res.message, "error");
         }
-        document.getElementById("regBtn").disabled = false;
-        document.getElementById("regBtn").innerText = "MAG-REGISTER";
       })
       .catch(err => {
+        hideSpinner();
         Swal.fire("Error", "Hindi makakonekta sa server.", "error");
-        document.getElementById("regBtn").disabled = false;
-        document.getElementById("regBtn").innerText = "MAG-REGISTER";
       });
     };
   </script>
