@@ -22,11 +22,7 @@
     .badge-disapproved { background-color: #dc3545; color: white; }
     .conditional-field { display: none; }
     .search-col-input { font-size: 0.8rem; padding: 3px 5px; }
-    
-    @media (max-width: 768px) {
-      .navbar-brand { font-size: 1rem; }
-      .table { font-size: 0.85rem; }
-    }
+    .table-details th { background-color: #f8f9fa; width: 35%; }
   </style>
 </head>
 <body>
@@ -43,7 +39,6 @@
   </nav>
 
   <div class="container-fluid px-3 mb-5">
-    
     <div class="card shadow-sm border-0">
       <div class="card-header card-header-pandayan d-flex justify-content-between align-items-center flex-wrap gap-2">
         <span>Monitoring Dashboard</span>
@@ -91,22 +86,16 @@
           <h5 class="modal-title fw-bold">Request Liham Pahintulot</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
-        
         <form id="lpForm">
           <div class="modal-body p-4" style="max-height: 70vh; overflow-y: auto;">
-            
             <div class="mb-3">
               <label class="form-label fw-bold">1. REQUESTED BY (Pangalan ng Kapwa)</label>
               <input type="text" id="requestedBy" class="form-control" placeholder="Pangalan mo" required oninput="saveDraft()">
             </div>
-
             <div class="mb-3">
               <label class="form-label fw-bold">2. REQUEST FROM (Branch na nag-request)</label>
-              <select id="requestFrom" class="form-select" required onchange="saveDraft()">
-                <option value="">-Pumili ng Branch-</option>
-              </select>
+              <select id="requestFrom" class="form-select" required onchange="saveDraft()"><option value="">-Pumili ng Branch-</option></select>
             </div>
-
             <div class="mb-3">
               <label class="form-label fw-bold">3. MODE OF PASABAY</label>
               <select id="modeOfPasabay" class="form-select" onchange="handleModeChange(this.value); saveDraft();" required>
@@ -118,19 +107,14 @@
                 <option value="Thru Courier">Thru Courier</option>
               </select>
             </div>
-
             <div id="divPasabayBranch" class="mb-3 conditional-field">
               <label class="form-label fw-bold text-danger">Piliin ang Branch na pasasabayan:</label>
-              <select id="pasabayTargetBranch" class="form-select" onchange="saveDraft()">
-                <option value="">-Pumili ng Target Branch-</option>
-              </select>
+              <select id="pasabayTargetBranch" class="form-select" onchange="saveDraft()"><option value="">-Pumili ng Target Branch-</option></select>
             </div>
-
             <div id="divShuttle" class="mb-3 conditional-field">
               <label class="form-label fw-bold text-danger">Anong Shuttle ang pagsasabayan?</label>
-              <input type="text" id="shuttleName" class="form-control" placeholder="Ilagay ang plaka o shuttle name" oninput="saveDraft()">
+              <input type="text" id="shuttleName" class="form-control" placeholder="Plaka o shuttle name" oninput="saveDraft()">
             </div>
-
             <div id="divCourier" class="mb-3 conditional-field">
               <label class="form-label fw-bold text-danger">Courier Option:</label>
               <select id="courierOption" class="form-select" onchange="handleCourierChange(this.value); saveDraft();">
@@ -139,24 +123,18 @@
                 <option value="Drop to Branch">Drop to Branch</option>
               </select>
             </div>
-
             <div id="divPosFile" class="mb-3 conditional-field">
               <label class="form-label fw-bold text-danger">Attach POS Receipt Screenshot (Required):</label>
               <input type="file" id="posFile" class="form-control" accept="image/*">
             </div>
-
             <div class="mb-3">
               <label class="form-label fw-bold">4. REQUESTED TO (Pakikisuyuang Kawan)</label>
-              <select id="requestedTo" class="form-select" required onchange="saveDraft()">
-                <option value="">-Pumili ng Kawan-</option>
-              </select>
+              <select id="requestedTo" class="form-select" required onchange="saveDraft()"><option value="">-Pumili ng Kawan-</option></select>
             </div>
-
             <div class="mb-3">
               <label class="form-label fw-bold">5. P.O. NUMBER</label>
               <input type="text" id="poNumber" class="form-control" placeholder="Ilagay ang RPO Number" required oninput="saveDraft()">
             </div>
-
             <div class="mb-3">
               <label class="form-label fw-bold">6. REASON FOR REQUEST</label>
               <select id="reason" class="form-select" onchange="handleReasonChange(this.value); saveDraft();" required>
@@ -167,27 +145,22 @@
                 <option value="Others">Others</option>
               </select>
             </div>
-
             <div id="divOtherReason" class="mb-3 conditional-field">
               <label class="form-label fw-bold text-danger">Isulat ang ibang dahilan:</label>
               <input type="text" id="otherReason" class="form-control" placeholder="Other reason..." oninput="saveDraft()">
             </div>
-
             <div class="mb-3">
               <label class="form-label fw-bold">7. KWENTO NG PAGKAUNAWA SA PANGYAYARI (KPP)</label>
               <textarea id="kpp" class="form-control" rows="3" placeholder="Ipaliwanag ang detalye..." required oninput="saveDraft()"></textarea>
             </div>
-
             <div class="mb-3">
               <label class="form-label fw-bold">8. GE'S APPROVAL ATTACHMENT</label>
               <input type="file" id="geFile" class="form-control" accept="image/*" required>
             </div>
-
             <div id="divApprovalAttachment" class="mb-3 conditional-field">
               <label id="lblApprovalAttachment" class="form-label fw-bold text-danger">APPROVAL ATTACHMENT</label>
               <input type="file" id="tindahanFile" class="form-control" accept="image/*">
             </div>
-
           </div>
           <div class="modal-footer bg-light d-flex justify-content-between">
             <button type="button" class="btn btn-outline-danger btn-sm" onclick="clearDraft()">🗑️ Clear Form</button>
@@ -201,22 +174,33 @@
     </div>
   </div>
 
+  <div class="modal fade" id="actionModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content" style="border-radius: 15px; overflow: hidden;">
+        <div class="modal-header text-white card-header-pandayan">
+          <h5 class="modal-title fw-bold" id="actionModalTitle">Request Details</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4" style="max-height: 75vh; overflow-y: auto;" id="actionModalBody">
+          </div>
+        <div class="modal-footer bg-light" id="actionModalFooter">
+          </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbwxzEOakS1W34gK4R1JuufMM-pjLGdXnxjdryvqCp44AXkAohKu6BknVNgA4Yf4Wa3l/exec";
     let currentUser = null;
     window.rawDashboardData = [];
+    let selectedRequestIndex = null;
 
-    // ON LOAD CHECK SESSION & FETCH DATA
     window.onload = function() {
       const session = localStorage.getItem("pandayan_user_session") || sessionStorage.getItem("pandayan_user_session");
-      if(!session) {
-        window.location.href = "index.html";
-        return;
-      }
+      if(!session) { window.location.href = "index.html"; return; }
       currentUser = JSON.parse(session);
       document.getElementById("userInfo").innerText = `Kapwa: ${currentUser.kapwaName} (${currentUser.role})`;
-      
       fetchDropdowns();
       fetchDashboard();
       loadDraft();
@@ -236,15 +220,12 @@
             const reqFrom = document.getElementById("requestFrom");
             const pasTarget = document.getElementById("pasabayTargetBranch");
             const reqTo = document.getElementById("requestedTo");
-            
             d.branches.forEach(b => {
               reqFrom.options[reqFrom.options.length] = new Option(b, b);
               pasTarget.options[pasTarget.options.length] = new Option(b, b);
             });
-            d.kawans.forEach(k => {
-              reqTo.options[reqTo.options.length] = new Option(k, k);
-            });
-            loadDraft(); // Re-apply saved values for dropdowns
+            d.kawans.forEach(k => { reqTo.options[reqTo.options.length] = new Option(k, k); });
+            loadDraft();
           }
         });
     }
@@ -259,7 +240,6 @@
             window.rawDashboardData = res.data;
             res.data.forEach((r, idx) => {
               const getBadge = (s) => s === "PENDING" ? "badge-pending" : (s === "APPROVED" ? "badge-approved" : "badge-disapproved");
-              
               html += `<tr>
                 <td><span class="badge bg-secondary">${r.requestId}</span></td>
                 <td><small>${r.dateOfRequest}</small></td>
@@ -270,7 +250,7 @@
                 <td><span class="badge ${getBadge(r.hatidSundoStatus)}">${r.hatidSundoStatus}</span></td>
                 <td><span class="badge ${getBadge(r.kawanStatus)}">${r.kawanStatus}</span></td>
                 <td>
-                  <button class="btn btn-sm btn-dark" onclick="viewDetails(${idx})">View / Action</button>
+                  <button class="btn btn-sm btn-dark fw-bold" onclick="viewDetails(${idx})">View / Action</button>
                 </td>
               </tr>`;
             });
@@ -281,38 +261,21 @@
         });
     }
 
-    // CONDITIONAL FIELDS LOGIC
     function handleModeChange(val) {
       document.getElementById("divPasabayBranch").style.display = (val === "Pasabay To") ? "block" : "none";
       document.getElementById("divShuttle").style.display = (val === "Pasabay to Shuttle") ? "block" : "none";
       document.getElementById("divCourier").style.display = (val === "Thru Courier") ? "block" : "none";
-      
       const divApp = document.getElementById("divApprovalAttachment");
       const lblApp = document.getElementById("lblApprovalAttachment");
-      
-      if(val === "Pasabay To") {
-        divApp.style.display = "block";
-        lblApp.innerText = "9. TINDAHAN'S APPROVAL ATTACHMENT";
-      } else if(val === "Pasabay to Shuttle") {
-        divApp.style.display = "block";
-        lblApp.innerText = "9. SHUTTLE'S APPROVAL ATTACHMENT";
-      } else if(val === "Pasabay to FE Ronnie") {
-        divApp.style.display = "block";
-        lblApp.innerText = "9. FE RONNIE'S APPROVAL ATTACHMENT";
-      } else {
-        divApp.style.display = "none";
-      }
+      if(val === "Pasabay To") { divApp.style.display = "block"; lblApp.innerText = "9. TINDAHAN'S APPROVAL ATTACHMENT"; }
+      else if(val === "Pasabay to Shuttle") { divApp.style.display = "block"; lblApp.innerText = "9. SHUTTLE'S APPROVAL ATTACHMENT"; }
+      else if(val === "Pasabay to FE Ronnie") { divApp.style.display = "block"; lblApp.innerText = "9. FE RONNIE'S APPROVAL ATTACHMENT"; }
+      else { divApp.style.display = "none"; }
     }
 
-    function handleCourierChange(val) {
-      document.getElementById("divPosFile").style.display = (val === "Direct Delivery to Panauhin") ? "block" : "none";
-    }
+    function handleCourierChange(val) { document.getElementById("divPosFile").style.display = (val === "Direct Delivery to Panauhin") ? "block" : "none"; }
+    function handleReasonChange(val) { document.getElementById("divOtherReason").style.display = (val === "Others") ? "block" : "none"; }
 
-    function handleReasonChange(val) {
-      document.getElementById("divOtherReason").style.display = (val === "Others") ? "block" : "none";
-    }
-
-    // AUTO-SAVE DRAFT IN LOCAL STORAGE
     function saveDraft() {
       const draft = {
         requestedBy: document.getElementById("requestedBy").value,
@@ -334,22 +297,18 @@
       const saved = localStorage.getItem("pandayan_form_draft");
       if(!saved) return;
       const d = JSON.parse(saved);
-      
       document.getElementById("requestedBy").value = d.requestedBy || "";
       document.getElementById("requestFrom").value = d.requestFrom || "";
       document.getElementById("modeOfPasabay").value = d.modeOfPasabay || "";
       handleModeChange(d.modeOfPasabay || "");
-      
       document.getElementById("pasabayTargetBranch").value = d.pasabayTargetBranch || "";
       document.getElementById("shuttleName").value = d.shuttleName || "";
       document.getElementById("courierOption").value = d.courierOption || "";
       handleCourierChange(d.courierOption || "");
-      
       document.getElementById("requestedTo").value = d.requestedTo || "";
       document.getElementById("poNumber").value = d.poNumber || "";
       document.getElementById("reason").value = d.reason || "";
       handleReasonChange(d.reason || "");
-      
       document.getElementById("otherReason").value = d.otherReason || "";
       document.getElementById("kpp").value = d.kpp || "";
     }
@@ -357,27 +316,20 @@
     function clearDraft() {
       localStorage.removeItem("pandayan_form_draft");
       document.getElementById("lpForm").reset();
-      handleModeChange("");
-      handleCourierChange("");
-      handleReasonChange("");
+      handleModeChange(""); handleCourierChange(""); handleReasonChange("");
       Swal.fire("Cleared", "Nabura na ang iyong form draft.", "info");
     }
 
     const fileToBase64 = f => new Promise((res, rej) => {
       if(!f) return res("");
-      const r = new FileReader();
-      r.readAsDataURL(f);
-      r.onload = () => res(r.result);
-      r.onerror = e => rej(e);
+      const r = new FileReader(); r.readAsDataURL(f);
+      r.onload = () => res(r.result); r.onerror = e => rej(e);
     });
 
-    // SUBMIT REQUEST
     document.getElementById("lpForm").onsubmit = async function(e) {
       e.preventDefault();
-      
       document.getElementById("submitBtn").disabled = true;
       document.getElementById("submitBtn").innerText = "Ipinapadala...";
-
       const mode = document.getElementById("modeOfPasabay").value;
       const now = new Date();
       const timestamp = now.getFullYear() + ("0" + (now.getMonth() + 1)).slice(-2) + ("0" + now.getDate()).slice(-2) + "-" + 
@@ -397,34 +349,21 @@
         kapwaName: currentUser.kapwaName,
         requestedBy: document.getElementById("requestedBy").value,
         requestFrom: document.getElementById("requestFrom").value,
-        modeOfPasabay: mode,
-        modeRemarks: modeRemarks,
+        modeOfPasabay: mode, modeRemarks: modeRemarks,
         requestedTo: document.getElementById("requestedTo").value,
         poNumber: document.getElementById("poNumber").value,
         reason: (document.getElementById("reason").value === "Others") ? document.getElementById("otherReason").value : document.getElementById("reason").value,
         kpp: document.getElementById("kpp").value,
         requestId: generatedId,
-        posFile: posB64,
-        geFile: geB64,
-        tindahanFile: tindahanB64
+        posFile: posB64, geFile: geB64, tindahanFile: tindahanB64
       };
 
-      fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "submitRequest", payload: payload })
-      })
+      fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "submitRequest", payload: payload }) })
       .then(r => r.json())
       .then(res => {
         if(res.status === "success") {
           clearDraft();
-          Swal.fire({
-            title: "Mabuhay!",
-            text: "Naipasa ang request! ID: " + res.requestId,
-            icon: "success",
-            confirmButtonColor: "#800020"
-          }).then(() => {
-            location.reload();
-          });
+          Swal.fire({ title: "Mabuhay!", text: "Naipasa ang request! ID: " + res.requestId, icon: "success", confirmButtonColor: "#800020" }).then(() => { location.reload(); });
         } else {
           Swal.fire("Error", res.message, "error");
           document.getElementById("submitBtn").disabled = false;
@@ -433,35 +372,208 @@
       });
     };
 
-    // SEARCH & FILTER TABLE LOGIC
     function filterTable() {
       const generalFilter = document.getElementById("generalSearch").value.toUpperCase();
       const colInputs = document.querySelectorAll(".search-col-input");
       const rows = document.getElementById("mainTable").getElementsByTagName("tr");
-
-      for (let i = 2; i < rows.length; i++) { // Skip header rows
+      for (let i = 2; i < rows.length; i++) {
         let row = rows[i];
         let cells = row.getElementsByTagName("td");
         if (cells.length < 8) continue;
-
         let matchesGeneral = row.innerText.toUpperCase().indexOf(generalFilter) > -1;
         let matchesCols = true;
-
         for (let j = 0; j < 8; j++) {
           let colVal = colInputs[j].value.toUpperCase();
-          if (colVal && cells[j].innerText.toUpperCase().indexOf(colVal) === -1) {
-            matchesCols = false;
-            break;
-          }
+          if (colVal && cells[j].innerText.toUpperCase().indexOf(colVal) === -1) { matchesCols = false; break; }
         }
-
         row.style.display = (matchesGeneral && matchesCols) ? "" : "none";
       }
     }
 
+    // ==========================================
+    // PHASE 4: ACTION & APPROVAL MODAL LOGIC
+    // ==========================================
     function viewDetails(idx) {
-      // Dito papasok ang Phase 4 (Approval Modal & SSU Close Request)
-      Swal.fire("Phase 4 Feature", "Ang Approval Modal at SSU Close Request ay iu-update natin sa Phase 4!", "info");
+      selectedRequestIndex = idx;
+      const r = window.rawDashboardData[idx];
+      document.getElementById("actionModalTitle").innerText = `Details: ${r.requestId}`;
+      
+      const fileLink = (url, name) => url ? `<a href="${url}" target="_blank" class="badge bg-primary text-decoration-none">View ${name} File</a>` : 'Walang Attachment';
+
+      let pdfDownloadBtn = "";
+      if (r.pdfUrl) {
+        pdfDownloadBtn = `<div class="alert alert-success text-center py-2 mb-3">
+          <b>📄 Approved PDF Liham Pahintulot:</b><br>
+          <a href="${r.pdfUrl}" target="_blank" class="btn btn-sm btn-success fw-bold mt-1">📥 DOWNLOAD PDF</a>
+        </div>`;
+      }
+
+      let html = `
+        ${pdfDownloadBtn}
+        <table class="table table-bordered table-sm table-details align-middle">
+          <tr><th>Request ID</th><td><b class="text-danger">${r.requestId}</b></td></tr>
+          <tr><th>Date of Request</th><td>${r.dateOfRequest}</td></tr>
+          <tr><th>Account / Requested By</th><td>${r.accountName} / <b>${r.requestedBy}</b></td></tr>
+          <tr><th>Request From / To</th><td>${r.requestFrom} ➡️ <b>${r.requestedTo}</b></td></tr>
+          <tr><th>Mode of Pasabay</th><td>${r.modeOfPasabay} (${r.modeRemarks || '-'})</td></tr>
+          <tr><th>RPO Number</th><td>${r.poNumber}</td></tr>
+          <tr><th>Reason for Request</th><td>${r.reason}</td></tr>
+          <tr><th>KPP (Kwento)</th><td><div class="bg-light p-2 rounded small">${r.kpp}</div></td></tr>
+          <tr><th>POS Receipt Screenshot</th><td>${fileLink(r.posReceipt, 'POS Receipt')}</td></tr>
+          <tr><th>GE Approval Screenshot</th><td>${fileLink(r.geApprovalFile, 'GE Approval')}</td></tr>
+          <tr><th>Tindahan Approval Screenshot</th><td>${fileLink(r.tindahanApprovalFile, 'Tindahan Approval')}</td></tr>
+        </table>
+
+        <h6 class="fw-bold mt-4" style="color:#800020;">APPROVAL STATUS HISTORY</h6>
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm text-center small">
+            <thead class="table-dark">
+              <tr><th>Level</th><th>Status</th><th>Approver Name</th><th>Remarks</th><th>Timestamp</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1st (Hatid-Sundo)</td>
+                <td><span class="badge ${r.hatidSundoStatus==='APPROVED'?'bg-success':(r.hatidSundoStatus==='DISAPPROVED'?'bg-danger':'bg-warning text-dark')}">${r.hatidSundoStatus}</span></td>
+                <td>${r.approver1Name || '-'}</td><td>${r.remarks1 || '-'}</td><td>${r.timestamp1 || '-'}</td>
+              </tr>
+              <tr>
+                <td>2nd (Kawan)</td>
+                <td><span class="badge ${r.kawanStatus==='APPROVED'?'bg-success':(r.kawanStatus==='DISAPPROVED'?'bg-danger':'bg-warning text-dark')}">${r.kawanStatus}</span></td>
+                <td>${r.approver2Name || '-'}</td><td>${r.remarks2 || '-'}</td><td>${r.timestamp2 || '-'}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      // Check if user can approve
+      let actionForm = "";
+      const is1stApprover = (currentUser.role === "1st Approver" || currentUser.role === "Admin");
+      const is2ndApprover = (currentUser.role === "2nd Approver" || currentUser.role === "Admin");
+
+      let canAction1st = is1stApprover && r.hatidSundoStatus === "PENDING";
+      let canAction2nd = is2ndApprover && r.hatidSundoStatus === "APPROVED" && r.kawanStatus === "PENDING";
+
+      if (canAction1st || canAction2nd) {
+        actionForm = `
+          <div class="card bg-light p-3 border-danger mt-3">
+            <h6 class="fw-bold text-danger">APPROVER ACTION SECTION (${canAction1st ? '1st Approval' : '2nd Approval'})</h6>
+            <div class="mb-2">
+              <label class="form-label small fw-bold">Remarks / Instruction:</label>
+              <textarea id="appRemarks" class="form-control form-control-sm" rows="2" placeholder="Maglagay ng remarks..."></textarea>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-success btn-sm flex-grow-1 fw-bold" onclick="submitApprovalAction('APPROVED')">APPROVE</button>
+              <button class="btn btn-danger btn-sm flex-grow-1 fw-bold" onclick="submitApprovalAction('DISAPPROVED')">DISAPPROVE</button>
+            </div>
+          </div>
+        `;
+      } else if (is2ndApprover && r.hatidSundoStatus === "PENDING") {
+        actionForm = `<div class="alert alert-warning text-center small mt-3">⚠️ Naka-lock pa ang 2nd Approval. Kailangan munang ma-APPROVED ng 1st Approver (Hatid-Sundo).</div>`;
+      }
+
+      document.getElementById("actionModalBody").innerHTML = html + actionForm;
+
+      // Footer SSU Button
+      let footerHtml = `<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Isara</button>`;
+      if (r.kawanStatus === "APPROVED") {
+        footerHtml = `<button type="button" class="btn btn-warning btn-sm fw-bold" onclick="openSSUModal(${idx})">📦 PASABAY SSU / CLOSE REQUEST</button> ` + footerHtml;
+      }
+      document.getElementById("actionModalFooter").innerHTML = footerHtml;
+
+      new bootstrap.Modal(document.getElementById("actionModal")).show();
+    }
+
+    function submitApprovalAction(status) {
+      const r = window.rawDashboardData[selectedRequestIndex];
+      const remarks = document.getElementById("appRemarks").value.trim();
+      if(status === "DISAPPROVED" && !remarks) return Swal.fire("Required", "Kailangan ng remarks kapag Disapproved.", "warning");
+
+      Swal.fire({ title: "Nagpro-proseso...", text: "Ipinapadala ang desisyon at nag-ge-generate ng PDF kung kinakailangan.", allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+      const payload = {
+        rowIndex: r.rowIndex,
+        role: currentUser.role,
+        approverName: currentUser.kapwaName,
+        actionStatus: status,
+        remarks: remarks
+      };
+
+      fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "processApproval", payload: payload })
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.status === "success") {
+          Swal.fire("Mabuhay!", res.message, "success").then(() => location.reload());
+        } else {
+          Swal.fire("Error", res.message, "error");
+        }
+      });
+    }
+
+    function openSSUModal(idx) {
+      const r = window.rawDashboardData[idx];
+      bootstrap.Modal.getInstance(document.getElementById("actionModal")).hide();
+
+      Swal.fire({
+        title: "Pasabay SSU / Close Request",
+        html: `
+          <div class="text-start small">
+            <div class="mb-2">
+              <label class="form-label fw-bold">Date Received:</label>
+              <input type="date" id="ssuDate" class="form-control">
+            </div>
+            <div class="mb-2">
+              <label class="form-label fw-bold">RPO Attachment (Screenshot):</label>
+              <input type="file" id="ssuRpoFile" class="form-control" accept="image/*">
+            </div>
+            <div class="mb-2">
+              <label class="form-label fw-bold">Remarks:</label>
+              <textarea id="ssuRemarks" class="form-control" rows="2" placeholder="Remarks..."></textarea>
+            </div>
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: "Submit SSU",
+        confirmButtonColor: "#800020",
+        preConfirm: async () => {
+          const date = document.getElementById("ssuDate").value;
+          const rpoFile = document.getElementById("ssuRpoFile").files[0];
+          const remarks = document.getElementById("ssuRemarks").value;
+
+          if(!date || !rpoFile) {
+            Swal.showValidationMessage("Kailangang ilagay ang Date Received at RPO Attachment!");
+            return false;
+          }
+
+          const rpoB64 = await fileToBase64(rpoFile);
+          return {
+            rowIndex: r.rowIndex,
+            requestId: r.requestId,
+            dateReceived: date,
+            rpoFile: rpoB64,
+            ssuRemarks: remarks
+          };
+        }
+      }).then((res) => {
+        if(res.isConfirmed) {
+          Swal.fire({ title: "Isina-save...", allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+          fetch(API_URL, {
+            method: "POST",
+            body: JSON.stringify({ action: "closeRequest", payload: res.value })
+          })
+          .then(r => r.json())
+          .then(resp => {
+            if(resp.status === "success") {
+              Swal.fire("Success!", "Naisara na ang request.", "success").then(() => location.reload());
+            } else {
+              Swal.fire("Error", resp.message, "error");
+            }
+          });
+        }
+      });
     }
   </script>
 </body>
