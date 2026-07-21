@@ -15,31 +15,47 @@
     }
     body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     
-    /* Vibrant Navigation Bar */
+    /* Navigation Bar */
     .navbar { 
       background-color: var(--pandayan-burgundy); 
       color: var(--pandayan-white); 
       border-bottom: 5px solid var(--pandayan-yellow); 
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
-    .navbar-brand { font-weight: 800; color: var(--pandayan-white) !important; font-size: 1.3rem; letter-spacing: 0.5px; }
+    .navbar-brand { font-weight: 800; color: var(--pandayan-white) !important; font-size: 1.25rem; }
     
-    /* Custom Buttons */
-    .btn-pandayan { background-color: var(--pandayan-burgundy); color: var(--pandayan-white); font-weight: bold; border: 2px solid var(--pandayan-blue); }
+    /* Live Clock Widget */
+    .clock-widget {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid var(--pandayan-yellow);
+      border-radius: 8px;
+      padding: 4px 12px;
+      color: var(--pandayan-yellow);
+      font-weight: bold;
+      font-size: 0.85rem;
+    }
+
+    /* Buttons */
+    .btn-pandayan { background-color: var(--pandayan-burgundy); color: var(--pandayan-white); font-weight: bold; border: 2px solid var(--pandayan-blue); border-radius: 8px; }
     .btn-pandayan:hover { background-color: var(--pandayan-blue); color: var(--pandayan-white); }
-    .btn-warning-pandayan { background-color: var(--pandayan-yellow); color: var(--pandayan-burgundy); font-weight: 800; border: 2px solid var(--pandayan-burgundy); }
+    .btn-warning-pandayan { background-color: var(--pandayan-yellow); color: var(--pandayan-burgundy); font-weight: 800; border: 2px solid var(--pandayan-burgundy); border-radius: 8px; }
     .btn-warning-pandayan:hover { background-color: var(--pandayan-burgundy); color: var(--pandayan-yellow); }
-    .btn-blue { background-color: var(--pandayan-blue); color: white; font-weight: bold; }
+    .btn-blue { background-color: var(--pandayan-blue); color: white; font-weight: bold; border-radius: 6px; }
     .btn-blue:hover { background-color: #000099; color: white; }
 
-    /* Cards & Headers */
+    /* Card & Soft Header */
     .card-header-pandayan { 
       background-color: var(--pandayan-burgundy); 
       color: var(--pandayan-white); 
       font-weight: bold; 
       border-bottom: 3px solid var(--pandayan-yellow);
+      border-radius: 12px 12px 0 0 !important;
     }
-    
+    .table-burgundy-header {
+      background-color: var(--pandayan-burgundy) !important;
+      color: var(--pandayan-white) !important;
+    }
+
     /* Badges */
     .badge-pending { background-color: var(--pandayan-yellow); color: var(--pandayan-burgundy); font-weight: 800; border: 1px solid var(--pandayan-burgundy); }
     .badge-approved { background-color: #198754; color: white; }
@@ -47,13 +63,15 @@
     .badge-ssu { background-color: var(--pandayan-blue); color: white; font-weight: bold; }
 
     .conditional-field { display: none; }
-    .search-col-input { font-size: 0.8rem; padding: 3px 5px; border: 1px solid var(--pandayan-blue); }
+    .search-col-input { font-size: 0.8rem; padding: 4px 8px; border: 1px solid #ccc; border-radius: 6px; }
     .table-details th { background-color: #f8f9fa; width: 35%; color: var(--pandayan-burgundy); }
-    
-    /* File Preview Image Style */
     .img-preview { max-height: 120px; border-radius: 8px; border: 2px dashed var(--pandayan-burgundy); padding: 3px; display: none; margin-top: 5px; }
 
-    /* LOADING OVERLAY SPINNER */
+    /* Modal Styling */
+    .nav-tabs .nav-link.active { background-color: var(--pandayan-burgundy); color: white; font-weight: bold; border: none; }
+    .nav-tabs .nav-link { color: var(--pandayan-burgundy); font-weight: bold; }
+
+    /* Loading Overlay Spinner */
     #loadingOverlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(128, 0, 32, 0.85); z-index: 9999;
@@ -72,7 +90,10 @@
 
   <nav class="navbar p-3 mb-4 sticky-top">
     <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap gap-2">
-      <span class="navbar-brand m-0">LIHAM PAHINTULOT ONLINE</span>
+      <div class="d-flex align-items-center gap-3">
+        <span class="navbar-brand m-0">LIHAM PAHINTULOT ONLINE</span>
+        <div class="clock-widget d-none d-md-block" id="liveClockWidget">Loading time...</div>
+      </div>
       <div class="d-flex align-items-center gap-2">
         <span id="userInfo" class="badge bg-light text-dark d-none d-md-inline p-2 border"></span>
         <button class="btn btn-warning-pandayan btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#requestModal">+ REQUEST FORM</button>
@@ -82,16 +103,16 @@
   </nav>
 
   <div class="container-fluid px-3 mb-5">
-    <div class="card shadow-sm border-0">
-      <div class="card-header card-header-pandayan d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <span>📋 MONITORING DASHBOARD</span>
+    <div class="card shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
+      <div class="card-header card-header-pandayan d-flex justify-content-between align-items-center flex-wrap gap-2 p-3">
+        <span class="fs-6">📋 MONITORING DASHBOARD</span>
         <input type="text" id="generalSearch" class="form-control form-control-sm w-auto" placeholder="🔍 General Search..." onkeyup="filterTable()">
       </div>
       
       <div class="table-responsive">
         <table class="table table-hover bg-white m-0 align-middle text-center" id="mainTable">
-          <thead class="table-dark small">
-            <tr style="background-color: var(--pandayan-burgundy);">
+          <thead>
+            <tr class="table-burgundy-header small fw-bold">
               <th>Request ID</th>
               <th>Date</th>
               <th>From</th>
@@ -118,6 +139,14 @@
             <tr><td colspan="9" class="p-4 text-center">Nagloload ng data...</td></tr>
           </tbody>
         </table>
+      </div>
+
+      <div class="card-footer bg-light d-flex justify-content-between align-items-center p-3">
+        <small class="fw-bold text-muted" id="pageIndicator">Showing 0 to 0 entries</small>
+        <div class="d-flex gap-2">
+          <button class="btn btn-sm btn-outline-dark fw-bold" id="prevBtn" onclick="changePage(-1)">⏮️ Previous</button>
+          <button class="btn btn-sm btn-outline-dark fw-bold" id="nextBtn" onclick="changePage(1)">Next ⏭️</button>
+        </div>
       </div>
     </div>
   </div>
@@ -242,8 +271,64 @@
           <h5 class="modal-title fw-bold" id="actionModalTitle">Request Details</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
-        <div class="modal-body p-4" style="max-height: 75vh; overflow-y: auto;" id="actionModalBody">
+        <div class="modal-body p-4" style="max-height: 75vh; overflow-y: auto;">
+          
+          <ul class="nav nav-tabs mb-3" id="modalTab" role="tablist">
+            <li class="nav-item">
+              <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#tab-info" type="button">📌 General Info</button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" id="kpp-tab" data-bs-toggle="tab" data-bs-target="#tab-kpp" type="button">📖 KPP Kwento</button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" id="files-tab" data-bs-toggle="tab" data-bs-target="#tab-files" type="button">📎 Attachments</button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" id="status-tab" data-bs-toggle="tab" data-bs-target="#tab-status" type="button">🛡️ Approval History</button>
+            </li>
+          </ul>
+
+          <div class="tab-content" id="modalTabContent">
+            <div class="tab-pane fade show active" id="tab-info">
+              <table class="table table-bordered table-sm table-details align-middle m-0">
+                <tr><th>Request ID</th><td><b class="text-danger" id="vId"></b></td></tr>
+                <tr><th>Date of Request</th><td id="vDate"></td></tr>
+                <tr><th>Account / Requested By</th><td><span id="vAccount"></span> / <b id="vBy"></b></td></tr>
+                <tr><th>Request From / To</th><td><span id="vFrom"></span> ➡️ <b id="vTo"></b></td></tr>
+                <tr><th>Mode of Pasabay</th><td id="vMode"></td></tr>
+                <tr><th>RPO Number</th><td id="vPo"></td></tr>
+                <tr><th>Reason for Request</th><td id="vReason"></td></tr>
+              </table>
+            </div>
+
+            <div class="tab-pane fade" id="tab-kpp">
+              <div class="card p-3 bg-light border-0">
+                <h6 class="fw-bold" style="color: var(--pandayan-burgundy);">Kwento ng Pagkaunawa sa Pangyayari (KPP):</h6>
+                <div class="bg-white p-3 border rounded text-dark" id="vKpp" style="min-height: 120px; white-space: pre-wrap;"></div>
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="tab-files">
+              <div class="d-flex flex-column gap-2" id="vFilesContainer">
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="tab-status">
+              <div class="table-responsive">
+                <table class="table table-bordered table-sm text-center small align-middle">
+                  <thead class="table-dark">
+                    <tr><th>Level</th><th>Status</th><th>Approver Name</th><th>Remarks</th><th>Timestamp</th></tr>
+                  </thead>
+                  <tbody id="vHistoryBody">
+                    </tbody>
+                </table>
+              </div>
+            </div>
           </div>
+
+          <div id="vActionSection"></div>
+
+        </div>
         <div class="modal-footer bg-light" id="actionModalFooter">
           </div>
       </div>
@@ -252,15 +337,27 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzEbUc4c6dmHnNbqk9vq7Y4YSuSzyumMTw2dhrTkAJjCfu7hr84iJbTFotzcXtlngtI/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbyH5OsnviMV56PZfhUKpiMb8NQpKULfTmtJtUfFgrIOHheLWsqRxYgv3m2OeeJnEr-w/exec";
     let currentUser = null;
     window.rawDashboardData = [];
+    window.filteredData = [];
+    let currentPage = 1;
+    const itemsPerPage = 10;
     let selectedRequestIndex = null;
 
     function showSpinner() { document.getElementById("loadingOverlay").style.display = "flex"; }
     function hideSpinner() { document.getElementById("loadingOverlay").style.display = "none"; }
 
+    // REAL-TIME CLOCK WIDGET
+    function updateClock() {
+      const now = new Date();
+      const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+      document.getElementById("liveClockWidget").innerText = "⏰ " + now.toLocaleDateString('en-US', options);
+    }
+    setInterval(updateClock, 1000);
+
     window.onload = function() {
+      updateClock();
       const session = localStorage.getItem("pandayan_user_session") || sessionStorage.getItem("pandayan_user_session");
       if(!session) { window.location.href = "index.html"; return; }
       currentUser = JSON.parse(session);
@@ -301,51 +398,89 @@
         .then(r => r.json())
         .then(res => {
           hideSpinner();
-          let html = "";
           if(res.status === "success" && res.data.length > 0) {
-            window.rawDashboardData = res.data;
-            res.data.forEach((r, idx) => {
-              const getBadge = (s) => {
-                if(s === "SSU") return "badge-ssu";
-                if(s === "PENDING") return "badge-pending";
-                return s === "APPROVED" ? "badge-approved" : "badge-disapproved";
+            
+            // PRIORITY SORTING LOGIC:
+            // 1. Pending muna sa unahan
+            // 2. Approved / Disapproved sa gitna
+            // 3. SSU sa pinaka-huli
+            window.rawDashboardData = res.data.sort((a, b) => {
+              const getRank = (r) => {
+                if (r.hatidSundoStatus === "PENDING" || r.kawanStatus === "PENDING") return 1;
+                if (r.hatidSundoStatus === "SSU" || r.kawanStatus === "SSU") return 3;
+                return 2;
               };
-              
-              html += `<tr>
-                <td><span class="badge bg-secondary">${r.requestId}</span></td>
-                <td><small>${r.dateOfRequest}</small></td>
-                <td>${r.requestFrom}</td>
-                <td>${r.requestedTo}</td>
-                <td><small>${r.modeOfPasabay}</small></td>
-                <td><small>${r.modeRemarks || '-'}</small></td>
-                <td><span class="badge ${getBadge(r.hatidSundoStatus)}">${r.hatidSundoStatus}</span></td>
-                <td><span class="badge ${getBadge(r.kawanStatus)}">${r.kawanStatus}</span></td>
-                <td>
-                  <button class="btn btn-sm btn-blue fw-bold shadow-sm" onclick="viewDetails(${idx})">View / Action</button>
-                </td>
-              </tr>`;
+              return getRank(a) - getRank(b);
             });
+
+            window.filteredData = [...window.rawDashboardData];
+            currentPage = 1;
+            renderTablePage();
           } else {
-            html = "<tr><td colspan='9' class='p-4 text-muted'>Walang nakitang records.</td></tr>";
+            document.getElementById("dashBody").innerHTML = "<tr><td colspan='9' class='p-4 text-muted'>Walang nakitang records.</td></tr>";
+            document.getElementById("pageIndicator").innerText = "Showing 0 of 0 entries";
           }
-          document.getElementById("dashBody").innerHTML = html;
         })
         .catch(() => hideSpinner());
     }
 
-    // LIVE IMAGE PREVIEW FUNCTION
+    // PAGINATION RENDERER (10 Items / Page)
+    function renderTablePage() {
+      const start = (currentPage - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+      const pageData = window.filteredData.slice(start, end);
+
+      let html = "";
+      if (pageData.length === 0) {
+        html = "<tr><td colspan='9' class='p-4 text-muted'>Walang nakitang records sa search na ito.</td></tr>";
+      } else {
+        pageData.forEach((r) => {
+          const originalIdx = window.rawDashboardData.findIndex(item => item.requestId === r.requestId);
+          const getBadge = (s) => {
+            if(s === "SSU") return "badge-ssu";
+            if(s === "PENDING") return "badge-pending";
+            return s === "APPROVED" ? "badge-approved" : "badge-disapproved";
+          };
+          
+          html += `<tr>
+            <td><span class="badge bg-secondary">${r.requestId}</span></td>
+            <td><small>${r.dateOfRequest}</small></td>
+            <td>${r.requestFrom}</td>
+            <td>${r.requestedTo}</td>
+            <td><small>${r.modeOfPasabay}</small></td>
+            <td><small>${r.modeRemarks || '-'}</small></td>
+            <td><span class="badge ${getBadge(r.hatidSundoStatus)}">${r.hatidSundoStatus}</span></td>
+            <td><span class="badge ${getBadge(r.kawanStatus)}">${r.kawanStatus}</span></td>
+            <td>
+              <button class="btn btn-sm btn-blue fw-bold shadow-sm" onclick="viewDetails(${originalIdx})">View / Action</button>
+            </td>
+          </tr>`;
+        });
+      }
+
+      document.getElementById("dashBody").innerHTML = html;
+      
+      const total = window.filteredData.length;
+      const showingStart = total === 0 ? 0 : start + 1;
+      const showingEnd = Math.min(end, total);
+      document.getElementById("pageIndicator").innerText = `Showing ${showingStart} to ${showingEnd} of ${total} entries`;
+      
+      document.getElementById("prevBtn").disabled = (currentPage === 1);
+      document.getElementById("nextBtn").disabled = (end >= total);
+    }
+
+    function changePage(direction) {
+      currentPage += direction;
+      renderTablePage();
+    }
+
     function previewImage(input, targetId) {
       const img = document.getElementById(targetId);
       if (input.files && input.files[0]) {
         const reader = new FileReader();
-        reader.onload = e => {
-          img.src = e.target.result;
-          img.style.display = "block";
-        };
+        reader.onload = e => { img.src = e.target.result; img.style.display = "block"; };
         reader.readAsDataURL(input.files[0]);
-      } else {
-        img.style.display = "none";
-      }
+      } else { img.style.display = "none"; }
     }
 
     function handleModeChange(val) {
@@ -418,10 +553,6 @@
       e.preventDefault();
       showSpinner();
       const mode = document.getElementById("modeOfPasabay").value;
-      const now = new Date();
-      const timestamp = now.getFullYear() + ("0" + (now.getMonth() + 1)).slice(-2) + ("0" + now.getDate()).slice(-2) + "-" + 
-                        ("0" + now.getHours()).slice(-2) + ("0" + now.getMinutes()).slice(-2) + ("0" + now.getSeconds()).slice(-2);
-      const generatedId = "LP-" + timestamp;
 
       const posB64 = await fileToBase64(document.getElementById("posFile").files[0]);
       const geB64 = await fileToBase64(document.getElementById("geFile").files[0]);
@@ -437,7 +568,7 @@
         requestFrom: document.getElementById("requestFrom").value, modeOfPasabay: mode, modeRemarks: modeRemarks,
         requestedTo: document.getElementById("requestedTo").value, poNumber: document.getElementById("poNumber").value,
         reason: (document.getElementById("reason").value === "Others") ? document.getElementById("otherReason").value : document.getElementById("reason").value,
-        kpp: document.getElementById("kpp").value, requestId: generatedId,
+        kpp: document.getElementById("kpp").value,
         posFile: posB64, geFile: geB64, tindahanFile: tindahanB64
       };
 
@@ -447,7 +578,7 @@
         hideSpinner();
         if(res.status === "success") {
           clearDraft();
-          Swal.fire({ title: "Mabuhay!", text: "Naipasa ang request! ID: " + res.requestId, icon: "success", confirmButtonColor: "#800020" }).then(() => { location.reload(); });
+          Swal.fire({ title: "Mabuhay!", text: "Naipasa ang request! Request ID: " + res.requestId, icon: "success", confirmButtonColor: "#800020" }).then(() => { location.reload(); });
         } else {
           Swal.fire("Error", res.message, "error");
         }
@@ -458,78 +589,80 @@
     function filterTable() {
       const generalFilter = document.getElementById("generalSearch").value.toUpperCase();
       const colInputs = document.querySelectorAll(".search-col-input");
-      const rows = document.getElementById("mainTable").getElementsByTagName("tr");
-      for (let i = 2; i < rows.length; i++) {
-        let row = rows[i];
-        let cells = row.getElementsByTagName("td");
-        if (cells.length < 8) continue;
-        let matchesGeneral = row.innerText.toUpperCase().indexOf(generalFilter) > -1;
+
+      window.filteredData = window.rawDashboardData.filter(r => {
+        let matchesGeneral = (r.requestId + r.dateOfRequest + r.requestFrom + r.requestedTo + r.modeOfPasabay + (r.modeRemarks||'') + r.hatidSundoStatus + r.kawanStatus).toUpperCase().indexOf(generalFilter) > -1;
+        
         let matchesCols = true;
-        for (let j = 0; j < 8; j++) {
-          let colVal = colInputs[j].value.toUpperCase();
-          if (colVal && cells[j].innerText.toUpperCase().indexOf(colVal) === -1) { matchesCols = false; break; }
+        const vals = [r.requestId, r.dateOfRequest, r.requestFrom, r.requestedTo, r.modeOfPasabay, r.modeRemarks||'', r.hatidSundoStatus, r.kawanStatus];
+        for(let j=0; j<8; j++) {
+          let cVal = colInputs[j].value.toUpperCase();
+          if(cVal && vals[j].toUpperCase().indexOf(cVal) === -1) {
+            matchesCols = false; break;
+          }
         }
-        row.style.display = (matchesGeneral && matchesCols) ? "" : "none";
-      }
+        return matchesGeneral && matchesCols;
+      });
+
+      currentPage = 1;
+      renderTablePage();
     }
 
-    // VIEW & ACTION MODAL LOGIC WITH RECEIVED P.O & RESTRICTIONS
+    // SPACIOUS VIEW MODAL WITH TABULAR INTERFACE
     function viewDetails(idx) {
       selectedRequestIndex = idx;
       const r = window.rawDashboardData[idx];
-      document.getElementById("actionModalTitle").innerText = `Details: ${r.requestId}`;
+      document.getElementById("actionModalTitle").innerText = `Request Details: ${r.requestId}`;
       
-      const fileLink = (url, name) => url ? `<a href="${url}" target="_blank" class="badge bg-primary text-decoration-none p-2">📄 View ${name}</a>` : 'Walang Attachment';
+      // Inject Tab 1 Info
+      document.getElementById("vId").innerText = r.requestId;
+      document.getElementById("vDate").innerText = r.dateOfRequest;
+      document.getElementById("vAccount").innerText = r.accountName;
+      document.getElementById("vBy").innerText = r.requestedBy;
+      document.getElementById("vFrom").innerText = r.requestFrom;
+      document.getElementById("vTo").innerText = r.requestedTo;
+      document.getElementById("vMode").innerText = `${r.modeOfPasabay} (${r.modeRemarks || '-'})`;
+      document.getElementById("vPo").innerText = r.poNumber;
+      document.getElementById("vReason").innerText = r.reason;
 
-      let pdfDownloadBtn = "";
-      if (r.pdfUrl) {
-        pdfDownloadBtn = `<div class="alert alert-success text-center py-2 mb-3">
-          <b>📄 Approved PDF Liham Pahintulot:</b><br>
-          <a href="${r.pdfUrl}" target="_blank" class="btn btn-sm btn-success fw-bold mt-1">📥 DOWNLOAD PDF</a>
-        </div>`;
+      // Inject Tab 2 KPP
+      document.getElementById("vKpp").innerText = r.kpp || 'Walang detalye.';
+
+      // Inject Tab 3 Files
+      let filesHtml = "";
+      if(r.pdfUrl) {
+        filesHtml += `<a href="${r.pdfUrl}" target="_blank" class="btn btn-success fw-bold text-start p-2">📄 Download Approved PDF Liham Pahintulot</a>`;
       }
+      if(r.posReceipt) {
+        filesHtml += `<a href="${r.posReceipt}" target="_blank" class="btn btn-outline-primary fw-bold text-start p-2">🖼️ View POS Receipt Screenshot</a>`;
+      }
+      if(r.geApprovalFile) {
+        filesHtml += `<a href="${r.geApprovalFile}" target="_blank" class="btn btn-outline-primary fw-bold text-start p-2">🖼️ View GE Approval Screenshot</a>`;
+      }
+      if(r.tindahanApprovalFile) {
+        filesHtml += `<a href="${r.tindahanApprovalFile}" target="_blank" class="btn btn-outline-primary fw-bold text-start p-2">🖼️ View Tindahan/Shuttle Approval Screenshot</a>`;
+      }
+      if(r.rpoAttachment) {
+        filesHtml += `<a href="${r.rpoAttachment}" target="_blank" class="btn btn-outline-success fw-bold text-start p-2">📦 View Received P.O. Attachment (SSU)</a>`;
+      }
+      document.getElementById("vFilesContainer").innerHTML = filesHtml || '<p class="text-muted">Walang attachments.</p>';
 
-      let html = `
-        ${pdfDownloadBtn}
-        <table class="table table-bordered table-sm table-details align-middle">
-          <tr><th>Request ID</th><td><b class="text-danger">${r.requestId}</b></td></tr>
-          <tr><th>Date of Request</th><td>${r.dateOfRequest}</td></tr>
-          <tr><th>Account / Requested By</th><td>${r.accountName} / <b>${r.requestedBy}</b></td></tr>
-          <tr><th>Request From / To</th><td>${r.requestFrom} ➡️ <b>${r.requestedTo}</b></td></tr>
-          <tr><th>Mode of Pasabay</th><td>${r.modeOfPasabay} (${r.modeRemarks || '-'})</td></tr>
-          <tr><th>RPO Number</th><td>${r.poNumber}</td></tr>
-          <tr><th>Reason for Request</th><td>${r.reason}</td></tr>
-          <tr><th>KPP (Kwento)</th><td><div class="bg-light p-2 rounded small">${r.kpp}</div></td></tr>
-          <tr><th>POS Receipt Screenshot</th><td>${fileLink(r.posReceipt, 'POS Receipt')}</td></tr>
-          <tr><th>GE Approval Screenshot</th><td>${fileLink(r.geApprovalFile, 'GE Approval')}</td></tr>
-          <tr><th>Tindahan Approval Screenshot</th><td>${fileLink(r.tindahanApprovalFile, 'Tindahan Approval')}</td></tr>
-          <tr><th>Received P.O. Attachment (SSU)</th><td>${fileLink(r.rpoAttachment, 'Received P.O.')}</td></tr>
-          <tr><th>SSU Remarks</th><td>${r.ssuRemarks || '-'}</td></tr>
-        </table>
-
-        <h6 class="fw-bold mt-4" style="color:#800020;">APPROVAL STATUS HISTORY</h6>
-        <div class="table-responsive">
-          <table class="table table-bordered table-sm text-center small">
-            <thead class="table-dark">
-              <tr><th>Level</th><th>Status</th><th>Approver Name</th><th>Remarks</th><th>Timestamp</th></tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1st (Hatid-Sundo)</td>
-                <td><span class="badge ${r.hatidSundoStatus==='SSU'?'badge-ssu':(r.hatidSundoStatus==='APPROVED'?'bg-success':(r.hatidSundoStatus==='DISAPPROVED'?'bg-danger':'bg-warning text-dark'))}">${r.hatidSundoStatus}</span></td>
-                <td>${r.approver1Name || '-'}</td><td>${r.remarks1 || '-'}</td><td>${r.timestamp1 || '-'}</td>
-              </tr>
-              <tr>
-                <td>2nd (Kawan)</td>
-                <td><span class="badge ${r.kawanStatus==='SSU'?'badge-ssu':(r.kawanStatus==='APPROVED'?'bg-success':(r.kawanStatus==='DISAPPROVED'?'bg-danger':'bg-warning text-dark'))}">${r.kawanStatus}</span></td>
-                <td>${r.approver2Name || '-'}</td><td>${r.remarks2 || '-'}</td><td>${r.timestamp2 || '-'}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      // Inject Tab 4 Approval History
+      let historyHtml = `
+        <tr>
+          <td>1st (Hatid-Sundo)</td>
+          <td><span class="badge ${r.hatidSundoStatus==='SSU'?'badge-ssu':(r.hatidSundoStatus==='APPROVED'?'bg-success':(r.hatidSundoStatus==='DISAPPROVED'?'bg-danger':'bg-warning text-dark'))}">${r.hatidSundoStatus}</span></td>
+          <td>${r.approver1Name || '-'}</td><td>${r.remarks1 || '-'}</td><td>${r.timestamp1 || '-'}</td>
+        </tr>
+        <tr>
+          <td>2nd (Kawan)</td>
+          <td><span class="badge ${r.kawanStatus==='SSU'?'badge-ssu':(r.kawanStatus==='APPROVED'?'bg-success':(r.kawanStatus==='DISAPPROVED'?'bg-danger':'bg-warning text-dark'))}">${r.kawanStatus}</span></td>
+          <td>${r.approver2Name || '-'}</td><td>${r.remarks2 || '-'}</td><td>${r.timestamp2 || '-'}</td>
+        </tr>
       `;
+      document.getElementById("vHistoryBody").innerHTML = historyHtml;
 
-      // Approver Actions
+      // Approver Action Section
       let actionForm = "";
       const is1stApprover = (currentUser.role === "1st Approver" || currentUser.role === "Admin");
       const is2ndApprover = (currentUser.role === "2nd Approver" || currentUser.role === "Admin");
@@ -539,7 +672,7 @@
 
       if (canAction1st || canAction2nd) {
         actionForm = `
-          <div class="card bg-light p-3 border-danger mt-3">
+          <div class="card bg-light p-3 border-danger mt-3" style="border-radius:10px;">
             <h6 class="fw-bold text-danger">APPROVER ACTION SECTION (${canAction1st ? '1st Approval' : '2nd Approval'})</h6>
             <div class="mb-2">
               <label class="form-label small fw-bold">Remarks / Instruction:</label>
@@ -554,10 +687,9 @@
       } else if (is2ndApprover && r.hatidSundoStatus === "PENDING") {
         actionForm = `<div class="alert alert-warning text-center small mt-3">⚠️ Naka-lock pa ang 2nd Approval. Kailangan munang ma-APPROVED ng 1st Approver.</div>`;
       }
+      document.getElementById("vActionSection").innerHTML = actionForm;
 
-      document.getElementById("actionModalBody").innerHTML = html + actionForm;
-
-      // RESTRICTED SSU CLOSE REQUEST BUTTON (VIEWER / ADMIN ONLY)
+      // Footer SSU Button Restriction
       let footerHtml = `<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Isara</button>`;
       const isViewerOrAdmin = (currentUser.role === "Viewer" || currentUser.role === "Admin");
       
@@ -565,6 +697,10 @@
         footerHtml = `<button type="button" class="btn btn-warning-pandayan btn-sm fw-bold shadow-sm" onclick="openSSUModal(${idx})">📦 PASABAY SSU / CLOSE REQUEST</button> ` + footerHtml;
       }
       document.getElementById("actionModalFooter").innerHTML = footerHtml;
+
+      // Reset to Tab 1
+      const firstTabEl = document.querySelector('#modalTab button[data-bs-target="#tab-info"]');
+      bootstrap.Tab.getInstance(firstTabEl)?.show() || new bootstrap.Tab(firstTabEl).show();
 
       new bootstrap.Modal(document.getElementById("actionModal")).show();
     }
