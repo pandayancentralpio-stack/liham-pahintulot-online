@@ -16,106 +16,70 @@
     }
     body { background-color: #f4f7f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
 
-    /* LAYOUT STRUCTURE */
     .app-wrapper { display: flex; min-height: 100vh; }
     
-    /* LEFT SIDEBAR (SUPPLIER PORTAL STYLE) */
     .sidebar {
       width: var(--sidebar-width);
       background-color: var(--pandayan-burgundy);
       color: white;
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      top: 0; bottom: 0; left: 0;
-      z-index: 1000;
-      padding: 20px 15px;
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; bottom: 0; left: 0;
+      z-index: 1000; padding: 20px 15px;
       box-shadow: 4px 0 10px rgba(0,0,0,0.15);
     }
     .sidebar-brand { font-size: 1.2rem; font-weight: 900; letter-spacing: 1px; color: var(--pandayan-yellow); margin-bottom: 2px; }
     .sidebar-subtext { font-size: 0.75rem; color: #f8f9fa; margin-bottom: 25px; opacity: 0.9; }
     
     .nav-btn {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.2);
-      color: white;
-      font-weight: 700;
-      padding: 10px 15px;
-      border-radius: 8px;
-      text-align: left;
-      margin-bottom: 10px;
-      transition: all 0.2s;
-      width: 100%;
+      background: transparent; border: 1px solid rgba(255,255,255,0.2);
+      color: white; font-weight: 700; padding: 10px 15px;
+      border-radius: 8px; text-align: left; margin-bottom: 10px; width: 100%;
     }
-    .nav-btn:hover { background: rgba(255,255,255,0.1); color: var(--pandayan-yellow); }
     .nav-btn.active {
       background-color: var(--pandayan-yellow) !important;
-      color: var(--pandayan-burgundy) !important;
-      border: none;
+      color: var(--pandayan-burgundy) !important; border: none;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
 
     .manual-btn-bottom {
-      margin-top: auto;
-      background: rgba(0,0,0,0.2);
-      border: 1px dashed var(--pandayan-yellow);
-      color: white;
-      font-size: 0.75rem;
-      padding: 10px;
-      border-radius: 8px;
-      text-align: center;
-      text-decoration: none;
+      margin-top: auto; background: rgba(0,0,0,0.2);
+      border: 1px dashed var(--pandayan-yellow); color: white;
+      font-size: 0.75rem; padding: 10px; border-radius: 8px;
+      text-align: center; text-decoration: none;
     }
     .manual-btn-bottom:hover { color: var(--pandayan-yellow); }
 
-    /* MAIN CONTENT AREA */
     .main-content {
-      margin-left: var(--sidebar-width);
-      flex-grow: 1;
-      padding: 20px 25px;
-      width: calc(100% - var(--sidebar-width));
+      margin-left: var(--sidebar-width); flex-grow: 1;
+      padding: 20px 25px; width: calc(100% - var(--sidebar-width));
     }
 
-    /* TOP HEADER CARD */
     .top-header-card {
-      background: white;
-      border-radius: 12px;
-      padding: 15px 25px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      background: white; border-radius: 12px;
+      padding: 15px 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
       margin-bottom: 15px;
     }
     .header-title { color: var(--pandayan-burgundy); font-weight: 800; margin: 0; font-size: 1.25rem; }
     .header-subtitle { color: #666; font-size: 0.8rem; margin: 0; }
     .logout-btn { background-color: #dc3545; color: white; font-weight: bold; border-radius: 6px; padding: 6px 16px; border: none; }
 
-    /* YELLOW ALERT BANNER */
     .pending-alert-banner {
-      background-color: #fff8d6;
-      border: 1px solid var(--pandayan-yellow);
-      border-radius: 10px;
-      padding: 12px 20px;
-      font-size: 0.85rem;
-      color: #856404;
-      font-weight: bold;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      background-color: #fff8d6; border: 1px solid var(--pandayan-yellow);
+      border-radius: 10px; padding: 12px 20px; font-size: 0.85rem;
+      color: #856404; font-weight: bold; margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
     }
 
-    /* TABLE STYLING */
     .table-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
     .table-burgundy-header th { background-color: var(--pandayan-burgundy) !important; color: white !important; font-size: 0.85rem; border: none; }
     .search-col-input { font-size: 0.75rem; padding: 3px 6px; border: 1px solid #ddd; border-radius: 4px; width: 100%; }
 
-    /* PILL BADGES */
     .badge-pill { border-radius: 50px; padding: 4px 12px; font-weight: 800; font-size: 0.72rem; }
     .badge-pending { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
     .badge-approved { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
     .badge-disapproved { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
     .badge-ssu { background-color: #cce5ff; color: #004085; border: 1px solid #b8daff; }
 
-    /* BUTTONS */
     .btn-view { font-size: 0.75rem; padding: 4px 10px; border-radius: 5px; background-color: var(--pandayan-blue); color: white; font-weight: bold; border: none; }
     .btn-view:hover { background-color: #0000AA; color: white; }
     .btn-pdf { font-size: 0.75rem; padding: 4px 8px; border-radius: 5px; background-color: #198754; color: white; border: none; }
@@ -123,24 +87,22 @@
     .btn-bulk { background-color: var(--pandayan-yellow); color: var(--pandayan-burgundy); font-weight: 800; border: 2px solid var(--pandayan-burgundy); border-radius: 8px; font-size: 0.85rem; }
     .btn-bulk:hover { background-color: var(--pandayan-burgundy); color: var(--pandayan-yellow); }
 
-    /* LOWER RIGHT FLOATING CLOCK WIDGET */
     #lowerClock {
       position: fixed; bottom: 25px; right: 25px;
       background: var(--pandayan-burgundy); color: var(--pandayan-yellow);
       padding: 12px 25px; border-radius: 50px;
       font-weight: 900; font-size: 1.1rem;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-      z-index: 999; border: 2px solid var(--pandayan-yellow);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 999; border: 2px solid var(--pandayan-yellow);
     }
 
-    /* FORM STYLING */
     .form-section-title { background: #f8f9fa; padding: 8px 12px; border-left: 5px solid var(--pandayan-burgundy); font-weight: 800; color: var(--pandayan-burgundy); margin: 15px 0 10px 0; font-size: 0.85rem; }
     .card-header-pandayan { background-color: var(--pandayan-burgundy); color: white; font-weight: bold; }
     .nav-tabs .nav-link.active { background-color: var(--pandayan-burgundy); color: white; font-weight: bold; }
     .nav-tabs .nav-link { color: var(--pandayan-burgundy); font-weight: bold; }
     .img-preview { max-height: 120px; border-radius: 8px; border: 2px dashed var(--pandayan-burgundy); padding: 3px; display: none; margin-top: 5px; }
 
-    /* RESPONSIVE FOR MOBILE */
+    .conditional-field { display: none; }
+
     @media (max-width: 992px) {
       .sidebar { width: 100%; height: auto; position: relative; }
       .main-content { margin-left: 0; width: 100%; padding: 15px; }
@@ -148,19 +110,17 @@
       #lowerClock { font-size: 0.9rem; padding: 8px 15px; bottom: 15px; right: 15px; }
     }
 
-    /* LOADING OVERLAY */
     #loadingOverlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(128, 0, 32, 0.88); z-index: 9999;
       display: flex; flex-direction: column; justify-content: center; align-items: center; color: white;
     }
-    .spinner-border-pandayan { width: 3.5rem; height: 3.5rem; color: var(--pandayan-yellow); }
   </style>
 </head>
 <body>
 
   <div id="loadingOverlay">
-    <div class="spinner-border spinner-border-pandayan mb-3" role="status"></div>
+    <div class="spinner-border text-warning mb-3" style="width: 3.5rem; height: 3.5rem;" role="status"></div>
     <h5 class="fw-bold text-warning mb-1">NAGLOLOAD ANG WEB APP...</h5>
     <small class="text-white">Mangyaring maghintay nang ilang sandali.</small>
   </div>
@@ -340,7 +300,7 @@
             <div id="divCourier" class="mb-3 conditional-field card p-2 bg-light border-0">
               <label class="form-label small fw-bold text-primary">Courier Option:</label>
               <select id="courierOption" class="form-select form-select-sm" onchange="handleCourierChange(this.value); saveDraft();">
-                <option value="">-Option-</option>
+                <option value="">-Select Courier Option-</option>
                 <option value="Direct Delivery to Panauhin">Direct Delivery to Panauhin</option>
                 <option value="Drop to Branch">Drop to Branch</option>
               </select>
@@ -380,11 +340,13 @@
                 <input type="file" id="geFile" class="form-control form-control-sm" accept="image/*" required onchange="previewImage(this, 'prevGe')">
                 <img id="prevGe" class="img-preview" alt="GE Preview">
               </div>
+              
               <div class="col-md-4 mb-3 conditional-field" id="divApprovalAttachment">
-                <label id="lblApprovalAttachment" class="form-label small fw-bold text-primary">STORE APPROVAL</label>
+                <label id="lblApprovalAttachment" class="form-label small fw-bold text-primary">APPROVAL ATTACHMENT</label>
                 <input type="file" id="tindahanFile" class="form-control form-control-sm" accept="image/*" onchange="previewImage(this, 'prevTindahan')">
                 <img id="prevTindahan" class="img-preview" alt="Tindahan Preview">
               </div>
+
               <div class="col-md-4 mb-3 conditional-field" id="divPosFile">
                 <label class="form-label small fw-bold text-primary">POS RECEIPT</label>
                 <input type="file" id="posFile" class="form-control form-control-sm" accept="image/*" onchange="previewImage(this, 'prevPos')">
@@ -475,7 +437,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzitbJzVkThbwX6nhaYZOQu2BgbPRH99dEmsS96uM4aFlDu1YuO5PH7hBcanz6Usx0J/exec"; // PAALALA: PALITAN ITO NG IYONG WEB APP URL
+    const API_URL = "https://script.google.com/macros/s/AKfycbzitbJzVkThbwX6nhaYZOQu2BgbPRH99dEmsS96uM4aFlDu1YuO5PH7hBcanz6Usx0J/exec"; // PAALALA: PALITAN ITO!
     let currentUser = null;
     window.rawDashboardData = [];
     window.filteredData = [];
@@ -486,7 +448,6 @@
     function showSpinner() { document.getElementById("loadingOverlay").style.display = "flex"; }
     function hideSpinner() { document.getElementById("loadingOverlay").style.display = "none"; }
 
-    // REAL-TIME FLOATING CLOCK WIDGET (LOWER RIGHT)
     function updateClock() {
       const now = new Date();
       const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
@@ -500,9 +461,7 @@
       if(!session) { window.location.href = "index.html"; return; }
       currentUser = JSON.parse(session);
       
-      // HINDI NA IPINAPAKITA ANG ROLE SA NAME HEADER
       document.getElementById("userInfo").innerText = `Welcome, ${currentUser.kapwaName}`;
-      
       if(currentUser.role !== "Viewer") {
         document.getElementById("btnBulkApprove").style.display = "inline-block";
       }
@@ -545,7 +504,6 @@
           hideSpinner();
           if(res.status === "success" && res.data.length > 0) {
             
-            // PRIORITY SORTING: PENDING -> APPROVED -> SSU
             window.rawDashboardData = res.data.sort((a, b) => {
               const getRank = (r) => {
                 if (r.hatidSundoStatus === "PENDING" || r.kawanStatus === "PENDING") return 1;
@@ -555,7 +513,6 @@
               return getRank(a) - getRank(b);
             });
 
-            // Pending Alert Banner
             let pendingCount = window.rawDashboardData.filter(r => r.hatidSundoStatus === "PENDING" || r.kawanStatus === "PENDING").length;
             if(pendingCount > 0) {
               document.getElementById("pendingCountBadge").innerText = pendingCount;
@@ -681,27 +638,61 @@
       } else { img.style.display = "none"; }
     }
 
+    // ==========================================
+    // EXACT CONDITIONAL LOGIC HANDLERS
+    // ==========================================
     function handleModeChange(val) {
-      document.getElementById("divPasabayBranch").style.display = (val === "Pasabay To") ? "block" : "none";
-      document.getElementById("divShuttle").style.display = (val === "Pasabay to Shuttle") ? "block" : "none";
-      document.getElementById("divCourier").style.display = (val === "Thru Courier") ? "block" : "none";
+      const divBranch = document.getElementById("divPasabayBranch");
+      const divShuttle = document.getElementById("divShuttle");
+      const divCourier = document.getElementById("divCourier");
       const divApp = document.getElementById("divApprovalAttachment");
       const lblApp = document.getElementById("lblApprovalAttachment");
       const divPos = document.getElementById("divPosFile");
-      
-      divPos.style.display = (val === "Thru Courier") ? "block" : "none";
-      if(val === "Pasabay To") { divApp.style.display = "block"; lblApp.innerText = "STORE APPROVAL"; }
-      else if(val === "Pasabay to Shuttle") { divApp.style.display = "block"; lblApp.innerText = "SHUTTLE APPROVAL"; }
-      else if(val === "Pasabay to FE Ronnie") { divApp.style.display = "block"; lblApp.innerText = "FE RONNIE APPROVAL"; }
-      else { divApp.style.display = "none"; }
+
+      // Reset Visibility First
+      divBranch.style.display = "none";
+      divShuttle.style.display = "none";
+      divCourier.style.display = "none";
+      divApp.style.display = "none";
+      divPos.style.display = "none";
+
+      if (val === "Pasabay To") {
+        divBranch.style.display = "block";
+        divApp.style.display = "block";
+        lblApp.innerText = "TINDAHAN'S APPROVAL ATTACHMENT";
+      } 
+      else if (val === "Pasabay to Shuttle") {
+        divShuttle.style.display = "block";
+        divApp.style.display = "block";
+        lblApp.innerText = "SHUTTLE'S APPROVAL ATTACHMENT";
+      } 
+      else if (val === "Pasabay to FE Ronnie") {
+        divApp.style.display = "block";
+        lblApp.innerText = "FE RONNIE'S APPROVAL ATTACHMENT";
+      } 
+      else if (val === "Thru Courier") {
+        divCourier.style.display = "block";
+        // Check courier option state
+        handleCourierChange(document.getElementById("courierOption").value);
+      }
     }
 
     function handleCourierChange(val) {
-      document.getElementById("divPosFile").style.display = (val === "Direct Delivery to Panauhin") ? "block" : "none";
+      const divPos = document.getElementById("divPosFile");
+      if (val === "Direct Delivery to Panauhin") {
+        divPos.style.display = "block";
+      } else {
+        divPos.style.display = "none";
+      }
     }
 
     function handleReasonChange(val) {
-      document.getElementById("divOtherReason").style.display = (val === "Others") ? "block" : "none";
+      const divOther = document.getElementById("divOtherReason");
+      if (val === "Others") {
+        divOther.style.display = "block";
+      } else {
+        divOther.style.display = "none";
+      }
     }
 
     function saveDraft() {
@@ -728,15 +719,21 @@
       document.getElementById("requestedBy").value = d.requestedBy || "";
       document.getElementById("requestFrom").value = d.requestFrom || "";
       document.getElementById("modeOfPasabay").value = d.modeOfPasabay || "";
+      
       handleModeChange(d.modeOfPasabay || "");
+      
       document.getElementById("pasabayTargetBranch").value = d.pasabayTargetBranch || "";
       document.getElementById("shuttleName").value = d.shuttleName || "";
       document.getElementById("courierOption").value = d.courierOption || "";
+      
       handleCourierChange(d.courierOption || "");
+      
       document.getElementById("requestedTo").value = d.requestedTo || "";
       document.getElementById("poNumber").value = d.poNumber || "";
       document.getElementById("reason").value = d.reason || "";
+      
       handleReasonChange(d.reason || "");
+      
       document.getElementById("otherReason").value = d.otherReason || "";
       document.getElementById("kpp").value = d.kpp || "";
     }
@@ -744,7 +741,9 @@
     function clearDraft() {
       localStorage.removeItem("pandayan_form_draft");
       document.getElementById("lpForm").reset();
-      handleModeChange(""); handleCourierChange(""); handleReasonChange("");
+      handleModeChange(""); 
+      handleCourierChange(""); 
+      handleReasonChange("");
       document.querySelectorAll(".img-preview").forEach(img => img.style.display = "none");
       Swal.fire("Cleared", "Nabura na ang iyong form draft.", "info");
     }
@@ -842,7 +841,7 @@
         filesHtml += `<a href="${r.geApprovalFile}" target="_blank" class="btn btn-outline-primary btn-sm fw-bold text-start p-2">🖼️ View GE Approval Screenshot</a>`;
       }
       if(r.tindahanApprovalFile) {
-        filesHtml += `<a href="${r.tindahanApprovalFile}" target="_blank" class="btn btn-outline-primary btn-sm fw-bold text-start p-2">🖼️ View Tindahan/Shuttle Approval Screenshot</a>`;
+        filesHtml += `<a href="${r.tindahanApprovalFile}" target="_blank" class="btn btn-outline-primary btn-sm fw-bold text-start p-2">🖼️ View Approval Screenshot</a>`;
       }
       if(r.rpoAttachment) {
         filesHtml += `<a href="${r.rpoAttachment}" target="_blank" class="btn btn-outline-success btn-sm fw-bold text-start p-2">📦 View Received P.O. Attachment (SSU)</a>`;
