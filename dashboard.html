@@ -3,78 +3,155 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Liham Pahintulot Online - Dashboard</title>
+  <title>Liham Pahintulot Online - Portal</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     :root {
       --pandayan-burgundy: #800020;
       --pandayan-yellow: #FFD700;
       --pandayan-blue: #0000FF;
-      --pandayan-white: #FFFFFF;
+      --sidebar-width: 240px;
     }
-    body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #f4f7f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
+
+    /* LAYOUT STRUCTURE */
+    .app-wrapper { display: flex; min-height: 100vh; }
     
-    /* Navigation Bar */
-    .navbar { 
-      background-color: var(--pandayan-burgundy); 
-      color: var(--pandayan-white); 
-      border-bottom: 5px solid var(--pandayan-yellow); 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    /* LEFT SIDEBAR (SUPPLIER PORTAL STYLE) */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--pandayan-burgundy);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      z-index: 1000;
+      padding: 20px 15px;
+      box-shadow: 4px 0 10px rgba(0,0,0,0.15);
     }
-    .navbar-brand { font-weight: 800; color: var(--pandayan-white) !important; font-size: 1.25rem; }
+    .sidebar-brand { font-size: 1.2rem; font-weight: 900; letter-spacing: 1px; color: var(--pandayan-yellow); margin-bottom: 2px; }
+    .sidebar-subtext { font-size: 0.75rem; color: #f8f9fa; margin-bottom: 25px; opacity: 0.9; }
     
-    /* Live Clock Widget */
-    .clock-widget {
-      background: rgba(255, 255, 255, 0.15);
-      border: 1px solid var(--pandayan-yellow);
+    .nav-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      font-weight: 700;
+      padding: 10px 15px;
       border-radius: 8px;
-      padding: 4px 12px;
-      color: var(--pandayan-yellow);
-      font-weight: bold;
+      text-align: left;
+      margin-bottom: 10px;
+      transition: all 0.2s;
+      width: 100%;
+    }
+    .nav-btn:hover { background: rgba(255,255,255,0.1); color: var(--pandayan-yellow); }
+    .nav-btn.active {
+      background-color: var(--pandayan-yellow) !important;
+      color: var(--pandayan-burgundy) !important;
+      border: none;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .manual-btn-bottom {
+      margin-top: auto;
+      background: rgba(0,0,0,0.2);
+      border: 1px dashed var(--pandayan-yellow);
+      color: white;
+      font-size: 0.75rem;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      text-decoration: none;
+    }
+    .manual-btn-bottom:hover { color: var(--pandayan-yellow); }
+
+    /* MAIN CONTENT AREA */
+    .main-content {
+      margin-left: var(--sidebar-width);
+      flex-grow: 1;
+      padding: 20px 25px;
+      width: calc(100% - var(--sidebar-width));
+    }
+
+    /* TOP HEADER CARD */
+    .top-header-card {
+      background: white;
+      border-radius: 12px;
+      padding: 15px 25px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 15px;
+    }
+    .header-title { color: var(--pandayan-burgundy); font-weight: 800; margin: 0; font-size: 1.25rem; }
+    .header-subtitle { color: #666; font-size: 0.8rem; margin: 0; }
+    .logout-btn { background-color: #dc3545; color: white; font-weight: bold; border-radius: 6px; padding: 6px 16px; border: none; }
+
+    /* YELLOW ALERT BANNER */
+    .pending-alert-banner {
+      background-color: #fff8d6;
+      border: 1px solid var(--pandayan-yellow);
+      border-radius: 10px;
+      padding: 12px 20px;
       font-size: 0.85rem;
+      color: #856404;
+      font-weight: bold;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    /* Buttons */
-    .btn-pandayan { background-color: var(--pandayan-burgundy); color: var(--pandayan-white); font-weight: bold; border: 2px solid var(--pandayan-blue); border-radius: 8px; }
-    .btn-pandayan:hover { background-color: var(--pandayan-blue); color: var(--pandayan-white); }
-    .btn-warning-pandayan { background-color: var(--pandayan-yellow); color: var(--pandayan-burgundy); font-weight: 800; border: 2px solid var(--pandayan-burgundy); border-radius: 8px; }
-    .btn-warning-pandayan:hover { background-color: var(--pandayan-burgundy); color: var(--pandayan-yellow); }
-    .btn-blue { background-color: var(--pandayan-blue); color: white; font-weight: bold; border-radius: 6px; }
-    .btn-blue:hover { background-color: #000099; color: white; }
+    /* TABLE STYLING */
+    .table-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .table-burgundy-header th { background-color: var(--pandayan-burgundy) !important; color: white !important; font-size: 0.85rem; border: none; }
+    .search-col-input { font-size: 0.75rem; padding: 3px 6px; border: 1px solid #ddd; border-radius: 4px; width: 100%; }
 
-    /* Card & Soft Header */
-    .card-header-pandayan { 
-      background-color: var(--pandayan-burgundy); 
-      color: var(--pandayan-white); 
-      font-weight: bold; 
-      border-bottom: 3px solid var(--pandayan-yellow);
-      border-radius: 12px 12px 0 0 !important;
+    /* PILL BADGES */
+    .badge-pill { border-radius: 50px; padding: 4px 12px; font-weight: 800; font-size: 0.72rem; }
+    .badge-pending { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+    .badge-approved { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .badge-disapproved { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .badge-ssu { background-color: #cce5ff; color: #004085; border: 1px solid #b8daff; }
+
+    /* BUTTONS */
+    .btn-view { font-size: 0.75rem; padding: 4px 10px; border-radius: 5px; background-color: var(--pandayan-blue); color: white; font-weight: bold; border: none; }
+    .btn-view:hover { background-color: #0000AA; color: white; }
+    .btn-pdf { font-size: 0.75rem; padding: 4px 8px; border-radius: 5px; background-color: #198754; color: white; border: none; }
+    
+    .btn-bulk { background-color: var(--pandayan-yellow); color: var(--pandayan-burgundy); font-weight: 800; border: 2px solid var(--pandayan-burgundy); border-radius: 8px; font-size: 0.85rem; }
+    .btn-bulk:hover { background-color: var(--pandayan-burgundy); color: var(--pandayan-yellow); }
+
+    /* LOWER RIGHT FLOATING CLOCK WIDGET */
+    #lowerClock {
+      position: fixed; bottom: 25px; right: 25px;
+      background: var(--pandayan-burgundy); color: var(--pandayan-yellow);
+      padding: 12px 25px; border-radius: 50px;
+      font-weight: 900; font-size: 1.1rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      z-index: 999; border: 2px solid var(--pandayan-yellow);
     }
-    .table-burgundy-header {
-      background-color: var(--pandayan-burgundy) !important;
-      color: var(--pandayan-white) !important;
-    }
 
-    /* Badges */
-    .badge-pending { background-color: var(--pandayan-yellow); color: var(--pandayan-burgundy); font-weight: 800; border: 1px solid var(--pandayan-burgundy); }
-    .badge-approved { background-color: #198754; color: white; }
-    .badge-disapproved { background-color: #dc3545; color: white; }
-    .badge-ssu { background-color: var(--pandayan-blue); color: white; font-weight: bold; }
-
-    .conditional-field { display: none; }
-    .search-col-input { font-size: 0.8rem; padding: 4px 8px; border: 1px solid #ccc; border-radius: 6px; }
-    .table-details th { background-color: #f8f9fa; width: 35%; color: var(--pandayan-burgundy); }
+    /* FORM STYLING */
+    .form-section-title { background: #f8f9fa; padding: 8px 12px; border-left: 5px solid var(--pandayan-burgundy); font-weight: 800; color: var(--pandayan-burgundy); margin: 15px 0 10px 0; font-size: 0.85rem; }
+    .card-header-pandayan { background-color: var(--pandayan-burgundy); color: white; font-weight: bold; }
+    .nav-tabs .nav-link.active { background-color: var(--pandayan-burgundy); color: white; font-weight: bold; }
+    .nav-tabs .nav-link { color: var(--pandayan-burgundy); font-weight: bold; }
     .img-preview { max-height: 120px; border-radius: 8px; border: 2px dashed var(--pandayan-burgundy); padding: 3px; display: none; margin-top: 5px; }
 
-    /* Modal Styling */
-    .nav-tabs .nav-link.active { background-color: var(--pandayan-burgundy); color: white; font-weight: bold; border: none; }
-    .nav-tabs .nav-link { color: var(--pandayan-burgundy); font-weight: bold; }
+    /* RESPONSIVE FOR MOBILE */
+    @media (max-width: 992px) {
+      .sidebar { width: 100%; height: auto; position: relative; }
+      .main-content { margin-left: 0; width: 100%; padding: 15px; }
+      .app-wrapper { flex-direction: column; }
+      #lowerClock { font-size: 0.9rem; padding: 8px 15px; bottom: 15px; right: 15px; }
+    }
 
-    /* Loading Overlay Spinner */
+    /* LOADING OVERLAY */
     #loadingOverlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(128, 0, 32, 0.85); z-index: 9999;
+      background: rgba(128, 0, 32, 0.88); z-index: 9999;
       display: flex; flex-direction: column; justify-content: center; align-items: center; color: white;
     }
     .spinner-border-pandayan { width: 3.5rem; height: 3.5rem; color: var(--pandayan-yellow); }
@@ -88,64 +165,122 @@
     <small class="text-white">Mangyaring maghintay nang ilang sandali.</small>
   </div>
 
-  <nav class="navbar p-3 mb-4 sticky-top">
-    <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap gap-2">
-      <div class="d-flex align-items-center gap-3">
-        <span class="navbar-brand m-0">LIHAM PAHINTULOT ONLINE</span>
-        <div class="clock-widget d-none d-md-block" id="liveClockWidget">Loading time...</div>
+  <div id="lowerClock">⏰ Loading time...</div>
+
+  <div class="app-wrapper">
+    
+    <div class="sidebar">
+      <div>
+        <div class="sidebar-brand">PANDAYAN</div>
+        <div class="sidebar-subtext">Liham Pahintulot Portal</div>
       </div>
-      <div class="d-flex align-items-center gap-2">
-        <span id="userInfo" class="badge bg-light text-dark d-none d-md-inline p-2 border"></span>
-        <button class="btn btn-warning-pandayan btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#requestModal">+ REQUEST FORM</button>
-        <button class="btn btn-outline-light btn-sm fw-bold" onclick="logout()">LOGOUT</button>
-      </div>
+
+      <button class="nav-btn active">📊 Dashboard</button>
+
+      <a href="https://www.canva.com/design/DAHO99_dbI4/uEJq-K6hj4-9IilTL0TYQA/view?utm_content=DAHO99_dbI4&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=ha0ebe4be46#12" target="_blank" class="manual-btn-bottom">
+        ❓ Paano gamitin ang App?<br><small>(User Manual Presentation)</small>
+      </a>
     </div>
-  </nav>
 
-  <div class="container-fluid px-3 mb-5">
-    <div class="card shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
-      <div class="card-header card-header-pandayan d-flex justify-content-between align-items-center flex-wrap gap-2 p-3">
-        <span class="fs-6">📋 MONITORING DASHBOARD</span>
-        <input type="text" id="generalSearch" class="form-control form-control-sm w-auto" placeholder="🔍 General Search..." onkeyup="filterTable()">
-      </div>
+    <div class="main-content">
       
-      <div class="table-responsive">
-        <table class="table table-hover bg-white m-0 align-middle text-center" id="mainTable">
-          <thead>
-            <tr class="table-burgundy-header small fw-bold">
-              <th>Request ID</th>
-              <th>Date</th>
-              <th>From</th>
-              <th>To</th>
-              <th>Mode</th>
-              <th>Remarks</th>
-              <th>Hatid-Sundo Status</th>
-              <th>Kawan Status</th>
-              <th>Actions</th>
-            </tr>
-            <tr class="bg-light">
-              <th><input type="text" class="form-control search-col-input" placeholder="Filter..." onkeyup="filterTable()"></th>
-              <th><input type="text" class="form-control search-col-input" placeholder="Filter..." onkeyup="filterTable()"></th>
-              <th><input type="text" class="form-control search-col-input" placeholder="Filter..." onkeyup="filterTable()"></th>
-              <th><input type="text" class="form-control search-col-input" placeholder="Filter..." onkeyup="filterTable()"></th>
-              <th><input type="text" class="form-control search-col-input" placeholder="Filter..." onkeyup="filterTable()"></th>
-              <th><input type="text" class="form-control search-col-input" placeholder="Filter..." onkeyup="filterTable()"></th>
-              <th><input type="text" class="form-control search-col-input" placeholder="Filter..." onkeyup="filterTable()"></th>
-              <th><input type="text" class="form-control search-col-input" placeholder="Filter..." onkeyup="filterTable()"></th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="dashBody">
-            <tr><td colspan="9" class="p-4 text-center">Nagloload ng data...</td></tr>
-          </tbody>
-        </table>
+      <div class="top-header-card d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+          <h5 class="header-title">PANDAYAN SUPERSTORES</h5>
+          <p class="header-subtitle">Liham Pahintulot (Pasabay) Approval & Audit Pipeline</p>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <span id="userInfo" class="small fw-bold text-secondary">Welcome, Kapwa</span>
+          <button class="logout-btn btn-sm" onclick="logout()">LOG OUT</button>
+        </div>
       </div>
 
-      <div class="card-footer bg-light d-flex justify-content-between align-items-center p-3">
-        <small class="fw-bold text-muted" id="pageIndicator">Showing 0 to 0 entries</small>
-        <div class="d-flex gap-2">
-          <button class="btn btn-sm btn-outline-dark fw-bold" id="prevBtn" onclick="changePage(-1)">⏮️ Previous</button>
-          <button class="btn btn-sm btn-outline-dark fw-bold" id="nextBtn" onclick="changePage(1)">Next ⏭️</button>
+      <div class="pending-alert-banner" id="pendingAlertBanner" style="display: none;">
+        🔔 Mayroong <span id="pendingCountBadge" class="badge bg-danger">0</span> na pending request na naghihintay ng inyong aksyon.
+      </div>
+
+      <div class="table-container p-3">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          
+          <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-danger btn-sm fw-bold shadow-sm px-3" style="background-color: var(--pandayan-burgundy);" data-bs-toggle="modal" data-bs-target="#requestModal">
+              <i class="fa-solid fa-pen-to-square"></i> + REQUEST FORM
+            </button>
+            <button id="btnBulkApprove" class="btn btn-bulk btn-sm shadow-sm" onclick="openBulkModal()" style="display:none;">
+              <i class="fa-solid fa-check-double"></i> BULK APPROVE SELECTED
+            </button>
+          </div>
+
+          <div class="input-group input-group-sm" style="width: 250px;">
+            <span class="input-group-text bg-white border-end-0"><i class="fa fa-search text-muted"></i></span>
+            <input type="text" id="generalSearch" class="form-control border-start-0" placeholder="General Search..." onkeyup="filterTable()">
+          </div>
+
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle text-center m-0" id="mainTable">
+            <thead>
+              <tr class="table-burgundy-header">
+                <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
+                <th>Date of Request</th>
+                <th>Request ID</th>
+                <th>Request From</th>
+                <th>Requested To</th>
+                <th>Mode</th>
+                <th>Hatid-Sundo Status</th>
+                <th>Kawan Status</th>
+                <th>Action</th>
+              </tr>
+              <tr class="bg-light">
+                <th></th>
+                <th><input type="text" class="search-col-input" placeholder="Filter Date..." onkeyup="filterTable()"></th>
+                <th><input type="text" class="search-col-input" placeholder="Filter ID..." onkeyup="filterTable()"></th>
+                <th><input type="text" class="search-col-input" placeholder="Filter From..." onkeyup="filterTable()"></th>
+                <th><input type="text" class="search-col-input" placeholder="Filter To..." onkeyup="filterTable()"></th>
+                <th><input type="text" class="search-col-input" placeholder="Filter Mode..." onkeyup="filterTable()"></th>
+                <th><input type="text" class="search-col-input" placeholder="Filter Status..." onkeyup="filterTable()"></th>
+                <th><input type="text" class="search-col-input" placeholder="Filter Status..." onkeyup="filterTable()"></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="dashBody" class="small">
+              <tr><td colspan="9" class="p-4 text-center text-muted">Nagloload ng data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+          <small class="fw-bold text-muted" id="pageIndicator">Showing 0 to 0 entries</small>
+          <nav>
+            <ul class="pagination pagination-sm m-0">
+              <li class="page-item" id="prevLi"><button class="page-link" id="prevBtn" onclick="changePage(-1)">⏮️ Previous</button></li>
+              <li class="page-item" id="nextLi"><button class="page-link" id="nextBtn" onclick="changePage(1)">Next ⏭️</button></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="modal fade" id="bulkModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border-radius:15px; border: 3px solid var(--pandayan-burgundy);">
+        <div class="modal-header bg-danger text-white" style="background-color: var(--pandayan-burgundy) !important;">
+          <h6 class="modal-title fw-bold"><i class="fa-solid fa-check-double"></i> Bulk Approval Action</h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
+          <p class="fw-bold">Naka-select: <span id="bulkCount" class="text-danger">0</span> request(s)</p>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Remarks / Instructions for all selected:</label>
+            <textarea id="bulkRemarks" class="form-control" rows="3" placeholder="Isulat ang remarks dito..."></textarea>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-success flex-grow-1 fw-bold" onclick="submitBulk('APPROVED')">APPROVE ALL</button>
+            <button class="btn btn-danger flex-grow-1 fw-bold" onclick="submitBulk('DISAPPROVED')">DISAPPROVED ALL</button>
+          </div>
         </div>
       </div>
     </div>
@@ -153,110 +288,116 @@
 
   <div class="modal fade" id="requestModal" data-bs-backdrop="static" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content" style="border-radius: 15px; overflow: hidden; border: 3px solid var(--pandayan-burgundy);">
+      <div class="modal-content" style="border-radius: 16px; overflow: hidden; border: 3px solid var(--pandayan-burgundy);">
         <div class="modal-header text-white card-header-pandayan">
-          <h5 class="modal-title fw-bold">✍️ Request Liham Pahintulot Form</h5>
+          <h5 class="modal-title fw-bold"><i class="fa-solid fa-pen-to-square"></i> Request Liham Pahintulot Form</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
         <form id="lpForm">
-          <div class="modal-body p-4" style="max-height: 70vh; overflow-y: auto;">
+          <div class="modal-body p-4 bg-white" style="max-height: 75vh; overflow-y: auto;">
             
-            <div class="mb-3">
-              <label class="form-label fw-bold" style="color: var(--pandayan-burgundy);">1. REQUESTED BY (Pangalan ng Kapwa)</label>
-              <input type="text" id="requestedBy" class="form-control" placeholder="Pangalan mo" required oninput="saveDraft()">
+            <div class="form-section-title">PARA KANINO AT SAAN MULA</div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">1. REQUESTED BY (Pangalan ng Kapwa)</label>
+                <input type="text" id="requestedBy" class="form-control form-control-sm" placeholder="Pangalan mo" required oninput="saveDraft()">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">2. REQUEST FROM (Branch)</label>
+                <select id="requestFrom" class="form-select form-select-sm" required onchange="saveDraft()"><option value="">-Pumili ng Branch-</option></select>
+              </div>
             </div>
 
-            <div class="mb-3">
-              <label class="form-label fw-bold" style="color: var(--pandayan-burgundy);">2. REQUEST FROM (Branch na nag-request)</label>
-              <select id="requestFrom" class="form-select" required onchange="saveDraft()"><option value="">-Pumili ng Branch-</option></select>
+            <div class="form-section-title">DETALYE NG PASABAY</div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">3. MODE OF PASABAY</label>
+                <select id="modeOfPasabay" class="form-select form-select-sm" onchange="handleModeChange(this.value); saveDraft();" required>
+                  <option value="">-Pumili ng Mode-</option>
+                  <option value="Pasabay To">Pasabay To</option>
+                  <option value="Pasabay to Shuttle">Pasabay to Shuttle</option>
+                  <option value="Pickup to Central">Pickup to Central</option>
+                  <option value="Pasabay to FE Ronnie">Pasabay to FE Ronnie</option>
+                  <option value="Thru Courier">Thru Courier</option>
+                </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">4. REQUESTED TO (Kawan)</label>
+                <select id="requestedTo" class="form-select form-select-sm" required onchange="saveDraft()"><option value="">-Pumili ng Kawan-</option></select>
+              </div>
             </div>
 
-            <div class="mb-3">
-              <label class="form-label fw-bold" style="color: var(--pandayan-burgundy);">3. MODE OF PASABAY</label>
-              <select id="modeOfPasabay" class="form-select" onchange="handleModeChange(this.value); saveDraft();" required>
-                <option value="">-Pumili ng Mode-</option>
-                <option value="Pasabay To">Pasabay To</option>
-                <option value="Pasabay to Shuttle">Pasabay to Shuttle</option>
-                <option value="Pickup to Central">Pickup to Central</option>
-                <option value="Pasabay to FE Ronnie">Pasabay to FE Ronnie</option>
-                <option value="Thru Courier">Thru Courier</option>
-              </select>
+            <div id="divPasabayBranch" class="mb-3 conditional-field card p-2 bg-light border-0">
+              <label class="form-label small fw-bold text-primary">Piliin ang Target Branch na pasasabayan:</label>
+              <select id="pasabayTargetBranch" class="form-select form-select-sm" onchange="saveDraft()"><option value="">-Target Branch-</option></select>
             </div>
 
-            <div id="divPasabayBranch" class="mb-3 conditional-field">
-              <label class="form-label fw-bold text-primary">Piliin ang Branch na pasasabayan:</label>
-              <select id="pasabayTargetBranch" class="form-select" onchange="saveDraft()"><option value="">-Pumili ng Target Branch-</option></select>
+            <div id="divShuttle" class="mb-3 conditional-field card p-2 bg-light border-0">
+              <label class="form-label small fw-bold text-primary">Anong Shuttle ang pagsasabayan? (Plaka/Name):</label>
+              <input type="text" id="shuttleName" class="form-control form-control-sm" placeholder="Plaka / Shuttle name" oninput="saveDraft()">
             </div>
 
-            <div id="divShuttle" class="mb-3 conditional-field">
-              <label class="form-label fw-bold text-primary">Anong Shuttle ang pagsasabayan?</label>
-              <input type="text" id="shuttleName" class="form-control" placeholder="Plaka o shuttle name" oninput="saveDraft()">
-            </div>
-
-            <div id="divCourier" class="mb-3 conditional-field">
-              <label class="form-label fw-bold text-primary">Courier Option:</label>
-              <select id="courierOption" class="form-select" onchange="handleCourierChange(this.value); saveDraft();">
-                <option value="">-Pumili ng Courier Option-</option>
+            <div id="divCourier" class="mb-3 conditional-field card p-2 bg-light border-0">
+              <label class="form-label small fw-bold text-primary">Courier Option:</label>
+              <select id="courierOption" class="form-select form-select-sm" onchange="handleCourierChange(this.value); saveDraft();">
+                <option value="">-Option-</option>
                 <option value="Direct Delivery to Panauhin">Direct Delivery to Panauhin</option>
                 <option value="Drop to Branch">Drop to Branch</option>
               </select>
             </div>
 
-            <div id="divPosFile" class="mb-3 conditional-field">
-              <label class="form-label fw-bold text-primary">Attach POS Receipt Screenshot (Required):</label>
-              <input type="file" id="posFile" class="form-control" accept="image/*" onchange="previewImage(this, 'prevPos')">
-              <img id="prevPos" class="img-preview" alt="POS Preview">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">5. P.O. NUMBER</label>
+                <input type="text" id="poNumber" class="form-control form-control-sm" placeholder="RPO Number" required oninput="saveDraft()">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">6. REASON FOR REQUEST</label>
+                <select id="reason" class="form-select form-select-sm" onchange="handleReasonChange(this.value); saveDraft();" required>
+                  <option value="">-Pumili ng Dahilan-</option>
+                  <option value="Regular Stock">Regular Stock</option>
+                  <option value="Panauhin Order">Panauhin Order</option>
+                  <option value="Short Stock">Short Stock</option>
+                  <option value="Others">Others</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="divOtherReason" class="mb-3 conditional-field card p-2 bg-light border-0">
+              <label class="form-label small fw-bold text-primary">Isulat ang ibang dahilan:</label>
+              <input type="text" id="otherReason" class="form-control form-control-sm" placeholder="Other reason..." oninput="saveDraft()">
             </div>
 
             <div class="mb-3">
-              <label class="form-label fw-bold" style="color: var(--pandayan-burgundy);">4. REQUESTED TO (Pakikisuyuang Kawan)</label>
-              <select id="requestedTo" class="form-select" required onchange="saveDraft()"><option value="">-Pumili ng Kawan-</option></select>
+              <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">7. KWENTO NG PAGKAUNAWA SA PANGYAYARI (KPP)</label>
+              <textarea id="kpp" class="form-control form-control-sm" rows="3" placeholder="Ipaliwanag ang buong detalye..." required oninput="saveDraft()"></textarea>
             </div>
 
-            <div class="mb-3">
-              <label class="form-label fw-bold" style="color: var(--pandayan-burgundy);">5. P.O. NUMBER</label>
-              <input type="text" id="poNumber" class="form-control" placeholder="Ilagay ang RPO Number" required oninput="saveDraft()">
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label fw-bold" style="color: var(--pandayan-burgundy);">6. REASON FOR REQUEST</label>
-              <select id="reason" class="form-select" onchange="handleReasonChange(this.value); saveDraft();" required>
-                <option value="">-Pumili ng Dahilan-</option>
-                <option value="Regular Stock">Regular Stock</option>
-                <option value="Panauhin Order">Panauhin Order</option>
-                <option value="Short Stock">Short Stock</option>
-                <option value="Others">Others</option>
-              </select>
-            </div>
-
-            <div id="divOtherReason" class="mb-3 conditional-field">
-              <label class="form-label fw-bold text-primary">Isulat ang ibang dahilan:</label>
-              <input type="text" id="otherReason" class="form-control" placeholder="Other reason..." oninput="saveDraft()">
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label fw-bold" style="color: var(--pandayan-burgundy);">7. KWENTO NG PAGKAUNAWA SA PANGYAYARI (KPP)</label>
-              <textarea id="kpp" class="form-control" rows="3" placeholder="Ipaliwanag ang detalye..." required oninput="saveDraft()"></textarea>
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label fw-bold" style="color: var(--pandayan-burgundy);">8. GE'S APPROVAL ATTACHMENT</label>
-              <input type="file" id="geFile" class="form-control" accept="image/*" required onchange="previewImage(this, 'prevGe')">
-              <img id="prevGe" class="img-preview" alt="GE Preview">
-            </div>
-
-            <div id="divApprovalAttachment" class="mb-3 conditional-field">
-              <label id="lblApprovalAttachment" class="form-label fw-bold text-primary">APPROVAL ATTACHMENT</label>
-              <input type="file" id="tindahanFile" class="form-control" accept="image/*" onchange="previewImage(this, 'prevTindahan')">
-              <img id="prevTindahan" class="img-preview" alt="Tindahan Preview">
+            <div class="form-section-title">ATTACHMENTS (SCREENSHOTS)</div>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">8. GE'S APPROVAL</label>
+                <input type="file" id="geFile" class="form-control form-control-sm" accept="image/*" required onchange="previewImage(this, 'prevGe')">
+                <img id="prevGe" class="img-preview" alt="GE Preview">
+              </div>
+              <div class="col-md-4 mb-3 conditional-field" id="divApprovalAttachment">
+                <label id="lblApprovalAttachment" class="form-label small fw-bold text-primary">STORE APPROVAL</label>
+                <input type="file" id="tindahanFile" class="form-control form-control-sm" accept="image/*" onchange="previewImage(this, 'prevTindahan')">
+                <img id="prevTindahan" class="img-preview" alt="Tindahan Preview">
+              </div>
+              <div class="col-md-4 mb-3 conditional-field" id="divPosFile">
+                <label class="form-label small fw-bold text-primary">POS RECEIPT</label>
+                <input type="file" id="posFile" class="form-control form-control-sm" accept="image/*" onchange="previewImage(this, 'prevPos')">
+                <img id="prevPos" class="img-preview" alt="POS Preview">
+              </div>
             </div>
 
           </div>
           <div class="modal-footer bg-light d-flex justify-content-between">
-            <button type="button" class="btn btn-outline-danger btn-sm" onclick="clearDraft()">🗑️ Clear Form</button>
+            <button type="button" class="btn btn-outline-danger btn-sm fw-bold" onclick="clearDraft()">🗑️ CLEAR FORM</button>
             <div>
               <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Isara</button>
-              <button type="submit" class="btn btn-pandayan btn-sm px-4" id="submitBtn">IPASA REQUEST</button>
+              <button type="submit" class="btn btn-danger btn-sm px-4 fw-bold" style="background-color: var(--pandayan-burgundy);" id="submitBtn">IPASA REQUEST</button>
             </div>
           </div>
         </form>
@@ -266,9 +407,9 @@
 
   <div class="modal fade" id="actionModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content" style="border-radius: 15px; overflow: hidden; border: 3px solid var(--pandayan-burgundy);">
+      <div class="modal-content" style="border-radius: 12px; overflow: hidden; border: 3px solid var(--pandayan-burgundy);">
         <div class="modal-header text-white card-header-pandayan">
-          <h5 class="modal-title fw-bold" id="actionModalTitle">Request Details</h5>
+          <h6 class="modal-title fw-bold" id="actionModalTitle">Request Details</h6>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body p-4" style="max-height: 75vh; overflow-y: auto;">
@@ -290,14 +431,14 @@
 
           <div class="tab-content" id="modalTabContent">
             <div class="tab-pane fade show active" id="tab-info">
-              <table class="table table-bordered table-sm table-details align-middle m-0">
-                <tr><th>Request ID</th><td><b class="text-danger" id="vId"></b></td></tr>
-                <tr><th>Date of Request</th><td id="vDate"></td></tr>
-                <tr><th>Account / Requested By</th><td><span id="vAccount"></span> / <b id="vBy"></b></td></tr>
-                <tr><th>Request From / To</th><td><span id="vFrom"></span> ➡️ <b id="vTo"></b></td></tr>
-                <tr><th>Mode of Pasabay</th><td id="vMode"></td></tr>
-                <tr><th>RPO Number</th><td id="vPo"></td></tr>
-                <tr><th>Reason for Request</th><td id="vReason"></td></tr>
+              <table class="table table-bordered table-sm align-middle m-0" style="font-size:0.85rem;">
+                <tr><th style="width:35%; background:#f8f9fa;">Request ID</th><td><b class="text-danger" id="vId"></b></td></tr>
+                <tr><th style="background:#f8f9fa;">Date of Request</th><td id="vDate"></td></tr>
+                <tr><th style="background:#f8f9fa;">Account / Requested By</th><td><span id="vAccount"></span> / <b id="vBy"></b></td></tr>
+                <tr><th style="background:#f8f9fa;">Request From / To</th><td><span id="vFrom"></span> ➡️ <b id="vTo"></b></td></tr>
+                <tr><th style="background:#f8f9fa;">Mode of Pasabay</th><td id="vMode"></td></tr>
+                <tr><th style="background:#f8f9fa;">RPO Number</th><td id="vPo"></td></tr>
+                <tr><th style="background:#f8f9fa;">Reason for Request</th><td id="vReason"></td></tr>
               </table>
             </div>
 
@@ -309,8 +450,7 @@
             </div>
 
             <div class="tab-pane fade" id="tab-files">
-              <div class="d-flex flex-column gap-2" id="vFilesContainer">
-                </div>
+              <div class="d-flex flex-column gap-2" id="vFilesContainer"></div>
             </div>
 
             <div class="tab-pane fade" id="tab-status">
@@ -319,8 +459,7 @@
                   <thead class="table-dark">
                     <tr><th>Level</th><th>Status</th><th>Approver Name</th><th>Remarks</th><th>Timestamp</th></tr>
                   </thead>
-                  <tbody id="vHistoryBody">
-                    </tbody>
+                  <tbody id="vHistoryBody"></tbody>
                 </table>
               </div>
             </div>
@@ -329,15 +468,14 @@
           <div id="vActionSection"></div>
 
         </div>
-        <div class="modal-footer bg-light" id="actionModalFooter">
-          </div>
+        <div class="modal-footer bg-light" id="actionModalFooter"></div>
       </div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyH5OsnviMV56PZfhUKpiMb8NQpKULfTmtJtUfFgrIOHheLWsqRxYgv3m2OeeJnEr-w/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbzitbJzVkThbwX6nhaYZOQu2BgbPRH99dEmsS96uM4aFlDu1YuO5PH7hBcanz6Usx0J/exec"; // PAALALA: PALITAN ITO NG IYONG WEB APP URL
     let currentUser = null;
     window.rawDashboardData = [];
     window.filteredData = [];
@@ -348,11 +486,11 @@
     function showSpinner() { document.getElementById("loadingOverlay").style.display = "flex"; }
     function hideSpinner() { document.getElementById("loadingOverlay").style.display = "none"; }
 
-    // REAL-TIME CLOCK WIDGET
+    // REAL-TIME FLOATING CLOCK WIDGET (LOWER RIGHT)
     function updateClock() {
       const now = new Date();
-      const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-      document.getElementById("liveClockWidget").innerText = "⏰ " + now.toLocaleDateString('en-US', options);
+      const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+      document.getElementById("lowerClock").innerHTML = '<i class="fa-regular fa-clock"></i> ' + now.toLocaleDateString('en-US', options);
     }
     setInterval(updateClock, 1000);
 
@@ -361,7 +499,14 @@
       const session = localStorage.getItem("pandayan_user_session") || sessionStorage.getItem("pandayan_user_session");
       if(!session) { window.location.href = "index.html"; return; }
       currentUser = JSON.parse(session);
-      document.getElementById("userInfo").innerText = `Kapwa: ${currentUser.kapwaName} (${currentUser.role})`;
+      
+      // HINDI NA IPINAPAKITA ANG ROLE SA NAME HEADER
+      document.getElementById("userInfo").innerText = `Welcome, ${currentUser.kapwaName}`;
+      
+      if(currentUser.role !== "Viewer") {
+        document.getElementById("btnBulkApprove").style.display = "inline-block";
+      }
+
       fetchDropdowns();
       fetchDashboard();
       loadDraft();
@@ -400,10 +545,7 @@
           hideSpinner();
           if(res.status === "success" && res.data.length > 0) {
             
-            // PRIORITY SORTING LOGIC:
-            // 1. Pending muna sa unahan
-            // 2. Approved / Disapproved sa gitna
-            // 3. SSU sa pinaka-huli
+            // PRIORITY SORTING: PENDING -> APPROVED -> SSU
             window.rawDashboardData = res.data.sort((a, b) => {
               const getRank = (r) => {
                 if (r.hatidSundoStatus === "PENDING" || r.kawanStatus === "PENDING") return 1;
@@ -413,18 +555,26 @@
               return getRank(a) - getRank(b);
             });
 
+            // Pending Alert Banner
+            let pendingCount = window.rawDashboardData.filter(r => r.hatidSundoStatus === "PENDING" || r.kawanStatus === "PENDING").length;
+            if(pendingCount > 0) {
+              document.getElementById("pendingCountBadge").innerText = pendingCount;
+              document.getElementById("pendingAlertBanner").style.display = "flex";
+            } else {
+              document.getElementById("pendingAlertBanner").style.display = "none";
+            }
+
             window.filteredData = [...window.rawDashboardData];
             currentPage = 1;
             renderTablePage();
           } else {
-            document.getElementById("dashBody").innerHTML = "<tr><td colspan='9' class='p-4 text-muted'>Walang nakitang records.</td></tr>";
-            document.getElementById("pageIndicator").innerText = "Showing 0 of 0 entries";
+            document.getElementById("dashBody").innerHTML = "<tr><td colspan='9' class='p-4 text-center text-muted'>Walang nakitang records.</td></tr>";
+            document.getElementById("pageIndicator").innerText = "Showing 0 to 0 entries";
           }
         })
         .catch(() => hideSpinner());
     }
 
-    // PAGINATION RENDERER (10 Items / Page)
     function renderTablePage() {
       const start = (currentPage - 1) * itemsPerPage;
       const end = start + itemsPerPage;
@@ -432,7 +582,7 @@
 
       let html = "";
       if (pageData.length === 0) {
-        html = "<tr><td colspan='9' class='p-4 text-muted'>Walang nakitang records sa search na ito.</td></tr>";
+        html = "<tr><td colspan='9' class='p-4 text-center text-muted'>Walang nakitang records sa search na ito.</td></tr>";
       } else {
         pageData.forEach((r) => {
           const originalIdx = window.rawDashboardData.findIndex(item => item.requestId === r.requestId);
@@ -442,17 +592,22 @@
             return s === "APPROVED" ? "badge-approved" : "badge-disapproved";
           };
           
+          let pdfBtn = r.pdfUrl ? `<a href="${r.pdfUrl}" target="_blank" class="btn btn-pdf shadow-sm" title="Download Approved PDF"><i class="fa fa-file-pdf"></i></a>` : "";
+
           html += `<tr>
-            <td><span class="badge bg-secondary">${r.requestId}</span></td>
+            <td><input type="checkbox" class="row-checkbox" data-index="${originalIdx}"></td>
             <td><small>${r.dateOfRequest}</small></td>
+            <td><b class="text-primary">${r.requestId}</b></td>
             <td>${r.requestFrom}</td>
             <td>${r.requestedTo}</td>
             <td><small>${r.modeOfPasabay}</small></td>
-            <td><small>${r.modeRemarks || '-'}</small></td>
-            <td><span class="badge ${getBadge(r.hatidSundoStatus)}">${r.hatidSundoStatus}</span></td>
-            <td><span class="badge ${getBadge(r.kawanStatus)}">${r.kawanStatus}</span></td>
+            <td><span class="badge badge-pill ${getBadge(r.hatidSundoStatus)}">${r.hatidSundoStatus}</span></td>
+            <td><span class="badge badge-pill ${getBadge(r.kawanStatus)}">${r.kawanStatus}</span></td>
             <td>
-              <button class="btn btn-sm btn-blue fw-bold shadow-sm" onclick="viewDetails(${originalIdx})">View / Action</button>
+              <div class="d-flex gap-1 justify-content-center">
+                <button class="btn btn-view shadow-sm" onclick="viewDetails(${originalIdx})">View</button>
+                ${pdfBtn}
+              </div>
             </td>
           </tr>`;
         });
@@ -465,13 +620,56 @@
       const showingEnd = Math.min(end, total);
       document.getElementById("pageIndicator").innerText = `Showing ${showingStart} to ${showingEnd} of ${total} entries`;
       
-      document.getElementById("prevBtn").disabled = (currentPage === 1);
-      document.getElementById("nextBtn").disabled = (end >= total);
+      document.getElementById("prevLi").classList.toggle('disabled', currentPage === 1);
+      document.getElementById("nextLi").classList.toggle('disabled', end >= total);
     }
 
     function changePage(direction) {
       currentPage += direction;
       renderTablePage();
+    }
+
+    function toggleSelectAll(source) {
+      document.querySelectorAll(".row-checkbox").forEach(cb => cb.checked = source.checked);
+    }
+
+    function openBulkModal() {
+      const selected = document.querySelectorAll(".row-checkbox:checked");
+      if(selected.length === 0) return Swal.fire("Paunawa", "Pumili muna ng mga request sa checkboxes.", "warning");
+      document.getElementById("bulkCount").innerText = selected.length;
+      document.getElementById("bulkRemarks").value = "";
+      new bootstrap.Modal(document.getElementById("bulkModal")).show();
+    }
+
+    function submitBulk(status) {
+      const selected = document.querySelectorAll(".row-checkbox:checked");
+      const remarks = document.getElementById("bulkRemarks").value.trim();
+      if(status === "DISAPPROVED" && !remarks) return Swal.fire("Required", "Kailangan ng remarks kapag Disapproved.", "warning");
+
+      showSpinner();
+      const reqList = [];
+      selected.forEach(cb => {
+        const idx = cb.getAttribute("data-index");
+        reqList.push({ rowIndex: window.rawDashboardData[idx].rowIndex });
+      });
+
+      fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "bulkApproval",
+          payload: { requests: reqList, role: currentUser.role, approverName: currentUser.kapwaName, actionStatus: status, remarks: remarks }
+        })
+      })
+      .then(r => r.json())
+      .then(res => {
+        hideSpinner();
+        if(res.status === "success") {
+          Swal.fire("Success!", res.message, "success").then(() => location.reload());
+        } else {
+          Swal.fire("Error", res.message, "error");
+        }
+      })
+      .catch(() => hideSpinner());
     }
 
     function previewImage(input, targetId) {
@@ -489,14 +687,22 @@
       document.getElementById("divCourier").style.display = (val === "Thru Courier") ? "block" : "none";
       const divApp = document.getElementById("divApprovalAttachment");
       const lblApp = document.getElementById("lblApprovalAttachment");
-      if(val === "Pasabay To") { divApp.style.display = "block"; lblApp.innerText = "9. TINDAHAN'S APPROVAL ATTACHMENT"; }
-      else if(val === "Pasabay to Shuttle") { divApp.style.display = "block"; lblApp.innerText = "9. SHUTTLE'S APPROVAL ATTACHMENT"; }
-      else if(val === "Pasabay to FE Ronnie") { divApp.style.display = "block"; lblApp.innerText = "9. FE RONNIE'S APPROVAL ATTACHMENT"; }
+      const divPos = document.getElementById("divPosFile");
+      
+      divPos.style.display = (val === "Thru Courier") ? "block" : "none";
+      if(val === "Pasabay To") { divApp.style.display = "block"; lblApp.innerText = "STORE APPROVAL"; }
+      else if(val === "Pasabay to Shuttle") { divApp.style.display = "block"; lblApp.innerText = "SHUTTLE APPROVAL"; }
+      else if(val === "Pasabay to FE Ronnie") { divApp.style.display = "block"; lblApp.innerText = "FE RONNIE APPROVAL"; }
       else { divApp.style.display = "none"; }
     }
 
-    function handleCourierChange(val) { document.getElementById("divPosFile").style.display = (val === "Direct Delivery to Panauhin") ? "block" : "none"; }
-    function handleReasonChange(val) { document.getElementById("divOtherReason").style.display = (val === "Others") ? "block" : "none"; }
+    function handleCourierChange(val) {
+      document.getElementById("divPosFile").style.display = (val === "Direct Delivery to Panauhin") ? "block" : "none";
+    }
+
+    function handleReasonChange(val) {
+      document.getElementById("divOtherReason").style.display = (val === "Others") ? "block" : "none";
+    }
 
     function saveDraft() {
       const draft = {
@@ -594,8 +800,8 @@
         let matchesGeneral = (r.requestId + r.dateOfRequest + r.requestFrom + r.requestedTo + r.modeOfPasabay + (r.modeRemarks||'') + r.hatidSundoStatus + r.kawanStatus).toUpperCase().indexOf(generalFilter) > -1;
         
         let matchesCols = true;
-        const vals = [r.requestId, r.dateOfRequest, r.requestFrom, r.requestedTo, r.modeOfPasabay, r.modeRemarks||'', r.hatidSundoStatus, r.kawanStatus];
-        for(let j=0; j<8; j++) {
+        const vals = [r.dateOfRequest, r.requestId, r.requestFrom, r.requestedTo, r.modeOfPasabay, r.hatidSundoStatus, r.kawanStatus];
+        for(let j=0; j<7; j++) {
           let cVal = colInputs[j].value.toUpperCase();
           if(cVal && vals[j].toUpperCase().indexOf(cVal) === -1) {
             matchesCols = false; break;
@@ -608,13 +814,11 @@
       renderTablePage();
     }
 
-    // SPACIOUS VIEW MODAL WITH TABULAR INTERFACE
     function viewDetails(idx) {
       selectedRequestIndex = idx;
       const r = window.rawDashboardData[idx];
       document.getElementById("actionModalTitle").innerText = `Request Details: ${r.requestId}`;
       
-      // Inject Tab 1 Info
       document.getElementById("vId").innerText = r.requestId;
       document.getElementById("vDate").innerText = r.dateOfRequest;
       document.getElementById("vAccount").innerText = r.accountName;
@@ -625,44 +829,40 @@
       document.getElementById("vPo").innerText = r.poNumber;
       document.getElementById("vReason").innerText = r.reason;
 
-      // Inject Tab 2 KPP
       document.getElementById("vKpp").innerText = r.kpp || 'Walang detalye.';
 
-      // Inject Tab 3 Files
       let filesHtml = "";
       if(r.pdfUrl) {
-        filesHtml += `<a href="${r.pdfUrl}" target="_blank" class="btn btn-success fw-bold text-start p-2">📄 Download Approved PDF Liham Pahintulot</a>`;
+        filesHtml += `<a href="${r.pdfUrl}" target="_blank" class="btn btn-success btn-sm fw-bold text-start p-2">📄 Download Approved PDF Liham Pahintulot</a>`;
       }
       if(r.posReceipt) {
-        filesHtml += `<a href="${r.posReceipt}" target="_blank" class="btn btn-outline-primary fw-bold text-start p-2">🖼️ View POS Receipt Screenshot</a>`;
+        filesHtml += `<a href="${r.posReceipt}" target="_blank" class="btn btn-outline-primary btn-sm fw-bold text-start p-2">🖼️ View POS Receipt Screenshot</a>`;
       }
       if(r.geApprovalFile) {
-        filesHtml += `<a href="${r.geApprovalFile}" target="_blank" class="btn btn-outline-primary fw-bold text-start p-2">🖼️ View GE Approval Screenshot</a>`;
+        filesHtml += `<a href="${r.geApprovalFile}" target="_blank" class="btn btn-outline-primary btn-sm fw-bold text-start p-2">🖼️ View GE Approval Screenshot</a>`;
       }
       if(r.tindahanApprovalFile) {
-        filesHtml += `<a href="${r.tindahanApprovalFile}" target="_blank" class="btn btn-outline-primary fw-bold text-start p-2">🖼️ View Tindahan/Shuttle Approval Screenshot</a>`;
+        filesHtml += `<a href="${r.tindahanApprovalFile}" target="_blank" class="btn btn-outline-primary btn-sm fw-bold text-start p-2">🖼️ View Tindahan/Shuttle Approval Screenshot</a>`;
       }
       if(r.rpoAttachment) {
-        filesHtml += `<a href="${r.rpoAttachment}" target="_blank" class="btn btn-outline-success fw-bold text-start p-2">📦 View Received P.O. Attachment (SSU)</a>`;
+        filesHtml += `<a href="${r.rpoAttachment}" target="_blank" class="btn btn-outline-success btn-sm fw-bold text-start p-2">📦 View Received P.O. Attachment (SSU)</a>`;
       }
       document.getElementById("vFilesContainer").innerHTML = filesHtml || '<p class="text-muted">Walang attachments.</p>';
 
-      // Inject Tab 4 Approval History
       let historyHtml = `
         <tr>
           <td>1st (Hatid-Sundo)</td>
-          <td><span class="badge ${r.hatidSundoStatus==='SSU'?'badge-ssu':(r.hatidSundoStatus==='APPROVED'?'bg-success':(r.hatidSundoStatus==='DISAPPROVED'?'bg-danger':'bg-warning text-dark'))}">${r.hatidSundoStatus}</span></td>
+          <td><span class="badge badge-pill ${r.hatidSundoStatus==='SSU'?'badge-ssu':(r.hatidSundoStatus==='APPROVED'?'bg-success':(r.hatidSundoStatus==='DISAPPROVED'?'bg-danger':'bg-warning text-dark'))}">${r.hatidSundoStatus}</span></td>
           <td>${r.approver1Name || '-'}</td><td>${r.remarks1 || '-'}</td><td>${r.timestamp1 || '-'}</td>
         </tr>
         <tr>
           <td>2nd (Kawan)</td>
-          <td><span class="badge ${r.kawanStatus==='SSU'?'badge-ssu':(r.kawanStatus==='APPROVED'?'bg-success':(r.kawanStatus==='DISAPPROVED'?'bg-danger':'bg-warning text-dark'))}">${r.kawanStatus}</span></td>
+          <td><span class="badge badge-pill ${r.kawanStatus==='SSU'?'badge-ssu':(r.kawanStatus==='APPROVED'?'bg-success':(r.kawanStatus==='DISAPPROVED'?'bg-danger':'bg-warning text-dark'))}">${r.kawanStatus}</span></td>
           <td>${r.approver2Name || '-'}</td><td>${r.remarks2 || '-'}</td><td>${r.timestamp2 || '-'}</td>
         </tr>
       `;
       document.getElementById("vHistoryBody").innerHTML = historyHtml;
 
-      // Approver Action Section
       let actionForm = "";
       const is1stApprover = (currentUser.role === "1st Approver" || currentUser.role === "Admin");
       const is2ndApprover = (currentUser.role === "2nd Approver" || currentUser.role === "Admin");
@@ -672,7 +872,7 @@
 
       if (canAction1st || canAction2nd) {
         actionForm = `
-          <div class="card bg-light p-3 border-danger mt-3" style="border-radius:10px;">
+          <div class="card bg-light p-3 border-danger mt-3" style="border-radius:8px;">
             <h6 class="fw-bold text-danger">APPROVER ACTION SECTION (${canAction1st ? '1st Approval' : '2nd Approval'})</h6>
             <div class="mb-2">
               <label class="form-label small fw-bold">Remarks / Instruction:</label>
@@ -689,16 +889,14 @@
       }
       document.getElementById("vActionSection").innerHTML = actionForm;
 
-      // Footer SSU Button Restriction
       let footerHtml = `<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Isara</button>`;
       const isViewerOrAdmin = (currentUser.role === "Viewer" || currentUser.role === "Admin");
       
       if (isViewerOrAdmin && r.kawanStatus === "APPROVED") {
-        footerHtml = `<button type="button" class="btn btn-warning-pandayan btn-sm fw-bold shadow-sm" onclick="openSSUModal(${idx})">📦 PASABAY SSU / CLOSE REQUEST</button> ` + footerHtml;
+        footerHtml = `<button type="button" class="btn btn-warning btn-sm fw-bold shadow-sm" style="background-color:var(--pandayan-yellow); color:var(--pandayan-burgundy); border:1px solid var(--pandayan-burgundy);" onclick="openSSUModal(${idx})">📦 PASABAY SSU / CLOSE REQUEST</button> ` + footerHtml;
       }
       document.getElementById("actionModalFooter").innerHTML = footerHtml;
 
-      // Reset to Tab 1
       const firstTabEl = document.querySelector('#modalTab button[data-bs-target="#tab-info"]');
       bootstrap.Tab.getInstance(firstTabEl)?.show() || new bootstrap.Tab(firstTabEl).show();
 
