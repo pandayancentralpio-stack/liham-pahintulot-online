@@ -113,7 +113,7 @@
     #loadingOverlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(128, 0, 32, 0.88); z-index: 9999;
-      display: flex; flex-direction: column; justify-content: center; align-items: center; color: white;
+      display: none; flex-direction: column; justify-content: center; align-items: center; color: white;
     }
   </style>
 </head>
@@ -270,7 +270,7 @@
 
             <div class="form-section-title">PASABAY INFORMATION</div>
             <div class="row">
-              <div class="col-md-6 mb-3">
+              <div class="col-md-12 mb-3">
                 <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">3. MODE OF PASABAY</label>
                 <select id="modeOfPasabay" class="form-select form-select-sm" onchange="handleModeChange(this.value); saveDraft();" required>
                   <option value="">-Pumili ng Mode-</option>
@@ -280,10 +280,6 @@
                   <option value="Pasabay to FE Ronnie">Pasabay to FE Ronnie</option>
                   <option value="Thru Courier">Thru Courier</option>
                 </select>
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">4. REQUESTED TO (Kawan)</label>
-                <select id="requestedTo" class="form-select form-select-sm" required onchange="saveDraft()"><option value="">-Pumili ng Kawan-</option></select>
               </div>
             </div>
 
@@ -306,12 +302,16 @@
               </select>
             </div>
 
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">5. P.O. NUMBER</label>
-                <input type="text" id="poNumber" class="form-control form-control-sm" placeholder="P.O. Number..." required oninput="saveDraft()">
+            <div class="form-section-title d-flex justify-content-between align-items-center">
+              <span>LIST OF KAWAN & P.O. NUMBERS (MAX 5)</span>
+              <button type="button" class="btn btn-warning btn-sm fw-bold text-dark px-3" onclick="addKawanRow()">+ Magdagdag ng Kawan</button>
+            </div>
+            
+            <div id="kawanRowsContainer" class="mb-3">
               </div>
-              <div class="col-md-6 mb-3">
+
+            <div class="row">
+              <div class="col-md-12 mb-3">
                 <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">6. REASON FOR REQUEST</label>
                 <select id="reason" class="form-select form-select-sm" onchange="handleReasonChange(this.value); saveDraft();" required>
                   <option value="">-Pumili ng Dahilan-</option>
@@ -451,10 +451,11 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzitbJzVkThbwX6nhaYZOQu2BgbPRH99dEmsS96uM4aFlDu1YuO5PH7hBcanz6Usx0J/exec"; // PAALALA: PALITAN ITO NG IYONG WEB APP URL
+    const API_URL = "https://script.google.com/macros/s/AKfycbzitbJzVkThbwX6nhaYZOQu2BgbPRH99dEmsS96uM4aFlDu1YuO5PH7hBcanz6Usx0J/exec";
     let currentUser = null;
     window.rawDashboardData = [];
     window.filteredData = [];
+    window.kawanOptionsList = [];
     let currentPage = 1;
     const itemsPerPage = 10;
     let selectedRequestIndex = null;
@@ -482,7 +483,6 @@
 
       fetchDropdowns();
       fetchDashboard();
-      loadDraft();
     };
 
     function logout() {
@@ -498,15 +498,79 @@
           if(d.status === "success") {
             const reqFrom = document.getElementById("requestFrom");
             const pasTarget = document.getElementById("pasabayTargetBranch");
-            const reqTo = document.getElementById("requestedTo");
             d.branches.forEach(b => {
               reqFrom.options[reqFrom.options.length] = new Option(b, b);
               pasTarget.options[pasTarget.options.length] = new Option(b, b);
             });
-            d.kawans.forEach(k => { reqTo.options[reqTo.options.length] = new Option(k, k); });
+            window.kawanOptionsList = d.kawans || [];
+            
+            // Add initial 1st Kawan Row
+            const container = document.getElementById("kawanRowsContainer");
+            if (container.children.length === 0) {
+              addKawanRow();
+            }
             loadDraft();
           }
         });
+    }
+
+    // DYNAMIC KAWAN ROWS LOGIC
+    function addKawanRow(savedKawan = "", savedPo = "") {
+      const container = document.getElementById("kawanRowsContainer");
+      const currentRows = container.children.length;
+      
+      if (currentRows >= 5) {
+        return Swal.fire("Limit Reached", "Hanggang 5 Kawan lang po ang pwedeng isabay sa isang submission.", "info");
+      }
+
+      const rowId = "kRow_" + Date.now() + "_" + Math.floor(Math.random()*1000);
+      let optHtml = `<option value="">-Pumili ng Kawan-</option>`;
+      window.kawanOptionsList.forEach(k => {
+        optHtml += `<option value="${k}" ${k === savedKawan ? 'selected' : ''}>${k}</option>`;
+      });
+
+      const removeBtnHtml = currentRows > 0 ? `<button type="button" class="btn btn-danger btn-sm" onclick="removeKawanRow('${rowId}')">🗑️</button>` : '';
+
+      const rowCard = document.createElement("div");
+      rowCard.id = rowId;
+      rowCard.className = "card p-2 mb-2 bg-light border-0 kawan-item-row";
+      rowCard.innerHTML = `
+        <div class="row align-items-center">
+          <div class="col-md-6 mb-2 mb-md-0">
+            <label class="form-label small fw-bold text-secondary">Kawan #${currentRows + 1}</label>
+            <select class="form-select form-select-sm sel-kawan" required onchange="saveDraft()">${optHtml}</select>
+          </div>
+          <div class="col-md-5 mb-2 mb-md-0">
+            <label class="form-label small fw-bold text-secondary">P.O. Number #${currentRows + 1}</label>
+            <input type="text" class="form-control form-control-sm inp-po" placeholder="P.O. Number..." value="${savedPo}" required oninput="saveDraft()">
+          </div>
+          <div class="col-md-1 text-end">
+            ${removeBtnHtml}
+          </div>
+        </div>
+      `;
+      container.appendChild(rowCard);
+      reindexKawanLabels();
+    }
+
+    function removeKawanRow(rowId) {
+      const el = document.getElementById(rowId);
+      if (el) {
+        el.remove();
+        reindexKawanLabels();
+        saveDraft();
+      }
+    }
+
+    function reindexKawanLabels() {
+      const rows = document.querySelectorAll(".kawan-item-row");
+      rows.forEach((row, idx) => {
+        const labels = row.querySelectorAll("label");
+        if(labels.length >= 2) {
+          labels[0].innerText = `Kawan #${idx + 1}`;
+          labels[1].innerText = `P.O. Number #${idx + 1}`;
+        }
+      });
     }
 
     function fetchDashboard() {
@@ -705,6 +769,13 @@
     }
 
     function saveDraft() {
+      const items = [];
+      document.querySelectorAll(".kawan-item-row").forEach(row => {
+        const k = row.querySelector(".sel-kawan").value;
+        const p = row.querySelector(".inp-po").value;
+        items.push({ kawan: k, po: p });
+      });
+
       const draft = {
         requestedBy: document.getElementById("requestedBy").value,
         requestFrom: document.getElementById("requestFrom").value,
@@ -712,11 +783,10 @@
         pasabayTargetBranch: document.getElementById("pasabayTargetBranch").value,
         shuttleName: document.getElementById("shuttleName").value,
         courierOption: document.getElementById("courierOption").value,
-        requestedTo: document.getElementById("requestedTo").value,
-        poNumber: document.getElementById("poNumber").value,
         reason: document.getElementById("reason").value,
         otherReason: document.getElementById("otherReason").value,
-        kpp: document.getElementById("kpp").value
+        kpp: document.getElementById("kpp").value,
+        items: items
       };
       localStorage.setItem("pandayan_form_draft", JSON.stringify(draft));
     }
@@ -737,19 +807,24 @@
       
       handleCourierChange(d.courierOption || "");
       
-      document.getElementById("requestedTo").value = d.requestedTo || "";
-      document.getElementById("poNumber").value = d.poNumber || "";
       document.getElementById("reason").value = d.reason || "";
-      
       handleReasonChange(d.reason || "");
-      
       document.getElementById("otherReason").value = d.otherReason || "";
       document.getElementById("kpp").value = d.kpp || "";
+
+      if (d.items && d.items.length > 0) {
+        document.getElementById("kawanRowsContainer").innerHTML = "";
+        d.items.forEach(it => {
+          addKawanRow(it.kawan, it.po);
+        });
+      }
     }
 
     function clearDraft() {
       localStorage.removeItem("pandayan_form_draft");
       document.getElementById("lpForm").reset();
+      document.getElementById("kawanRowsContainer").innerHTML = "";
+      addKawanRow();
       handleModeChange(""); 
       handleCourierChange(""); 
       handleReasonChange("");
@@ -765,6 +840,18 @@
 
     document.getElementById("lpForm").onsubmit = async function(e) {
       e.preventDefault();
+      
+      const items = [];
+      document.querySelectorAll(".kawan-item-row").forEach(row => {
+        const k = row.querySelector(".sel-kawan").value;
+        const p = row.querySelector(".inp-po").value;
+        if(k && p) items.push({ requestedTo: k, poNumber: p });
+      });
+
+      if (items.length === 0) {
+        return Swal.fire("Required", "Kailangang maglagay ng kahit isang Kawan at P.O. Number.", "warning");
+      }
+
       showSpinner();
       const mode = document.getElementById("modeOfPasabay").value;
 
@@ -780,7 +867,7 @@
       const payload = {
         kapwaName: currentUser.kapwaName, requestedBy: document.getElementById("requestedBy").value,
         requestFrom: document.getElementById("requestFrom").value, modeOfPasabay: mode, modeRemarks: modeRemarks,
-        requestedTo: document.getElementById("requestedTo").value, poNumber: document.getElementById("poNumber").value,
+        items: items,
         reason: (document.getElementById("reason").value === "Others") ? document.getElementById("otherReason").value : document.getElementById("reason").value,
         kpp: document.getElementById("kpp").value,
         posFile: posB64, geFile: geB64, tindahanFile: tindahanB64
@@ -792,7 +879,7 @@
         hideSpinner();
         if(res.status === "success") {
           clearDraft();
-          Swal.fire({ title: "Mabuhay!", text: "Naipasa ang request! Request ID: " + res.requestId, icon: "success", confirmButtonColor: "#800020" }).then(() => { location.reload(); });
+          Swal.fire({ title: "Mabuhay!", text: res.message + " (IDs: " + res.requestId + ")", icon: "success", confirmButtonColor: "#800020" }).then(() => { location.reload(); });
         } else {
           Swal.fire("Error", res.message, "error");
         }
@@ -822,7 +909,6 @@
       renderTablePage();
     }
 
-    // VIEW DETAILS WITH TRANSPARENT SSU RECEIVING TAB
     function viewDetails(idx) {
       selectedRequestIndex = idx;
       const r = window.rawDashboardData[idx];
@@ -840,7 +926,6 @@
 
       document.getElementById("vKpp").innerText = r.kpp || 'Walang detalye.';
 
-      // Inject Attachments
       let filesHtml = "";
       if(r.pdfUrl) {
         filesHtml += `<a href="${r.pdfUrl}" target="_blank" class="btn btn-success btn-sm fw-bold text-start p-2">📄 Download Approved PDF Liham Pahintulot</a>`;
@@ -859,7 +944,6 @@
       }
       document.getElementById("vFilesContainer").innerHTML = filesHtml || '<p class="text-muted">Walang attachments.</p>';
 
-      // Inject Approval History
       let historyHtml = `
         <tr>
           <td>1st (Hatid-Sundo)</td>
@@ -874,7 +958,6 @@
       `;
       document.getElementById("vHistoryBody").innerHTML = historyHtml;
 
-      // Inject Transparent SSU Receiving Details
       document.getElementById("vSsuDate").innerText = r.ssuDate || 'Hindi pa na-SSU ng Tindahan';
       document.getElementById("vSsuRemarks").innerText = r.ssuRemarks || '-';
       if(r.rpoAttachment) {
