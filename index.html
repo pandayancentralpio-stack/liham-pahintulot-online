@@ -97,7 +97,6 @@
       color: var(--pandayan-burgundy);
     }
 
-    /* LOADING OVERLAY SPINNER */
     #loadingOverlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(128, 0, 32, 0.88); z-index: 9999;
@@ -192,7 +191,7 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzitbJzVkThbwX6nhaYZOQu2BgbPRH99dEmsS96uM4aFlDu1YuO5PH7hBcanz6Usx0J/exec"; // PAALALA: PALITAN ITO NG IYONG DEPLOYED WEB APP URL
+    const API_URL = "https://script.google.com/macros/s/AKfycbzitbJzVkThbwX6nhaYZOQu2BgbPRH99dEmsS96uM4aFlDu1YuO5PH7hBcanz6Usx0J/exec";
 
     function showSpinner(text = "PRO-PROSESO...") {
       document.getElementById("loadingText").innerText = text;
@@ -202,11 +201,9 @@
       document.getElementById("loadingOverlay").style.display = "none";
     }
 
-    // VIEW / SHOW / HIDE PASSWORD FUNCTION
     function togglePasswordVisibility(inputId, iconId) {
       const passwordInput = document.getElementById(inputId);
       const icon = document.getElementById(iconId);
-      
       if (passwordInput.type === "password") {
         passwordInput.type = "text";
         icon.classList.remove("fa-eye");
@@ -218,12 +215,9 @@
       }
     }
 
-    // AUTO-LOGIN CHECKER (REMEMBER ME FEATURE)
     window.onload = function() {
       const savedUser = localStorage.getItem("pandayan_user_session");
-      if (savedUser) {
-        window.location.href = "dashboard.html";
-      }
+      if (savedUser) { window.location.href = "dashboard.html"; }
     };
 
     function showRegister() {
@@ -240,7 +234,6 @@
       document.getElementById("toggleToRegister").style.display = "block";
     }
 
-    // LOGIN PROCESS
     document.getElementById("loginForm").onsubmit = function(e) {
       e.preventDefault();
       const u = document.getElementById("loginUsername").value.trim();
@@ -251,10 +244,7 @@
 
       fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({
-          action: "login",
-          payload: { username: u, password: p }
-        })
+        body: JSON.stringify({ action: "login", payload: { username: u, password: p } })
       })
       .then(res => res.json())
       .then(res => {
@@ -267,24 +257,15 @@
           }
 
           Swal.fire({
-            title: "Mabuhay!",
-            text: "Maligayang pagbabalik, " + res.user.kapwaName + "!",
-            icon: "success",
-            confirmButtonColor: "#800020"
-          }).then(() => {
-            window.location.href = "dashboard.html";
-          });
+            title: "Mabuhay!", text: "Maligayang pagbabalik, " + res.user.kapwaName + "!", icon: "success", confirmButtonColor: "#800020"
+          }).then(() => { window.location.href = "dashboard.html"; });
         } else {
           Swal.fire("Login Failed", res.message, "error");
         }
       })
-      .catch(err => {
-        hideSpinner();
-        Swal.fire("Error", "Hindi makakonekta sa server.", "error");
-      });
+      .catch(err => { hideSpinner(); Swal.fire("Error", "Hindi makakonekta sa server.", "error"); });
     };
 
-    // REGISTER PROCESS
     document.getElementById("registerForm").onsubmit = function(e) {
       e.preventDefault();
       const k = document.getElementById("regKapwaName").value.trim();
@@ -295,32 +276,18 @@
 
       fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({
-          action: "register",
-          payload: { kapwaName: k, username: u, password: p }
-        })
+        body: JSON.stringify({ action: "register", payload: { kapwaName: k, username: u, password: p } })
       })
       .then(res => res.json())
       .then(res => {
         hideSpinner();
         if (res.status === "success") {
-          Swal.fire({
-            title: "Account Created!",
-            text: res.message,
-            icon: "success",
-            confirmButtonColor: "#800020"
-          }).then(() => {
-            document.getElementById("registerForm").reset();
-            showLogin();
+          Swal.fire({ title: "Account Created!", text: res.message, icon: "success", confirmButtonColor: "#800020" }).then(() => {
+            document.getElementById("registerForm").reset(); showLogin();
           });
-        } else {
-          Swal.fire("Registration Error", res.message, "error");
-        }
+        } else { Swal.fire("Registration Error", res.message, "error"); }
       })
-      .catch(err => {
-        hideSpinner();
-        Swal.fire("Error", "Hindi makakonekta sa server.", "error");
-      });
+      .catch(err => { hideSpinner(); Swal.fire("Error", "Hindi makakonekta sa server.", "error"); });
     };
   </script>
 </body>
