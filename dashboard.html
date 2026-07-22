@@ -121,7 +121,7 @@
 
   <div id="loadingOverlay">
     <div class="spinner-border text-warning mb-3" style="width: 3.5rem; height: 3.5rem;" role="status"></div>
-    <h5 class="fw-bold text-warning mb-1">NAGLOLOAD ANG WEB APP...</h5>
+    <h5 class="fw-bold text-warning mb-1">Loading...</h5>
     <small class="text-white">Mangyaring maghintay nang ilang sandali.</small>
   </div>
 
@@ -147,7 +147,7 @@
       <div class="top-header-card d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div>
           <h5 class="header-title">PANDAYAN SUPERSTORES</h5>
-          <p class="header-subtitle">Liham Pahintulot (Pasabay) Approval & Audit Pipeline</p>
+          <p class="header-subtitle">Liham Pahintulot Online Portalc</p>
         </div>
         <div class="d-flex align-items-center gap-3">
           <span id="userInfo" class="small fw-bold text-secondary">Welcome, Kapwa</span>
@@ -256,11 +256,11 @@
         <form id="lpForm">
           <div class="modal-body p-4 bg-white" style="max-height: 75vh; overflow-y: auto;">
             
-            <div class="form-section-title">PARA KANINO AT SAAN MULA</div>
+            <div class="form-section-title">REQUESTER'S INFORMATION</div>
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">1. REQUESTED BY (Pangalan ng Kapwa)</label>
-                <input type="text" id="requestedBy" class="form-control form-control-sm" placeholder="Pangalan mo" required oninput="saveDraft()">
+                <input type="text" id="requestedBy" class="form-control form-control-sm" placeholder="Pangalan..." required oninput="saveDraft()">
               </div>
               <div class="col-md-6 mb-3">
                 <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">2. REQUEST FROM (Branch)</label>
@@ -268,7 +268,7 @@
               </div>
             </div>
 
-            <div class="form-section-title">DETALYE NG PASABAY</div>
+            <div class="form-section-title">PASABAY INFORMATION</div>
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">3. MODE OF PASABAY</label>
@@ -293,7 +293,7 @@
             </div>
 
             <div id="divShuttle" class="mb-3 conditional-field card p-2 bg-light border-0">
-              <label class="form-label small fw-bold text-primary">Anong Shuttle ang pagsasabayan? (Plaka/Name):</label>
+              <label class="form-label small fw-bold text-primary">Anong Shuttle ang pagsasabayan?:</label>
               <input type="text" id="shuttleName" class="form-control form-control-sm" placeholder="Plaka / Shuttle name" oninput="saveDraft()">
             </div>
 
@@ -309,7 +309,7 @@
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">5. P.O. NUMBER</label>
-                <input type="text" id="poNumber" class="form-control form-control-sm" placeholder="RPO Number" required oninput="saveDraft()">
+                <input type="text" id="poNumber" class="form-control form-control-sm" placeholder="P.O. Number..." required oninput="saveDraft()">
               </div>
               <div class="col-md-6 mb-3">
                 <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">6. REASON FOR REQUEST</label>
@@ -333,7 +333,7 @@
               <textarea id="kpp" class="form-control form-control-sm" rows="3" placeholder="Ipaliwanag ang buong detalye..." required oninput="saveDraft()"></textarea>
             </div>
 
-            <div class="form-section-title">ATTACHMENTS (SCREENSHOTS)</div>
+            <div class="form-section-title">APPROVAL ATTACHMENTS</div>
             <div class="row">
               <div class="col-md-4 mb-3">
                 <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">8. GE'S APPROVAL</label>
@@ -381,7 +381,7 @@
               <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#tab-info" type="button">📌 General Info</button>
             </li>
             <li class="nav-item">
-              <button class="nav-link" id="kpp-tab" data-bs-toggle="tab" data-bs-target="#tab-kpp" type="button">📖 KPP Kwento</button>
+              <button class="nav-link" id="kpp-tab" data-bs-toggle="tab" data-bs-target="#tab-kpp" type="button">📖 KPP</button>
             </li>
             <li class="nav-item">
               <button class="nav-link" id="files-tab" data-bs-toggle="tab" data-bs-target="#tab-files" type="button">📎 Attachments</button>
@@ -390,7 +390,7 @@
               <button class="nav-link" id="status-tab" data-bs-toggle="tab" data-bs-target="#tab-status" type="button">🛡️ Approval History</button>
             </li>
             <li class="nav-item">
-              <button class="nav-link" id="ssu-tab" data-bs-toggle="tab" data-bs-target="#tab-ssu" type="button">📦 SSU / Receiving</button>
+              <button class="nav-link" id="ssu-tab" data-bs-toggle="tab" data-bs-target="#tab-ssu" type="button">📦 Pasabay SSU</button>
             </li>
           </ul>
 
@@ -400,9 +400,9 @@
                 <tr><th style="width:35%; background:#f8f9fa;">Request ID</th><td><b class="text-danger" id="vId"></b></td></tr>
                 <tr><th style="background:#f8f9fa;">Date of Request</th><td id="vDate"></td></tr>
                 <tr><th style="background:#f8f9fa;">Account / Requested By</th><td><span id="vAccount"></span> / <b id="vBy"></b></td></tr>
-                <tr><th style="background:#f8f9fa;">Request From / To</th><td><span id="vFrom"></span> ➡️ <b id="vTo"></b></td></tr>
+                <tr><th style="background:#f8f9fa;">Request From / To</th><td><span id="vFrom"></span> / <b id="vTo"></b></td></tr>
                 <tr><th style="background:#f8f9fa;">Mode of Pasabay</th><td id="vMode"></td></tr>
-                <tr><th style="background:#f8f9fa;">RPO Number</th><td id="vPo"></td></tr>
+                <tr><th style="background:#f8f9fa;">P.O. Number</th><td id="vPo"></td></tr>
                 <tr><th style="background:#f8f9fa;">Reason for Request</th><td id="vReason"></td></tr>
               </table>
             </div>
