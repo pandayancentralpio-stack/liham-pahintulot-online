@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Liham Pahintulot Online - Login</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
   <style>
@@ -15,19 +16,19 @@
       --pandayan-white: #FFFFFF;
     }
     body {
-      background-color: var(--pandayan-yellow);
+      background-color: #f4f7f9;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 15px;
+      padding: 20px;
     }
     .auth-card {
       background: white;
-      border-radius: 20px;
+      border-radius: 16px;
       border: 3px solid var(--pandayan-burgundy);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
       width: 100%;
       max-width: 420px;
       overflow: hidden;
@@ -40,28 +41,29 @@
       border-bottom: 5px solid var(--pandayan-yellow);
     }
     .auth-header h3 {
-      font-weight: 800;
+      font-weight: 900;
       margin: 0;
       font-size: 1.4rem;
-      letter-spacing: 0.5px;
+      letter-spacing: 1px;
+      color: white;
     }
     .btn-pandayan {
       background-color: var(--pandayan-burgundy);
       color: white;
       font-weight: bold;
-      border: 2px solid var(--pandayan-blue);
+      border: none;
       padding: 12px;
       border-radius: 8px;
       width: 100%;
       transition: all 0.3s ease;
     }
     .btn-pandayan:hover {
-      background-color: var(--pandayan-blue);
+      background-color: #600018;
       color: white;
     }
     .btn-manual {
-      background-color: #198754;
-      color: white;
+      background-color: rgba(128, 0, 32, 0.08);
+      color: var(--pandayan-burgundy);
       font-weight: bold;
       border-radius: 8px;
       padding: 10px;
@@ -69,15 +71,16 @@
       display: block;
       text-align: center;
       margin-top: 15px;
-      border: 2px solid #146c43;
+      border: 1px dashed var(--pandayan-burgundy);
+      font-size: 0.85rem;
     }
     .btn-manual:hover {
-      background-color: #146c43;
+      background-color: var(--pandayan-burgundy);
       color: white;
     }
     .form-control:focus {
       border-color: var(--pandayan-burgundy);
-      box-shadow: 0 0 0 0.25rem rgba(128, 0, 32, 0.25);
+      box-shadow: 0 0 0 0.25rem rgba(128, 0, 32, 0.15);
     }
     .link-toggle {
       color: var(--pandayan-burgundy);
@@ -85,47 +88,63 @@
       cursor: pointer;
       text-decoration: underline;
     }
+    .input-group-text {
+      background-color: #f8f9fa;
+      border-left: none;
+      cursor: pointer;
+    }
+    .input-group-text:hover {
+      color: var(--pandayan-burgundy);
+    }
 
     /* LOADING OVERLAY SPINNER */
     #loadingOverlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(128, 0, 32, 0.85); z-index: 9999;
+      background: rgba(128, 0, 32, 0.88); z-index: 9999;
       display: none; flex-direction: column; justify-content: center; align-items: center; color: white;
     }
-    .spinner-border-pandayan { width: 3.5rem; height: 3.5rem; color: var(--pandayan-yellow); }
   </style>
 </head>
 <body>
 
   <div id="loadingOverlay">
-    <div class="spinner-border spinner-border-pandayan mb-3" role="status"></div>
+    <div class="spinner-border text-warning mb-3" style="width: 3.5rem; height: 3.5rem;" role="status"></div>
     <h5 class="fw-bold text-warning mb-1" id="loadingText">PRO-PROSESO...</h5>
     <small class="text-white">Mangyaring maghintay nang ilang sandali.</small>
   </div>
 
   <div class="auth-card">
     <div class="auth-header">
-      <h3>LIHAM PAHINTULOT ONLINE</h3>
-      <small class="text-warning fw-bold">Pandayan Superstores, Inc.</small>
+      <h3>PANDAYAN SUPERSTORES</h3>
+      <small class="text-warning fw-bold">Liham Pahintulot Online Portal</small>
     </div>
     
     <div class="p-4">
       <form id="loginForm">
-        <h5 class="text-center mb-3 fw-bold" style="color: var(--pandayan-burgundy);">Mag-log In</h5>
+        <h5 class="text-center mb-4 fw-bold" style="color: var(--pandayan-burgundy);">Mag-log In</h5>
         
         <div class="mb-3">
-          <label class="form-label fw-bold">Username</label>
-          <input type="text" id="loginUsername" class="form-control" placeholder="Ilagay ang iyong username" required>
+          <label class="form-label small fw-bold">Username</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0"><i class="fa fa-user text-muted"></i></span>
+            <input type="text" id="loginUsername" class="form-control border-start-0" placeholder="Ilagay ang iyong username" required>
+          </div>
         </div>
         
         <div class="mb-3">
-          <label class="form-label fw-bold">Password</label>
-          <input type="password" id="loginPassword" class="form-control" placeholder="Ilagay ang iyong password" required>
+          <label class="form-label small fw-bold">Password</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0"><i class="fa fa-lock text-muted"></i></span>
+            <input type="password" id="loginPassword" class="form-control border-start-0 border-end-0" placeholder="Ilagay ang iyong password" required>
+            <span class="input-group-text" onclick="togglePasswordVisibility('loginPassword', 'toggleLoginIcon')">
+              <i class="fa-solid fa-eye" id="toggleLoginIcon"></i>
+            </span>
+          </div>
         </div>
         
-        <div class="form-check mb-3">
+        <div class="form-check mb-4">
           <input class="form-check-input" type="checkbox" id="rememberMe">
-          <label class="form-check-label small fw-bold" for="rememberMe">
+          <label class="form-check-label small fw-bold text-secondary" for="rememberMe">
             Tandaan ako sa device na ito (Remember Me)
           </label>
         </div>
@@ -134,24 +153,29 @@
       </form>
 
       <form id="registerForm" style="display: none;">
-        <h5 class="text-center mb-3 fw-bold" style="color: var(--pandayan-burgundy);">Gumawa ng Account</h5>
+        <h5 class="text-center mb-4 fw-bold" style="color: var(--pandayan-burgundy);">Gumawa ng Account</h5>
         
         <div class="mb-3">
-          <label class="form-label fw-bold">Kapwa Name</label>
+          <label class="form-label small fw-bold">Kapwa Name</label>
           <input type="text" id="regKapwaName" class="form-control" placeholder="Pangalan (hal. Kapwa Juan)" required>
         </div>
 
         <div class="mb-3">
-          <label class="form-label fw-bold">Username</label>
+          <label class="form-label small fw-bold">Username</label>
           <input type="text" id="regUsername" class="form-control" placeholder="Pumili ng Username" required>
         </div>
 
         <div class="mb-3">
-          <label class="form-label fw-bold">Password</label>
-          <input type="password" id="regPassword" class="form-control" placeholder="Pumili ng Password" required>
+          <label class="form-label small fw-bold">Password</label>
+          <div class="input-group">
+            <input type="password" id="regPassword" class="form-control border-end-0" placeholder="Pumili ng Password" required>
+            <span class="input-group-text" onclick="togglePasswordVisibility('regPassword', 'toggleRegIcon')">
+              <i class="fa-solid fa-eye" id="toggleRegIcon"></i>
+            </span>
+          </div>
         </div>
 
-        <button type="submit" class="btn btn-pandayan shadow-sm" id="regBtn">MAG-REGISTER</button>
+        <button type="submit" class="btn btn-pandayan shadow-sm mt-2" id="regBtn">MAG-REGISTER</button>
       </form>
 
       <hr class="my-4">
@@ -162,13 +186,13 @@
       </div>
 
       <a href="https://www.canva.com/design/DAHO99_dbI4/uEJq-K6hj4-9IilTL0TYQA/view?utm_content=DAHO99_dbI4&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=ha0ebe4be46#12" target="_blank" class="btn-manual shadow-sm">
-        📖 Paano gamitin ang App? (User Manual)
+        ❓ Paano gamitin ang App? (User Manual)
       </a>
     </div>
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyH5OsnviMV56PZfhUKpiMb8NQpKULfTmtJtUfFgrIOHheLWsqRxYgv3m2OeeJnEr-w/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbzitbJzVkThbwX6nhaYZOQu2BgbPRH99dEmsS96uM4aFlDu1YuO5PH7hBcanz6Usx0J/exec"; // PAALALA: PALITAN ITO NG IYONG DEPLOYED WEB APP URL
 
     function showSpinner(text = "PRO-PROSESO...") {
       document.getElementById("loadingText").innerText = text;
@@ -178,7 +202,23 @@
       document.getElementById("loadingOverlay").style.display = "none";
     }
 
-    // AUTO-LOGIN CHECKER
+    // VIEW / SHOW / HIDE PASSWORD FUNCTION
+    function togglePasswordVisibility(inputId, iconId) {
+      const passwordInput = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+      } else {
+        passwordInput.type = "password";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+      }
+    }
+
+    // AUTO-LOGIN CHECKER (REMEMBER ME FEATURE)
     window.onload = function() {
       const savedUser = localStorage.getItem("pandayan_user_session");
       if (savedUser) {
