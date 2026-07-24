@@ -30,7 +30,7 @@
       border: 3px solid var(--pandayan-burgundy);
       box-shadow: 0 10px 25px rgba(0,0,0,0.15);
       width: 100%;
-      max-width: 460px;
+      max-width: 440px;
       overflow: hidden;
     }
     .auth-header {
@@ -47,34 +47,6 @@
       letter-spacing: 1px;
       color: white;
     }
-    
-    .auth-step-box {
-      background-color: #fff8d6;
-      border: 2px dashed var(--pandayan-burgundy);
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 20px;
-    }
-
-    .btn-auth-google {
-      background-color: #198754;
-      color: white;
-      font-weight: bold;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 8px;
-      width: 100%;
-      display: block;
-      text-align: center;
-      text-decoration: none;
-      font-size: 0.9rem;
-      transition: all 0.3s ease;
-    }
-    .btn-auth-google:hover {
-      background-color: #146c43;
-      color: white;
-    }
-
     .btn-pandayan {
       background-color: var(--pandayan-burgundy);
       color: white;
@@ -147,19 +119,8 @@
     </div>
     
     <div class="p-4">
-
-      <div class="auth-step-box">
-        <h6 class="fw-bold text-danger m-0 mb-1"><i class="fa-solid fa-shield-halved"></i> STEP 1: Authorization (Isang beses lang)</h6>
-        <p class="text-secondary small m-0 mb-2" style="font-size: 0.78rem;">
-          Bago mag-login, i-click ang button sa ibaba para ma-authorize ang iyong Google Account. (Piliin ang <i>Advanced > Go to project > Allow</i>).
-        </p>
-        <a href="https://script.google.com/macros/s/AKfycbydz_fDxnhx4JE9HZQBYz96r5hoArfoqwl6yAVtsN6xyI57Xx9U8zfmhsPpQ41gwSDL/exec" target="_blank" class="btn-auth-google shadow-sm">
-          🔐 I-Authorize ang Google Account
-        </a>
-      </div>
-
       <form id="loginForm">
-        <h6 class="fw-bold text-secondary text-uppercase mb-3" style="font-size:0.8rem; letter-spacing:1px;">STEP 2: LOGIN SA ACCOUNT</h6>
+        <h5 class="text-center mb-4 fw-bold" style="color: var(--pandayan-burgundy);">LOG IN</h5>
         
         <div class="mb-3">
           <label class="form-label small fw-bold">Username</label>
@@ -236,8 +197,8 @@
   </div>
 
   <script>
-    // PINAKABAGONG DEPLOYED API URL
-    const API_URL = "https://script.google.com/macros/s/AKfycbydz_fDxnhx4JE9HZQBYz96r5hoArfoqwl6yAVtsN6xyI57Xx9U8zfmhsPpQ41gwSDL/exec";
+    // BAGONG DEPLOYED API URL
+    const API_URL = "https://script.google.com/macros/s/AKfycbytwbQs-cAkGQBUwkqgcYudi4_BGK43tCiTUuU0BzRHnwnGM888pZMmz6vljH2ch6Nr/exec";
 
     function showSpinner(text = "PRO-PROSESO...") {
       document.getElementById("loadingText").innerText = text;
@@ -311,11 +272,7 @@
       })
       .catch(err => { 
         hideSpinner(); 
-        Swal.fire({
-          title: "Authorization Needed",
-          html: "Siguraduhing na-click mo ang <b>Step 1: I-authorize ang Google Account</b> sa itaas para makapasok sa system.",
-          icon: "warning"
-        }); 
+        Swal.fire("Error", "Hindi makakonekta sa server. Paki-check ang internet connection.", "error"); 
       });
     };
 
@@ -341,7 +298,7 @@
           });
         } else { Swal.fire("Registration Error", res.message, "error"); }
       })
-      .catch(err => { hideSpinner(); Swal.fire("Error", "Hindi makakonekta sa server. Paki-click muna ang Step 1 Authorization button.", "error"); });
+      .catch(err => { hideSpinner(); Swal.fire("Error", "Hindi makakonekta sa server.", "error"); });
     };
   </script>
 </body>
