@@ -30,7 +30,7 @@
       border: 3px solid var(--pandayan-burgundy);
       box-shadow: 0 10px 25px rgba(0,0,0,0.15);
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
       overflow: hidden;
     }
     .auth-header {
@@ -160,6 +160,12 @@
         </div>
 
         <div class="mb-3">
+          <label class="form-label small fw-bold">Email Address</label>
+          <input type="email" id="regEmail" class="form-control" placeholder="halimbawa@pandayan.com.ph" required>
+          <small class="text-muted" style="font-size:0.72rem;">Dito ipapadala ang mga email status updates.</small>
+        </div>
+
+        <div class="mb-3">
           <label class="form-label small fw-bold">Username</label>
           <input type="text" id="regUsername" class="form-control" placeholder="Pumili ng Username" required>
         </div>
@@ -191,6 +197,7 @@
   </div>
 
   <script>
+    // ⚠️ Siguraduhing papalitan ito ng iyong pinakabagong Deployment Web App URL kung kailangan
     const API_URL = "https://script.google.com/macros/s/AKfycbzitbJzVkThbwX6nhaYZOQu2BgbPRH99dEmsS96uM4aFlDu1YuO5PH7hBcanz6Usx0J/exec";
 
     function showSpinner(text = "PRO-PROSESO...") {
@@ -216,7 +223,7 @@
     }
 
     window.onload = function() {
-      const savedUser = localStorage.getItem("pandayan_user_session");
+      const savedUser = localStorage.getItem("pandayan_user_session") || sessionStorage.getItem("pandayan_user_session");
       if (savedUser) { window.location.href = "dashboard.html"; }
     };
 
@@ -269,6 +276,7 @@
     document.getElementById("registerForm").onsubmit = function(e) {
       e.preventDefault();
       const k = document.getElementById("regKapwaName").value.trim();
+      const em = document.getElementById("regEmail").value.trim();
       const u = document.getElementById("regUsername").value.trim();
       const p = document.getElementById("regPassword").value.trim();
 
@@ -276,7 +284,7 @@
 
       fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "register", payload: { kapwaName: k, username: u, password: p } })
+        body: JSON.stringify({ action: "register", payload: { kapwaName: k, email: em, username: u, password: p } })
       })
       .then(res => res.json())
       .then(res => {
