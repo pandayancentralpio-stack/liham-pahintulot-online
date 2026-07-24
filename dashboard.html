@@ -71,10 +71,10 @@
     }
 
     .table-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-    .table-burgundy-header th { background-color: var(--pandayan-burgundy) !important; color: white !important; font-size: 0.85rem; border: none; }
+    .table-burgundy-header th { background-color: var(--pandayan-burgundy) !important; color: white !important; font-size: 0.82rem; border: none; }
     .search-col-input { font-size: 0.75rem; padding: 3px 6px; border: 1px solid #ddd; border-radius: 4px; width: 100%; }
 
-    .badge-pill { border-radius: 50px; padding: 4px 12px; font-weight: 800; font-size: 0.72rem; }
+    .badge-pill { border-radius: 50px; padding: 4px 10px; font-weight: 800; font-size: 0.7rem; }
     .badge-pending { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
     .badge-approved { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
     .badge-disapproved { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
@@ -86,6 +86,24 @@
     
     .btn-bulk { background-color: var(--pandayan-yellow); color: var(--pandayan-burgundy); font-weight: 800; border: 2px solid var(--pandayan-burgundy); border-radius: 8px; font-size: 0.85rem; }
     .btn-bulk:hover { background-color: var(--pandayan-burgundy); color: var(--pandayan-yellow); }
+
+    /* SUB DASHBOARD TABS */
+    .sub-dashboard-tabs .nav-link {
+      color: var(--pandayan-burgundy);
+      font-weight: bold;
+      border: 1px solid #dee2e6;
+      border-bottom: none;
+      margin-right: 4px;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      font-size: 0.85rem;
+      background: #f8f9fa;
+    }
+    .sub-dashboard-tabs .nav-link.active {
+      background-color: var(--pandayan-burgundy) !important;
+      color: white !important;
+      border-color: var(--pandayan-burgundy);
+    }
 
     #lowerClock {
       position: fixed; bottom: 25px; right: 25px;
@@ -159,6 +177,24 @@
         🔔 Mayroong <span id="pendingCountBadge" class="badge bg-danger">0</span> na pending request na naghihintay ng inyong aksyon.
       </div>
 
+      <ul class="nav nav-tabs sub-dashboard-tabs mb-2 border-bottom-0" id="subDashboardTabs">
+        <li class="nav-item">
+          <button class="nav-link active" onclick="switchSubTab('ALL', this)"><i class="fa-solid fa-list"></i> Lahat ng Request</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" onclick="switchSubTab('PENDING', this)"><i class="fa-solid fa-clock-rotate-left text-warning"></i> Pending Request</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" onclick="switchSubTab('APPROVED', this)"><i class="fa-solid fa-circle-check text-success"></i> Approved Request</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" onclick="switchSubTab('DISAPPROVED', this)"><i class="fa-solid fa-circle-xmark text-danger"></i> Disapproved Request</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" onclick="switchSubTab('SSU', this)"><i class="fa-solid fa-box text-primary"></i> SSU Request</button>
+        </li>
+      </ul>
+
       <div class="table-container p-3">
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
           
@@ -183,29 +219,31 @@
             <thead>
               <tr class="table-burgundy-header">
                 <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
-                <th>Date of Request</th>
+                <th>Date</th>
                 <th>Request ID</th>
                 <th>Request From</th>
                 <th>Requested To</th>
-                <th>Mode</th>
-                <th>Hatid-Sundo Status</th>
+                <th>Liham For</th>
+                <th>GE Status</th>
+                <th>Hatid-Sundo</th>
                 <th>Kawan Status</th>
                 <th>Action</th>
               </tr>
               <tr class="bg-light">
                 <th></th>
-                <th><input type="text" class="search-col-input" placeholder="Filter Date..." onkeyup="filterTable()"></th>
-                <th><input type="text" class="search-col-input" placeholder="Filter ID..." onkeyup="filterTable()"></th>
-                <th><input type="text" class="search-col-input" placeholder="Filter From..." onkeyup="filterTable()"></th>
-                <th><input type="text" class="search-col-input" placeholder="Filter To..." onkeyup="filterTable()"></th>
-                <th><input type="text" class="search-col-input" placeholder="Filter Mode..." onkeyup="filterTable()"></th>
-                <th><input type="text" class="search-col-input" placeholder="Filter Status..." onkeyup="filterTable()"></th>
-                <th><input type="text" class="search-col-input" placeholder="Filter Status..." onkeyup="filterTable()"></th>
+                <th><input type="text" class="search-col-input" placeholder="Date..." onkeyup="filterTable()"></th>
+                <th><input type="text" class="search-col-input" placeholder="ID..." onkeyup="filterTable()"></th>
+                <th><input type="text" class="search-col-input" placeholder="From..." onkeyup="filterTable()"></th>
+                <th><input type="text" class="search-col-input" placeholder="To..." onkeyup="filterTable()"></th>
+                <th><input type="text" class="search-col-input" placeholder="For..." onkeyup="filterTable()"></th>
+                <th><input type="text" class="search-col-input" placeholder="Status..." onkeyup="filterTable()"></th>
+                <th><input type="text" class="search-col-input" placeholder="Status..." onkeyup="filterTable()"></th>
+                <th><input type="text" class="search-col-input" placeholder="Status..." onkeyup="filterTable()"></th>
                 <th></th>
               </tr>
             </thead>
             <tbody id="dashBody" class="small">
-              <tr><td colspan="9" class="p-4 text-center text-muted">Nagloload ng data...</td></tr>
+              <tr><td colspan="10" class="p-4 text-center text-muted">Nagloload ng data...</td></tr>
             </tbody>
           </table>
         </div>
@@ -256,35 +294,23 @@
         <form id="lpForm">
           <div class="modal-body p-4 bg-white" style="max-height: 75vh; overflow-y: auto;">
             
-            <div class="form-section-title">REQUESTER'S INFORMATION</div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">1. REQUESTED BY (Pangalan ng Kapwa)</label>
-                <input type="text" id="requestedBy" class="form-control form-control-sm" placeholder="Pangalan..." required oninput="saveDraft()">
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">2. REQUEST FROM (Branch)</label>
-                <select id="requestFrom" class="form-select form-select-sm" required onchange="saveDraft()"><option value="">-Pumili ng Branch-</option></select>
-              </div>
-            </div>
-
-            <div class="form-section-title">PASABAY INFORMATION</div>
+            <div class="form-section-title">PASABAY CATEGORY</div>
             <div class="row">
               <div class="col-md-12 mb-3">
-                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">3. MODE OF PASABAY</label>
-                <select id="modeOfPasabay" class="form-select form-select-sm" onchange="handleModeChange(this.value); saveDraft();" required>
-                  <option value="">-Pumili ng Mode-</option>
+                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">1. LIHAM PAHINTULOT FOR</label>
+                <select id="lihamPahintulotFor" class="form-select form-select-sm" onchange="handleLihamForChange(this.value); saveDraft();" required>
+                  <option value="">-Pumili ng Kategorya-</option>
                   <option value="Pasabay To">Pasabay To</option>
                   <option value="Pasabay to Shuttle">Pasabay to Shuttle</option>
                   <option value="Pickup to Central">Pickup to Central</option>
-                  <option value="Pasabay to FE Ronnie">Pasabay to FE Ronnie</option>
+                  <option value="Pickup to FE Ronnie">Pickup to FE Ronnie</option>
                   <option value="Thru Courier">Thru Courier</option>
                 </select>
               </div>
             </div>
 
             <div id="divPasabayBranch" class="mb-3 conditional-field card p-2 bg-light border-0">
-              <label class="form-label small fw-bold text-primary">Piliin ang Target Branch na pasasabayan:</label>
+              <label class="form-label small fw-bold text-primary">Piliin ang Target Branch na pagsasabayan:</label>
               <select id="pasabayTargetBranch" class="form-select form-select-sm" onchange="saveDraft()"><option value="">-Target Branch-</option></select>
             </div>
 
@@ -302,17 +328,28 @@
               </select>
             </div>
 
+            <div class="form-section-title">REQUESTER'S INFORMATION</div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">2. REQUESTED BY (Pangalan ng Kapwa)</label>
+                <input type="text" id="requestedBy" class="form-control form-control-sm" placeholder="Pangalan..." required oninput="saveDraft()">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">3. REQUEST FROM (Branch)</label>
+                <select id="requestFrom" class="form-select form-select-sm" required onchange="saveDraft()"><option value="">-Pumili ng Branch-</option></select>
+              </div>
+            </div>
+
             <div class="form-section-title d-flex justify-content-between align-items-center">
               <span>LIST OF KAWAN & P.O. NUMBERS (MAX 5)</span>
               <button type="button" class="btn btn-warning btn-sm fw-bold text-dark px-3" onclick="addKawanRow()">+ Magdagdag ng Kawan</button>
             </div>
             
-            <div id="kawanRowsContainer" class="mb-3">
-              </div>
+            <div id="kawanRowsContainer" class="mb-3"></div>
 
             <div class="row">
               <div class="col-md-12 mb-3">
-                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">6. REASON FOR REQUEST</label>
+                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">4. REASON FOR REQUEST</label>
                 <select id="reason" class="form-select form-select-sm" onchange="handleReasonChange(this.value); saveDraft();" required>
                   <option value="">-Pumili ng Dahilan-</option>
                   <option value="Regular Stock">Regular Stock</option>
@@ -329,26 +366,14 @@
             </div>
 
             <div class="mb-3">
-              <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">7. KWENTO NG PAGKAUNAWA SA PANGYAYARI (KPP)</label>
+              <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">5. KWENTO NG PAGKAUNAWA SA PANGYAYARI (KPP)</label>
               <textarea id="kpp" class="form-control form-control-sm" rows="3" placeholder="Ipaliwanag ang buong detalye..." required oninput="saveDraft()"></textarea>
             </div>
 
-            <div class="form-section-title">APPROVAL ATTACHMENTS</div>
+            <div class="form-section-title conditional-field" id="secAttachmentsTitle">ATTACHMENT (COURIER DIRECT DELIVERY)</div>
             <div class="row">
-              <div class="col-md-4 mb-3">
-                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">8. GE'S APPROVAL</label>
-                <input type="file" id="geFile" class="form-control form-control-sm" accept="image/*" required onchange="previewImage(this, 'prevGe')">
-                <img id="prevGe" class="img-preview" alt="GE Preview">
-              </div>
-              
-              <div class="col-md-4 mb-3 conditional-field" id="divApprovalAttachment">
-                <label id="lblApprovalAttachment" class="form-label small fw-bold text-primary">APPROVAL ATTACHMENT</label>
-                <input type="file" id="tindahanFile" class="form-control form-control-sm" accept="image/*" onchange="previewImage(this, 'prevTindahan')">
-                <img id="prevTindahan" class="img-preview" alt="Tindahan Preview">
-              </div>
-
-              <div class="col-md-4 mb-3 conditional-field" id="divPosFile">
-                <label class="form-label small fw-bold text-primary">POS RECEIPT</label>
+              <div class="col-md-6 mb-3 conditional-field" id="divPosFile">
+                <label class="form-label small fw-bold text-primary">POS RECEIPT SCREENSHOT</label>
                 <input type="file" id="posFile" class="form-control form-control-sm" accept="image/*" onchange="previewImage(this, 'prevPos')">
                 <img id="prevPos" class="img-preview" alt="POS Preview">
               </div>
@@ -401,7 +426,7 @@
                 <tr><th style="background:#f8f9fa;">Date of Request</th><td id="vDate"></td></tr>
                 <tr><th style="background:#f8f9fa;">Account / Requested By</th><td><span id="vAccount"></span> / <b id="vBy"></b></td></tr>
                 <tr><th style="background:#f8f9fa;">Request From / To</th><td><span id="vFrom"></span> / <b id="vTo"></b></td></tr>
-                <tr><th style="background:#f8f9fa;">Mode of Pasabay</th><td id="vMode"></td></tr>
+                <tr><th style="background:#f8f9fa;">Liham Pahintulot For</th><td id="vMode"></td></tr>
                 <tr><th style="background:#f8f9fa;">P.O. Number</th><td id="vPo"></td></tr>
                 <tr><th style="background:#f8f9fa;">Reason for Request</th><td id="vReason"></td></tr>
               </table>
@@ -451,6 +476,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    // ⚠️ Siguraduhing papalitan ito ng iyong Web App Deployment URL
     const API_URL = "https://script.google.com/macros/s/AKfycbzitbJzVkThbwX6nhaYZOQu2BgbPRH99dEmsS96uM4aFlDu1YuO5PH7hBcanz6Usx0J/exec";
     let currentUser = null;
     window.rawDashboardData = [];
@@ -459,6 +485,7 @@
     let currentPage = 1;
     const itemsPerPage = 10;
     let selectedRequestIndex = null;
+    let currentActiveTab = "ALL";
 
     function showSpinner() { document.getElementById("loadingOverlay").style.display = "flex"; }
     function hideSpinner() { document.getElementById("loadingOverlay").style.display = "none"; }
@@ -476,7 +503,7 @@
       if(!session) { window.location.href = "index.html"; return; }
       currentUser = JSON.parse(session);
       
-      document.getElementById("userInfo").innerText = `Welcome, ${currentUser.kapwaName}`;
+      document.getElementById("userInfo").innerText = `Welcome, ${currentUser.kapwaName} (${currentUser.role})`;
       if(currentUser.role !== "Viewer") {
         document.getElementById("btnBulkApprove").style.display = "inline-block";
       }
@@ -504,7 +531,6 @@
             });
             window.kawanOptionsList = d.kawans || [];
             
-            // Add initial 1st Kawan Row
             const container = document.getElementById("kawanRowsContainer");
             if (container.children.length === 0) {
               addKawanRow();
@@ -584,14 +610,20 @@
             
             window.rawDashboardData = res.data.sort((a, b) => {
               const getRank = (r) => {
-                if (r.hatidSundoStatus === "PENDING" || r.kawanStatus === "PENDING") return 1;
-                if (r.hatidSundoStatus === "SSU" || r.kawanStatus === "SSU") return 3;
+                if (r.geStatus === "PENDING" || r.hatidSundoStatus === "PENDING" || r.kawanStatus === "PENDING") return 1;
+                if (r.geStatus === "SSU" || r.hatidSundoStatus === "SSU" || r.kawanStatus === "SSU") return 3;
                 return 2;
               };
               return getRank(a) - getRank(b);
             });
 
-            let pendingCount = window.rawDashboardData.filter(r => r.hatidSundoStatus === "PENDING" || r.kawanStatus === "PENDING").length;
+            let pendingCount = window.rawDashboardData.filter(r => {
+              if (currentUser.role === "GE") return r.geStatus === "PENDING";
+              if (currentUser.role === "1st Approver") return r.hatidSundoStatus === "PENDING";
+              if (currentUser.role === "2nd Approver") return r.kawanStatus === "PENDING";
+              return false;
+            }).length;
+
             if(pendingCount > 0) {
               document.getElementById("pendingCountBadge").innerText = pendingCount;
               document.getElementById("pendingAlertBanner").style.display = "flex";
@@ -599,15 +631,21 @@
               document.getElementById("pendingAlertBanner").style.display = "none";
             }
 
-            window.filteredData = [...window.rawDashboardData];
-            currentPage = 1;
-            renderTablePage();
+            filterTable();
           } else {
-            document.getElementById("dashBody").innerHTML = "<tr><td colspan='9' class='p-4 text-center text-muted'>Walang nakitang records.</td></tr>";
+            document.getElementById("dashBody").innerHTML = "<tr><td colspan='10' class='p-4 text-center text-muted'>Walang nakitang records.</td></tr>";
             document.getElementById("pageIndicator").innerText = "Showing 0 to 0 entries";
           }
         })
         .catch(() => hideSpinner());
+    }
+
+    // SUB DASHBOARD SWITCHER
+    function switchSubTab(tabName, btnEl) {
+      currentActiveTab = tabName;
+      document.querySelectorAll("#subDashboardTabs .nav-link").forEach(el => el.classList.remove("active"));
+      btnEl.classList.add("active");
+      filterTable();
     }
 
     function renderTablePage() {
@@ -617,7 +655,7 @@
 
       let html = "";
       if (pageData.length === 0) {
-        html = "<tr><td colspan='9' class='p-4 text-center text-muted'>Walang nakitang records sa search na ito.</td></tr>";
+        html = "<tr><td colspan='10' class='p-4 text-center text-muted'>Walang nakitang records sa kategoryang ito.</td></tr>";
       } else {
         pageData.forEach((r) => {
           const originalIdx = window.rawDashboardData.findIndex(item => item.requestId === r.requestId);
@@ -629,13 +667,25 @@
           
           let pdfBtn = r.pdfUrl ? `<a href="${r.pdfUrl}" target="_blank" class="btn btn-pdf shadow-sm" title="Download Approved PDF"><i class="fa fa-file-pdf"></i></a>` : "";
 
+          // DISABLE CHECKBOX IF ALREADY ACTIONED OR APPROVED/DISAPPROVED
+          let isActioned = false;
+          if (currentUser.role === "GE" && r.geStatus !== "PENDING") isActioned = true;
+          if (currentUser.role === "1st Approver" && r.hatidSundoStatus !== "PENDING") isActioned = true;
+          if (currentUser.role === "2nd Approver" && r.kawanStatus !== "PENDING") isActioned = true;
+          if (r.geStatus === "DISAPPROVED" || r.hatidSundoStatus === "DISAPPROVED" || r.kawanStatus === "DISAPPROVED" || r.kawanStatus === "SSU") isActioned = true;
+
+          let checkboxHtml = isActioned 
+            ? `<input type="checkbox" class="row-checkbox" disabled title="Naisagawa na ang aksyon sa request na ito">` 
+            : `<input type="checkbox" class="row-checkbox" data-index="${originalIdx}">`;
+
           html += `<tr>
-            <td><input type="checkbox" class="row-checkbox" data-index="${originalIdx}"></td>
+            <td>${checkboxHtml}</td>
             <td><small>${r.dateOfRequest}</small></td>
             <td><b class="text-primary">${r.requestId}</b></td>
             <td>${r.requestFrom}</td>
             <td>${r.requestedTo}</td>
-            <td><small>${r.modeOfPasabay}</small></td>
+            <td><small>${r.lihamPahintulotFor}</small></td>
+            <td><span class="badge badge-pill ${getBadge(r.geStatus)}">${r.geStatus}</span></td>
             <td><span class="badge badge-pill ${getBadge(r.hatidSundoStatus)}">${r.hatidSundoStatus}</span></td>
             <td><span class="badge badge-pill ${getBadge(r.kawanStatus)}">${r.kawanStatus}</span></td>
             <td>
@@ -665,19 +715,19 @@
     }
 
     function toggleSelectAll(source) {
-      document.querySelectorAll(".row-checkbox").forEach(cb => cb.checked = source.checked);
+      document.querySelectorAll(".row-checkbox:not([disabled])").forEach(cb => cb.checked = source.checked);
     }
 
     function openBulkModal() {
-      const selected = document.querySelectorAll(".row-checkbox:checked");
-      if(selected.length === 0) return Swal.fire("Paunawa", "Pumili muna ng mga request sa checkboxes.", "warning");
+      const selected = document.querySelectorAll(".row-checkbox:checked:not([disabled])");
+      if(selected.length === 0) return Swal.fire("Paunawa", "Pumili muna ng mga active o pending requests sa checkboxes.", "warning");
       document.getElementById("bulkCount").innerText = selected.length;
       document.getElementById("bulkRemarks").value = "";
       new bootstrap.Modal(document.getElementById("bulkModal")).show();
     }
 
     function submitBulk(status) {
-      const selected = document.querySelectorAll(".row-checkbox:checked");
+      const selected = document.querySelectorAll(".row-checkbox:checked:not([disabled])");
       const remarks = document.getElementById("bulkRemarks").value.trim();
       if(status === "DISAPPROVED" && !remarks) return Swal.fire("Required", "Kailangan ng remarks kapag Disapproved.", "warning");
 
@@ -716,46 +766,75 @@
       } else { img.style.display = "none"; }
     }
 
-    function handleModeChange(val) {
-      const divBranch = document.getElementById("divPasabayBranch");
+    // PROMPTS & FORM LOGIC FOR LIHAM PAHINTULOT FOR
+    function handleLihamForChange(val) {
+      const divBranch  = document.getElementById("divPasabayBranch");
       const divShuttle = document.getElementById("divShuttle");
       const divCourier = document.getElementById("divCourier");
-      const divApp = document.getElementById("divApprovalAttachment");
-      const lblApp = document.getElementById("lblApprovalAttachment");
-      const divPos = document.getElementById("divPosFile");
+      const secAttach  = document.getElementById("secAttachmentsTitle");
+      const divPos     = document.getElementById("divPosFile");
 
-      divBranch.style.display = "none";
+      divBranch.style.display  = "none";
       divShuttle.style.display = "none";
       divCourier.style.display = "none";
-      divApp.style.display = "none";
-      divPos.style.display = "none";
+      secAttach.style.display  = "none";
+      divPos.style.display     = "none";
 
       if (val === "Pasabay To") {
         divBranch.style.display = "block";
-        divApp.style.display = "block";
-        lblApp.innerText = "TINDAHAN'S APPROVAL ATTACHMENT";
+        Swal.fire({
+          title: "Mabuhay!",
+          text: "Paalala, siguruhing approved at informed ang Tindahan na pagsasabayan ng ating ipasasabay na items. Salamat po!",
+          icon: "info",
+          confirmButtonColor: "#800020"
+        });
       } 
       else if (val === "Pasabay to Shuttle") {
         divShuttle.style.display = "block";
-        divApp.style.display = "block";
-        lblApp.innerText = "SHUTTLE'S APPROVAL ATTACHMENT";
+        Swal.fire({
+          title: "Mabuhay!",
+          text: "Paalala, siguruhing approved at informed ang Shuttle na pagsasabayan ng ating ipasasabay na items. Salamat po!",
+          icon: "info",
+          confirmButtonColor: "#800020"
+        });
       } 
-      else if (val === "Pasabay to FE Ronnie") {
-        divApp.style.display = "block";
-        lblApp.innerText = "FE RONNIE'S APPROVAL ATTACHMENT";
+      else if (val === "Pickup to Central") {
+        Swal.fire({
+          title: "Mabuhay!",
+          text: "Paalala, siguruhing approved at informed ang Hatid-Sundo at Kawan na for pickup/hand carry ang ating pinasuyong paninda. Salamat po!",
+          icon: "info",
+          confirmButtonColor: "#800020"
+        });
+      }
+      else if (val === "Pickup to FE Ronnie") {
+        Swal.fire({
+          title: "Mabuhay!",
+          text: "Paalala, siguruhing approved at informed si FE Ronnie para sa ating pasabay. Salamat po!",
+          icon: "info",
+          confirmButtonColor: "#800020"
+        });
       } 
       else if (val === "Thru Courier") {
         divCourier.style.display = "block";
+        Swal.fire({
+          title: "Mabuhay!",
+          text: "Paalala, siguruhing bayad na ng Panauhin ang ipapadalang paninda lalo na’t kung ito ay direct delivery sa Panauhin. Salamat po!",
+          icon: "info",
+          confirmButtonColor: "#800020"
+        });
         handleCourierChange(document.getElementById("courierOption").value);
       }
     }
 
     function handleCourierChange(val) {
-      const divPos = document.getElementById("divPosFile");
+      const secAttach = document.getElementById("secAttachmentsTitle");
+      const divPos    = document.getElementById("divPosFile");
       if (val === "Direct Delivery to Panauhin") {
-        divPos.style.display = "block";
+        secAttach.style.display = "block";
+        divPos.style.display    = "block";
       } else {
-        divPos.style.display = "none";
+        secAttach.style.display = "none";
+        divPos.style.display    = "none";
       }
     }
 
@@ -777,9 +856,9 @@
       });
 
       const draft = {
+        lihamPahintulotFor: document.getElementById("lihamPahintulotFor").value,
         requestedBy: document.getElementById("requestedBy").value,
         requestFrom: document.getElementById("requestFrom").value,
-        modeOfPasabay: document.getElementById("modeOfPasabay").value,
         pasabayTargetBranch: document.getElementById("pasabayTargetBranch").value,
         shuttleName: document.getElementById("shuttleName").value,
         courierOption: document.getElementById("courierOption").value,
@@ -795,11 +874,11 @@
       const saved = localStorage.getItem("pandayan_form_draft");
       if(!saved) return;
       const d = JSON.parse(saved);
+      document.getElementById("lihamPahintulotFor").value = d.lihamPahintulotFor || "";
       document.getElementById("requestedBy").value = d.requestedBy || "";
       document.getElementById("requestFrom").value = d.requestFrom || "";
-      document.getElementById("modeOfPasabay").value = d.modeOfPasabay || "";
       
-      handleModeChange(d.modeOfPasabay || "");
+      handleLihamForChange(d.lihamPahintulotFor || "");
       
       document.getElementById("pasabayTargetBranch").value = d.pasabayTargetBranch || "";
       document.getElementById("shuttleName").value = d.shuttleName || "";
@@ -825,7 +904,7 @@
       document.getElementById("lpForm").reset();
       document.getElementById("kawanRowsContainer").innerHTML = "";
       addKawanRow();
-      handleModeChange(""); 
+      handleLihamForChange(""); 
       handleCourierChange(""); 
       handleReasonChange("");
       document.querySelectorAll(".img-preview").forEach(img => img.style.display = "none");
@@ -853,24 +932,22 @@
       }
 
       showSpinner();
-      const mode = document.getElementById("modeOfPasabay").value;
+      const lihamFor = document.getElementById("lihamPahintulotFor").value;
 
       const posB64 = await fileToBase64(document.getElementById("posFile").files[0]);
-      const geB64 = await fileToBase64(document.getElementById("geFile").files[0]);
-      const tindahanB64 = await fileToBase64(document.getElementById("tindahanFile").files[0]);
 
       let modeRemarks = "";
-      if(mode === "Pasabay To") modeRemarks = document.getElementById("pasabayTargetBranch").value;
-      else if(mode === "Pasabay to Shuttle") modeRemarks = document.getElementById("shuttleName").value;
-      else if(mode === "Thru Courier") modeRemarks = document.getElementById("courierOption").value;
+      if(lihamFor === "Pasabay To") modeRemarks = document.getElementById("pasabayTargetBranch").value;
+      else if(lihamFor === "Pasabay to Shuttle") modeRemarks = document.getElementById("shuttleName").value;
+      else if(lihamFor === "Thru Courier") modeRemarks = document.getElementById("courierOption").value;
 
       const payload = {
         kapwaName: currentUser.kapwaName, requestedBy: document.getElementById("requestedBy").value,
-        requestFrom: document.getElementById("requestFrom").value, modeOfPasabay: mode, modeRemarks: modeRemarks,
+        requestFrom: document.getElementById("requestFrom").value, lihamPahintulotFor: lihamFor, modeRemarks: modeRemarks,
         items: items,
         reason: (document.getElementById("reason").value === "Others") ? document.getElementById("otherReason").value : document.getElementById("reason").value,
         kpp: document.getElementById("kpp").value,
-        posFile: posB64, geFile: geB64, tindahanFile: tindahanB64
+        posFile: posB64
       };
 
       fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "submitRequest", payload: payload }) })
@@ -892,17 +969,29 @@
       const colInputs = document.querySelectorAll(".search-col-input");
 
       window.filteredData = window.rawDashboardData.filter(r => {
-        let matchesGeneral = (r.requestId + r.dateOfRequest + r.requestFrom + r.requestedTo + r.modeOfPasabay + (r.modeRemarks||'') + r.hatidSundoStatus + r.kawanStatus).toUpperCase().indexOf(generalFilter) > -1;
+        // Sub-dashboard filtering
+        let matchesSubTab = true;
+        if (currentActiveTab === "PENDING") {
+          matchesSubTab = (r.geStatus === "PENDING" || r.hatidSundoStatus === "PENDING" || r.kawanStatus === "PENDING") && (r.geStatus !== "DISAPPROVED" && r.hatidSundoStatus !== "DISAPPROVED" && r.kawanStatus !== "DISAPPROVED");
+        } else if (currentActiveTab === "APPROVED") {
+          matchesSubTab = (r.kawanStatus === "APPROVED");
+        } else if (currentActiveTab === "DISAPPROVED") {
+          matchesSubTab = (r.geStatus === "DISAPPROVED" || r.hatidSundoStatus === "DISAPPROVED" || r.kawanStatus === "DISAPPROVED");
+        } else if (currentActiveTab === "SSU") {
+          matchesSubTab = (r.kawanStatus === "SSU" || r.hatidSundoStatus === "SSU");
+        }
+
+        let matchesGeneral = (r.requestId + r.dateOfRequest + r.requestFrom + r.requestedTo + r.lihamPahintulotFor + (r.modeRemarks||'') + r.geStatus + r.hatidSundoStatus + r.kawanStatus).toUpperCase().indexOf(generalFilter) > -1;
         
         let matchesCols = true;
-        const vals = [r.dateOfRequest, r.requestId, r.requestFrom, r.requestedTo, r.modeOfPasabay, r.hatidSundoStatus, r.kawanStatus];
-        for(let j=0; j<7; j++) {
+        const vals = [r.dateOfRequest, r.requestId, r.requestFrom, r.requestedTo, r.lihamPahintulotFor, r.geStatus, r.hatidSundoStatus, r.kawanStatus];
+        for(let j=0; j<8; j++) {
           let cVal = colInputs[j].value.toUpperCase();
-          if(cVal && vals[j].toUpperCase().indexOf(cVal) === -1) {
+          if(cVal && vals[j] && vals[j].toUpperCase().indexOf(cVal) === -1) {
             matchesCols = false; break;
           }
         }
-        return matchesGeneral && matchesCols;
+        return matchesSubTab && matchesGeneral && matchesCols;
       });
 
       currentPage = 1;
@@ -920,7 +1009,7 @@
       document.getElementById("vBy").innerText = r.requestedBy;
       document.getElementById("vFrom").innerText = r.requestFrom;
       document.getElementById("vTo").innerText = r.requestedTo;
-      document.getElementById("vMode").innerText = `${r.modeOfPasabay} (${r.modeRemarks || '-'})`;
+      document.getElementById("vMode").innerText = `${r.lihamPahintulotFor} (${r.modeRemarks || '-'})`;
       document.getElementById("vPo").innerText = r.poNumber;
       document.getElementById("vReason").innerText = r.reason;
 
@@ -933,12 +1022,6 @@
       if(r.posReceipt) {
         filesHtml += `<a href="${r.posReceipt}" target="_blank" class="btn btn-outline-primary btn-sm fw-bold text-start p-2">🖼️ View POS Receipt Screenshot</a>`;
       }
-      if(r.geApprovalFile) {
-        filesHtml += `<a href="${r.geApprovalFile}" target="_blank" class="btn btn-outline-primary btn-sm fw-bold text-start p-2">🖼️ View GE Approval Screenshot</a>`;
-      }
-      if(r.tindahanApprovalFile) {
-        filesHtml += `<a href="${r.tindahanApprovalFile}" target="_blank" class="btn btn-outline-primary btn-sm fw-bold text-start p-2">🖼️ View Approval Screenshot</a>`;
-      }
       if(r.rpoAttachment) {
         filesHtml += `<a href="${r.rpoAttachment}" target="_blank" class="btn btn-outline-success btn-sm fw-bold text-start p-2">📦 View Received P.O. Attachment (SSU)</a>`;
       }
@@ -946,12 +1029,17 @@
 
       let historyHtml = `
         <tr>
-          <td>1st (Hatid-Sundo)</td>
+          <td>Group Executive (GE)</td>
+          <td><span class="badge badge-pill ${r.geStatus==='SSU'?'badge-ssu':(r.geStatus==='APPROVED'?'bg-success':(r.geStatus==='DISAPPROVED'?'bg-danger':'bg-warning text-dark'))}">${r.geStatus}</span></td>
+          <td>${r.geApproverName || '-'}</td><td>${r.geRemarks || '-'}</td><td>${r.geTimestamp || '-'}</td>
+        </tr>
+        <tr>
+          <td>Hatid-Sundo (1st)</td>
           <td><span class="badge badge-pill ${r.hatidSundoStatus==='SSU'?'badge-ssu':(r.hatidSundoStatus==='APPROVED'?'bg-success':(r.hatidSundoStatus==='DISAPPROVED'?'bg-danger':'bg-warning text-dark'))}">${r.hatidSundoStatus}</span></td>
           <td>${r.approver1Name || '-'}</td><td>${r.remarks1 || '-'}</td><td>${r.timestamp1 || '-'}</td>
         </tr>
         <tr>
-          <td>2nd (Kawan)</td>
+          <td>Kawan (2nd)</td>
           <td><span class="badge badge-pill ${r.kawanStatus==='SSU'?'badge-ssu':(r.kawanStatus==='APPROVED'?'bg-success':(r.kawanStatus==='DISAPPROVED'?'bg-danger':'bg-warning text-dark'))}">${r.kawanStatus}</span></td>
           <td>${r.approver2Name || '-'}</td><td>${r.remarks2 || '-'}</td><td>${r.timestamp2 || '-'}</td>
         </tr>
@@ -967,16 +1055,22 @@
       }
 
       let actionForm = "";
+      const isGE          = (currentUser.role === "GE" || currentUser.role === "Admin");
       const is1stApprover = (currentUser.role === "1st Approver" || currentUser.role === "Admin");
       const is2ndApprover = (currentUser.role === "2nd Approver" || currentUser.role === "Admin");
 
-      let canAction1st = is1stApprover && r.hatidSundoStatus === "PENDING";
+      let canActionGE  = isGE && r.geStatus === "PENDING";
+      let canAction1st = is1stApprover && r.geStatus === "APPROVED" && r.hatidSundoStatus === "PENDING";
       let canAction2nd = is2ndApprover && r.hatidSundoStatus === "APPROVED" && r.kawanStatus === "PENDING";
 
-      if (canAction1st || canAction2nd) {
+      if (canActionGE || canAction1st || canAction2nd) {
+        let levelText = "GE Approval";
+        if (canAction1st) levelText = "1st Approval (Hatid-Sundo)";
+        if (canAction2nd) levelText = "2nd Approval (Kawan)";
+
         actionForm = `
           <div class="card bg-light p-3 border-danger mt-3" style="border-radius:8px;">
-            <h6 class="fw-bold text-danger">APPROVER ACTION SECTION (${canAction1st ? '1st Approval' : '2nd Approval'})</h6>
+            <h6 class="fw-bold text-danger">APPROVER ACTION SECTION (${levelText})</h6>
             <div class="mb-2">
               <label class="form-label small fw-bold">Remarks / Instruction:</label>
               <textarea id="appRemarks" class="form-control form-control-sm" rows="2" placeholder="Maglagay ng remarks..."></textarea>
@@ -987,8 +1081,10 @@
             </div>
           </div>
         `;
+      } else if (is1stApprover && r.geStatus === "PENDING") {
+        actionForm = `<div class="alert alert-warning text-center small mt-3">⚠️ Naka-lock pa ang 1st Approval. Kailangan munang ma-APPROVED ng GE.</div>`;
       } else if (is2ndApprover && r.hatidSundoStatus === "PENDING") {
-        actionForm = `<div class="alert alert-warning text-center small mt-3">⚠️ Naka-lock pa ang 2nd Approval. Kailangan munang ma-APPROVED ng 1st Approver.</div>`;
+        actionForm = `<div class="alert alert-warning text-center small mt-3">⚠️ Naka-lock pa ang 2nd Approval. Kailangan munang ma-APPROVED ng Hatid-Sundo.</div>`;
       }
       document.getElementById("vActionSection").innerHTML = actionForm;
 
