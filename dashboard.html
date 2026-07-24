@@ -179,10 +179,7 @@
 
       <ul class="nav nav-tabs sub-dashboard-tabs mb-2 border-bottom-0" id="subDashboardTabs">
         <li class="nav-item">
-          <button class="nav-link active" onclick="switchSubTab('ALL', this)"><i class="fa-solid fa-list"></i> Lahat ng Request</button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link" onclick="switchSubTab('PENDING', this)"><i class="fa-solid fa-clock-rotate-left text-warning"></i> Pending Request</button>
+          <button class="nav-link active" onclick="switchSubTab('PENDING', this)"><i class="fa-solid fa-clock-rotate-left text-warning"></i> Pending Request</button>
         </li>
         <li class="nav-item">
           <button class="nav-link" onclick="switchSubTab('APPROVED', this)"><i class="fa-solid fa-circle-check text-success"></i> Approved Request</button>
@@ -476,8 +473,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // ⚠️ Siguraduhing papalitan ito ng iyong Web App Deployment URL
-    const API_URL = "https://script.google.com/macros/s/AKfycbzitbJzVkThbwX6nhaYZOQu2BgbPRH99dEmsS96uM4aFlDu1YuO5PH7hBcanz6Usx0J/exec";
+    // BAGONG DEPLOYED API URL
+    const API_URL = "https://script.google.com/macros/s/AKfycbya8PxHU-qOdKHeAQhdcVNlp-F7X99pAWOfRAUvBtijG6Oq6zisWDYATOh4V-dP4l-W/exec";
     let currentUser = null;
     window.rawDashboardData = [];
     window.filteredData = [];
@@ -485,7 +482,7 @@
     let currentPage = 1;
     const itemsPerPage = 10;
     let selectedRequestIndex = null;
-    let currentActiveTab = "ALL";
+    let currentActiveTab = "PENDING"; // DEFAULT TAB IS PENDING
 
     function showSpinner() { document.getElementById("loadingOverlay").style.display = "flex"; }
     function hideSpinner() { document.getElementById("loadingOverlay").style.display = "none"; }
@@ -920,15 +917,22 @@
     document.getElementById("lpForm").onsubmit = async function(e) {
       e.preventDefault();
       
-      const items = [];
+      const rawItems = [];
+      const seenKeys = {};
+      
+      // DEDUPLICATION CONTROL ON FRONTEND
       document.querySelectorAll(".kawan-item-row").forEach(row => {
         const k = row.querySelector(".sel-kawan").value;
-        const p = row.querySelector(".inp-po").value;
-        if(k && p) items.push({ requestedTo: k, poNumber: p });
+        const p = row.querySelector(".inp-po").value.trim();
+        const key = k + "_" + p;
+        if(k && p && !seenKeys[key]) {
+          seenKeys[key] = true;
+          rawItems.push({ requestedTo: k, poNumber: p });
+        }
       });
 
-      if (items.length === 0) {
-        return Swal.fire("Required", "Kailangang maglagay ng kahit isang Kawan at P.O. Number.", "warning");
+      if (rawItems.length === 0) {
+        return Swal.fire("Required", "Kailangang maglagay ng kahit isang valid na Kawan at P.O. Number.", "warning");
       }
 
       showSpinner();
@@ -944,7 +948,7 @@
       const payload = {
         kapwaName: currentUser.kapwaName, requestedBy: document.getElementById("requestedBy").value,
         requestFrom: document.getElementById("requestFrom").value, lihamPahintulotFor: lihamFor, modeRemarks: modeRemarks,
-        items: items,
+        items: rawItems,
         reason: (document.getElementById("reason").value === "Others") ? document.getElementById("otherReason").value : document.getElementById("reason").value,
         kpp: document.getElementById("kpp").value,
         posFile: posB64
