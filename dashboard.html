@@ -3,129 +3,98 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Liham Pahintulot Online - Portal</title>
+  <title>Liham Pahintulot Online - Login</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
   <style>
     :root {
       --pandayan-burgundy: #800020;
       --pandayan-yellow: #FFD700;
       --pandayan-blue: #0000FF;
-      --sidebar-width: 240px;
+      --pandayan-white: #FFFFFF;
     }
-    body { background-color: #f4f7f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
-
-    .app-wrapper { display: flex; min-height: 100vh; }
-    
-    .sidebar {
-      width: var(--sidebar-width);
+    body {
+      background-color: #f4f7f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .auth-card {
+      background: white;
+      border-radius: 16px;
+      border: 3px solid var(--pandayan-burgundy);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 440px;
+      overflow: hidden;
+    }
+    .auth-header {
       background-color: var(--pandayan-burgundy);
       color: white;
-      display: flex; flex-direction: column;
-      position: fixed; top: 0; bottom: 0; left: 0;
-      z-index: 1000; padding: 20px 15px;
-      box-shadow: 4px 0 10px rgba(0,0,0,0.15);
+      padding: 25px 20px;
+      text-align: center;
+      border-bottom: 5px solid var(--pandayan-yellow);
     }
-    .sidebar-brand { font-size: 1.2rem; font-weight: 900; letter-spacing: 1px; color: var(--pandayan-yellow); margin-bottom: 2px; }
-    .sidebar-subtext { font-size: 0.75rem; color: #f8f9fa; margin-bottom: 25px; opacity: 0.9; }
-    
-    .nav-btn {
-      background: transparent; border: 1px solid rgba(255,255,255,0.2);
-      color: white; font-weight: 700; padding: 10px 15px;
-      border-radius: 8px; text-align: left; margin-bottom: 10px; width: 100%;
+    .auth-header h3 {
+      font-weight: 900;
+      margin: 0;
+      font-size: 1.4rem;
+      letter-spacing: 1px;
+      color: white;
     }
-    .nav-btn.active {
-      background-color: var(--pandayan-yellow) !important;
-      color: var(--pandayan-burgundy) !important; border: none;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    .btn-pandayan {
+      background-color: var(--pandayan-burgundy);
+      color: white;
+      font-weight: bold;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      width: 100%;
+      transition: all 0.3s ease;
     }
-
-    .manual-btn-bottom {
-      margin-top: auto; background: rgba(0,0,0,0.2);
-      border: 1px dashed var(--pandayan-yellow); color: white;
-      font-size: 0.75rem; padding: 10px; border-radius: 8px;
-      text-align: center; text-decoration: none;
+    .btn-pandayan:hover {
+      background-color: #600018;
+      color: white;
     }
-    .manual-btn-bottom:hover { color: var(--pandayan-yellow); }
-
-    .main-content {
-      margin-left: var(--sidebar-width); flex-grow: 1;
-      padding: 20px 25px; width: calc(100% - var(--sidebar-width));
-    }
-
-    .top-header-card {
-      background: white; border-radius: 12px;
-      padding: 15px 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      margin-bottom: 15px;
-    }
-    .header-title { color: var(--pandayan-burgundy); font-weight: 800; margin: 0; font-size: 1.25rem; }
-    .header-subtitle { color: #666; font-size: 0.8rem; margin: 0; }
-    .logout-btn { background-color: #dc3545; color: white; font-weight: bold; border-radius: 6px; padding: 6px 16px; border: none; }
-
-    .pending-alert-banner {
-      background-color: #fff8d6; border: 1px solid var(--pandayan-yellow);
-      border-radius: 10px; padding: 12px 20px; font-size: 0.85rem;
-      color: #856404; font-weight: bold; margin-bottom: 20px;
-      display: flex; align-items: center; gap: 10px;
-    }
-
-    .table-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-    .table-burgundy-header th { background-color: var(--pandayan-burgundy) !important; color: white !important; font-size: 0.82rem; border: none; }
-    .search-col-input { font-size: 0.75rem; padding: 3px 6px; border: 1px solid #ddd; border-radius: 4px; width: 100%; }
-
-    .badge-pill { border-radius: 50px; padding: 4px 10px; font-weight: 800; font-size: 0.7rem; }
-    .badge-pending { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-    .badge-approved { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-    .badge-disapproved { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-    .badge-ssu { background-color: #cce5ff; color: #004085; border: 1px solid #b8daff; }
-
-    .btn-view { font-size: 0.75rem; padding: 4px 10px; border-radius: 5px; background-color: var(--pandayan-blue); color: white; font-weight: bold; border: none; }
-    .btn-view:hover { background-color: #0000AA; color: white; }
-    .btn-pdf { font-size: 0.75rem; padding: 4px 8px; border-radius: 5px; background-color: #198754; color: white; border: none; }
-    
-    .btn-bulk { background-color: var(--pandayan-yellow); color: var(--pandayan-burgundy); font-weight: 800; border: 2px solid var(--pandayan-burgundy); border-radius: 8px; font-size: 0.85rem; }
-    .btn-bulk:hover { background-color: var(--pandayan-burgundy); color: var(--pandayan-yellow); }
-
-    /* SUB DASHBOARD TABS */
-    .sub-dashboard-tabs .nav-link {
+    .btn-manual {
+      background-color: rgba(128, 0, 32, 0.08);
       color: var(--pandayan-burgundy);
       font-weight: bold;
-      border: 1px solid #dee2e6;
-      border-bottom: none;
-      margin-right: 4px;
-      border-top-left-radius: 8px;
-      border-top-right-radius: 8px;
+      border-radius: 8px;
+      padding: 10px;
+      text-decoration: none;
+      display: block;
+      text-align: center;
+      margin-top: 15px;
+      border: 1px dashed var(--pandayan-burgundy);
       font-size: 0.85rem;
-      background: #f8f9fa;
     }
-    .sub-dashboard-tabs .nav-link.active {
-      background-color: var(--pandayan-burgundy) !important;
-      color: white !important;
+    .btn-manual:hover {
+      background-color: var(--pandayan-burgundy);
+      color: white;
+    }
+    .form-control:focus {
       border-color: var(--pandayan-burgundy);
+      box-shadow: 0 0 0 0.25rem rgba(128, 0, 32, 0.15);
     }
-
-    #lowerClock {
-      position: fixed; bottom: 25px; right: 25px;
-      background: var(--pandayan-burgundy); color: var(--pandayan-yellow);
-      padding: 12px 25px; border-radius: 50px;
-      font-weight: 900; font-size: 1.1rem;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 999; border: 2px solid var(--pandayan-yellow);
+    .link-toggle {
+      color: var(--pandayan-burgundy);
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: underline;
     }
-
-    .form-section-title { background: #f8f9fa; padding: 8px 12px; border-left: 5px solid var(--pandayan-burgundy); font-weight: 800; color: var(--pandayan-burgundy); margin: 15px 0 10px 0; font-size: 0.85rem; }
-    .card-header-pandayan { background-color: var(--pandayan-burgundy); color: white; font-weight: bold; }
-    .nav-tabs .nav-link.active { background-color: var(--pandayan-burgundy); color: white; font-weight: bold; }
-    .nav-tabs .nav-link { color: var(--pandayan-burgundy); font-weight: bold; }
-    .img-preview { max-height: 120px; border-radius: 8px; border: 2px dashed var(--pandayan-burgundy); padding: 3px; display: none; margin-top: 5px; }
-
-    .conditional-field { display: none; }
-
-    @media (max-width: 992px) {
-      .sidebar { width: 100%; height: auto; position: relative; }
-      .main-content { margin-left: 0; width: 100%; padding: 15px; }
-      .app-wrapper { flex-direction: column; }
-      #lowerClock { font-size: 0.9rem; padding: 8px 15px; bottom: 15px; right: 15px; }
+    .input-group-text {
+      background-color: #f8f9fa;
+      border-left: none;
+      cursor: pointer;
+    }
+    .input-group-text:hover {
+      color: var(--pandayan-burgundy);
     }
 
     #loadingOverlay {
@@ -139,353 +108,198 @@
 
   <div id="loadingOverlay">
     <div class="spinner-border text-warning mb-3" style="width: 3.5rem; height: 3.5rem;" role="status"></div>
-    <h5 class="fw-bold text-warning mb-1">Loading...</h5>
+    <h5 class="fw-bold text-warning mb-1" id="loadingText">PRO-PROSESO...</h5>
     <small class="text-white">Mangyaring maghintay nang ilang sandali.</small>
   </div>
 
-  <div id="lowerClock">⏰ Loading time...</div>
-
-  <div class="app-wrapper">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h3>PANDAYAN SUPERSTORES</h3>
+      <small class="text-warning fw-bold">Liham Pahintulot Online Portal</small>
+    </div>
     
-    <div class="sidebar">
-      <div>
-        <div class="sidebar-brand">PANDAYAN</div>
-        <div class="sidebar-subtext">Liham Pahintulot Portal</div>
+    <div class="p-4">
+      <form id="loginForm">
+        <h5 class="text-center mb-4 fw-bold" style="color: var(--pandayan-burgundy);">LOG IN</h5>
+        
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Username</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0"><i class="fa fa-user text-muted"></i></span>
+            <input type="text" id="loginUsername" class="form-control border-start-0" placeholder="Ilagay ang iyong username" required>
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Password</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0"><i class="fa fa-lock text-muted"></i></span>
+            <input type="password" id="loginPassword" class="form-control border-start-0 border-end-0" placeholder="Ilagay ang iyong password" required>
+            <span class="input-group-text" onclick="togglePasswordVisibility('loginPassword', 'toggleLoginIcon')">
+              <i class="fa-solid fa-eye" id="toggleLoginIcon"></i>
+            </span>
+          </div>
+        </div>
+        
+        <div class="form-check mb-4">
+          <input class="form-check-input" type="checkbox" id="rememberMe">
+          <label class="form-check-label small fw-bold text-secondary" for="rememberMe">
+            Tandaan ako (Remember Me)
+          </label>
+        </div>
+        
+        <button type="submit" class="btn btn-pandayan shadow-sm" id="loginBtn">LOG IN</button>
+      </form>
+
+      <form id="registerForm" style="display: none;">
+        <h5 class="text-center mb-4 fw-bold" style="color: var(--pandayan-burgundy);">Gumawa ng Account</h5>
+        
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Kapwa Name</label>
+          <input type="text" id="regKapwaName" class="form-control" placeholder="Pangalan (hal. Kapwa Juan)" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Email Address</label>
+          <input type="email" id="regEmail" class="form-control" placeholder="halimbawa@pandayan.com.ph" required>
+          <small class="text-muted" style="font-size:0.72rem;">Dito ipapadala ang mga email status updates.</small>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Username</label>
+          <input type="text" id="regUsername" class="form-control" placeholder="Pumili ng Username" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Password</label>
+          <div class="input-group">
+            <input type="password" id="regPassword" class="form-control border-end-0" placeholder="Pumili ng Password" required>
+            <span class="input-group-text" onclick="togglePasswordVisibility('regPassword', 'toggleRegIcon')">
+              <i class="fa-solid fa-eye" id="toggleRegIcon"></i>
+            </span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-pandayan shadow-sm mt-2" id="regBtn">MAG-REGISTER</button>
+      </form>
+
+      <hr class="my-4">
+
+      <div class="text-center small">
+        <p id="toggleToRegister" class="m-0">Wala pang account? <span class="link-toggle" onclick="showRegister()">Gumawa ng Account</span></p>
+        <p id="toggleToLogin" class="m-0" style="display: none;">May account na? <span class="link-toggle" onclick="showLogin()">LOG IN</span></p>
       </div>
 
-      <button class="nav-btn active">📊 Dashboard</button>
-
-      <a href="https://www.canva.com/design/DAHO99_dbI4/uEJq-K6hj4-9IilTL0TYQA/view?utm_content=DAHO99_dbI4&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=ha0ebe4be46#12" target="_blank" class="manual-btn-bottom">
-        ❓ Paano gamitin ang App?<br><small>(User Manual Presentation)</small>
+      <a href="https://www.canva.com/design/DAHO99_dbI4/uEJq-K6hj4-9IilTL0TYQA/view?utm_content=DAHO99_dbI4&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=ha0ebe4be46#12" target="_blank" class="btn-manual shadow-sm">
+        ❓ Paano gamitin ang App? (User Manual)
       </a>
     </div>
-
-    <div class="main-content">
-      
-      <div class="top-header-card d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <div>
-          <h5 class="header-title">PANDAYAN SUPERSTORES</h5>
-          <p class="header-subtitle">Liham Pahintulot Online Portal</p>
-        </div>
-        <div class="d-flex align-items-center gap-3">
-          <span id="userInfo" class="small fw-bold text-secondary">Welcome, Kapwa</span>
-          <button class="logout-btn btn-sm" onclick="logout()">LOG OUT</button>
-        </div>
-      </div>
-
-      <div class="pending-alert-banner" id="pendingAlertBanner" style="display: none;">
-        🔔 Mayroong <span id="pendingCountBadge" class="badge bg-danger">0</span> na pending request na naghihintay ng inyong aksyon.
-      </div>
-
-      <ul class="nav nav-tabs sub-dashboard-tabs mb-2 border-bottom-0" id="subDashboardTabs">
-        <li class="nav-item">
-          <button class="nav-link active" onclick="switchSubTab('PENDING', this)"><i class="fa-solid fa-clock-rotate-left text-warning"></i> Pending Request</button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link" onclick="switchSubTab('APPROVED', this)"><i class="fa-solid fa-circle-check text-success"></i> Approved Request</button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link" onclick="switchSubTab('DISAPPROVED', this)"><i class="fa-solid fa-circle-xmark text-danger"></i> Disapproved Request</button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link" onclick="switchSubTab('SSU', this)"><i class="fa-solid fa-box text-primary"></i> SSU Request</button>
-        </li>
-      </ul>
-
-      <div class="table-container p-3">
-        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-          
-          <div class="d-flex align-items-center gap-2">
-            <button class="btn btn-danger btn-sm fw-bold shadow-sm px-3" style="background-color: var(--pandayan-burgundy);" data-bs-toggle="modal" data-bs-target="#requestModal">
-              <i class="fa-solid fa-pen-to-square"></i> + REQUEST FORM
-            </button>
-            <button id="btnBulkApprove" class="btn btn-bulk btn-sm shadow-sm" onclick="openBulkModal()" style="display:none;">
-              <i class="fa-solid fa-check-double"></i> BULK APPROVE SELECTED
-            </button>
-          </div>
-
-          <div class="input-group input-group-sm" style="width: 250px;">
-            <span class="input-group-text bg-white border-end-0"><i class="fa fa-search text-muted"></i></span>
-            <input type="text" id="generalSearch" class="form-control border-start-0" placeholder="General Search..." onkeyup="filterTable()">
-          </div>
-
-        </div>
-
-        <div class="table-responsive">
-          <table class="table table-hover align-middle text-center m-0" id="mainTable">
-            <thead>
-              <tr class="table-burgundy-header">
-                <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
-                <th>Date</th>
-                <th>Request ID</th>
-                <th>Request From</th>
-                <th>Requested To</th>
-                <th>Liham For</th>
-                <th>GE Status</th>
-                <th>Hatid-Sundo</th>
-                <th>Kawan Status</th>
-                <th>Action</th>
-              </tr>
-              <tr class="bg-light">
-                <th></th>
-                <th><input type="text" class="search-col-input" placeholder="Date..." onkeyup="filterTable()"></th>
-                <th><input type="text" class="search-col-input" placeholder="ID..." onkeyup="filterTable()"></th>
-                <th><input type="text" class="search-col-input" placeholder="From..." onkeyup="filterTable()"></th>
-                <th><input type="text" class="search-col-input" placeholder="To..." onkeyup="filterTable()"></th>
-                <th><input type="text" class="search-col-input" placeholder="For..." onkeyup="filterTable()"></th>
-                <th><input type="text" class="search-col-input" placeholder="Status..." onkeyup="filterTable()"></th>
-                <th><input type="text" class="search-col-input" placeholder="Status..." onkeyup="filterTable()"></th>
-                <th><input type="text" class="search-col-input" placeholder="Status..." onkeyup="filterTable()"></th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="dashBody" class="small">
-              <tr><td colspan="10" class="p-4 text-center text-muted">Nagloload ng data...</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
-          <small class="fw-bold text-muted" id="pageIndicator">Showing 0 to 0 entries</small>
-          <nav>
-            <ul class="pagination pagination-sm m-0">
-              <li class="page-item" id="prevLi"><button class="page-link" id="prevBtn" onclick="changePage(-1)">⏮️ Previous</button></li>
-              <li class="page-item" id="nextLi"><button class="page-link" id="nextBtn" onclick="changePage(1)">Next ⏭️</button></li>
-            </ul>
-          </nav>
-        </div>
-      </div>
-
-    </div>
   </div>
 
-  <div class="modal fade" id="bulkModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content" style="border-radius:15px; border: 3px solid var(--pandayan-burgundy);">
-        <div class="modal-header bg-danger text-white" style="background-color: var(--pandayan-burgundy) !important;">
-          <h6 class="modal-title fw-bold"><i class="fa-solid fa-check-double"></i> Bulk Approval Action</h6>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body p-4">
-          <p class="fw-bold">Naka-select: <span id="bulkCount" class="text-danger">0</span> request(s)</p>
-          <div class="mb-3">
-            <label class="form-label small fw-bold">Remarks / Instructions for all selected:</label>
-            <textarea id="bulkRemarks" class="form-control" rows="3" placeholder="Isulat ang remarks dito..."></textarea>
-          </div>
-          <div class="d-flex gap-2">
-            <button class="btn btn-success flex-grow-1 fw-bold" onclick="submitBulk('APPROVED')">APPROVE ALL</button>
-            <button class="btn btn-danger flex-grow-1 fw-bold" onclick="submitBulk('DISAPPROVED')">DISAPPROVED ALL</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="requestModal" data-bs-backdrop="static" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content" style="border-radius: 16px; overflow: hidden; border: 3px solid var(--pandayan-burgundy);">
-        <div class="modal-header text-white card-header-pandayan">
-          <h5 class="modal-title fw-bold"><i class="fa-solid fa-pen-to-square"></i> Request Liham Pahintulot Form</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <form id="lpForm">
-          <div class="modal-body p-4 bg-white" style="max-height: 75vh; overflow-y: auto;">
-            
-            <div class="form-section-title">PASABAY CATEGORY</div>
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">1. LIHAM PAHINTULOT FOR</label>
-                <select id="lihamPahintulotFor" class="form-select form-select-sm" onchange="handleLihamForChange(this.value); saveDraft();" required>
-                  <option value="">-Pumili ng Kategorya-</option>
-                  <option value="Pasabay To">Pasabay To</option>
-                  <option value="Pasabay to Shuttle">Pasabay to Shuttle</option>
-                  <option value="Pickup to Central">Pickup to Central</option>
-                  <option value="Pickup to FE Ronnie">Pickup to FE Ronnie</option>
-                  <option value="Thru Courier">Thru Courier</option>
-                </select>
-              </div>
-            </div>
-
-            <div id="divPasabayBranch" class="mb-3 conditional-field card p-2 bg-light border-0">
-              <label class="form-label small fw-bold text-primary">Piliin ang Target Branch na pagsasabayan:</label>
-              <select id="pasabayTargetBranch" class="form-select form-select-sm" onchange="saveDraft()"><option value="">-Target Branch-</option></select>
-            </div>
-
-            <div id="divShuttle" class="mb-3 conditional-field card p-2 bg-light border-0">
-              <label class="form-label small fw-bold text-primary">Anong Shuttle ang pagsasabayan?:</label>
-              <input type="text" id="shuttleName" class="form-control form-control-sm" placeholder="Plaka / Shuttle name" oninput="saveDraft()">
-            </div>
-
-            <div id="divCourier" class="mb-3 conditional-field card p-2 bg-light border-0">
-              <label class="form-label small fw-bold text-primary">Courier Option:</label>
-              <select id="courierOption" class="form-select form-select-sm" onchange="handleCourierChange(this.value); saveDraft();">
-                <option value="">-Select Courier Option-</option>
-                <option value="Direct Delivery to Panauhin">Direct Delivery to Panauhin</option>
-                <option value="Drop to Branch">Drop to Branch</option>
-              </select>
-            </div>
-
-            <div class="form-section-title">REQUESTER'S INFORMATION</div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">2. REQUESTED BY (Pangalan ng Kapwa)</label>
-                <input type="text" id="requestedBy" class="form-control form-control-sm" placeholder="Pangalan..." required oninput="saveDraft()">
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">3. REQUEST FROM (Branch)</label>
-                <select id="requestFrom" class="form-select form-select-sm" required onchange="saveDraft()"><option value="">-Pumili ng Branch-</option></select>
-              </div>
-            </div>
-
-            <div class="form-section-title d-flex justify-content-between align-items-center">
-              <span>LIST OF KAWAN & P.O. NUMBERS (MAX 5)</span>
-              <button type="button" class="btn btn-warning btn-sm fw-bold text-dark px-3" onclick="addKawanRow()">+ Magdagdag ng Kawan</button>
-            </div>
-            
-            <div id="kawanRowsContainer" class="mb-3"></div>
-
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">4. REASON FOR REQUEST</label>
-                <select id="reason" class="form-select form-select-sm" onchange="handleReasonChange(this.value); saveDraft();" required>
-                  <option value="">-Pumili ng Dahilan-</option>
-                  <option value="Regular Stock">Regular Stock</option>
-                  <option value="Panauhin Order">Panauhin Order</option>
-                  <option value="Short Stock">Short Stock</option>
-                  <option value="Others">Others</option>
-                </select>
-              </div>
-            </div>
-
-            <div id="divOtherReason" class="mb-3 conditional-field card p-2 bg-light border-0">
-              <label class="form-label small fw-bold text-primary">Isulat ang ibang dahilan:</label>
-              <input type="text" id="otherReason" class="form-control form-control-sm" placeholder="Other reason..." oninput="saveDraft()">
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">5. KWENTO NG PAGKAUNAWA SA PANGYAYARI (KPP)</label>
-              <textarea id="kpp" class="form-control form-control-sm" rows="3" placeholder="Ipaliwanag ang buong detalye..." required oninput="saveDraft()"></textarea>
-            </div>
-
-            <div class="form-section-title conditional-field" id="secAttachmentsTitle">ATTACHMENT (COURIER DIRECT DELIVERY)</div>
-            <div class="row">
-              <div class="col-md-6 mb-3 conditional-field" id="divPosFile">
-                <label class="form-label small fw-bold text-primary">POS RECEIPT SCREENSHOT</label>
-                <input type="file" id="posFile" class="form-control form-control-sm" accept="image/*" onchange="previewImage(this, 'prevPos')">
-                <img id="prevPos" class="img-preview" alt="POS Preview">
-              </div>
-            </div>
-
-          </div>
-          <div class="modal-footer bg-light d-flex justify-content-between">
-            <button type="button" class="btn btn-outline-danger btn-sm fw-bold" onclick="clearDraft()">🗑️ CLEAR FORM</button>
-            <div>
-              <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Isara</button>
-              <button type="submit" class="btn btn-danger btn-sm px-4 fw-bold" style="background-color: var(--pandayan-burgundy);" id="submitBtn">IPASA REQUEST</button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="actionModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content" style="border-radius: 12px; overflow: hidden; border: 3px solid var(--pandayan-burgundy);">
-        <div class="modal-header text-white card-header-pandayan">
-          <h6 class="modal-title fw-bold" id="actionModalTitle">Request Details</h6>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body p-4" style="max-height: 75vh; overflow-y: auto;">
-          
-          <ul class="nav nav-tabs mb-3" id="modalTab" role="tablist">
-            <li class="nav-item">
-              <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#tab-info" type="button">📌 General Info</button>
-            </li>
-            <li class="nav-item">
-              <button class="nav-link" id="kpp-tab" data-bs-toggle="tab" data-bs-target="#tab-kpp" type="button">📖 KPP</button>
-            </li>
-            <li class="nav-item">
-              <button class="nav-link" id="files-tab" data-bs-toggle="tab" data-bs-target="#tab-files" type="button">📎 Attachments</button>
-            </li>
-            <li class="nav-item">
-              <button class="nav-link" id="status-tab" data-bs-toggle="tab" data-bs-target="#tab-status" type="button">🛡️ Approval History</button>
-            </li>
-            <li class="nav-item">
-              <button class="nav-link" id="ssu-tab" data-bs-toggle="tab" data-bs-target="#tab-ssu" type="button">📦 Pasabay SSU</button>
-            </li>
-          </ul>
-
-          <div class="tab-content" id="modalTabContent">
-            <div class="tab-pane fade show active" id="tab-info">
-              <table class="table table-bordered table-sm align-middle m-0" style="font-size:0.85rem;">
-                <tr><th style="width:35%; background:#f8f9fa;">Request ID</th><td><b class="text-danger" id="vId"></b></td></tr>
-                <tr><th style="background:#f8f9fa;">Date of Request</th><td id="vDate"></td></tr>
-                <tr><th style="background:#f8f9fa;">Account / Requested By</th><td><span id="vAccount"></span> / <b id="vBy"></b></td></tr>
-                <tr><th style="background:#f8f9fa;">Request From / To</th><td><span id="vFrom"></span> / <b id="vTo"></b></td></tr>
-                <tr><th style="background:#f8f9fa;">Liham Pahintulot For</th><td id="vMode"></td></tr>
-                <tr><th style="background:#f8f9fa;">P.O. Number</th><td id="vPo"></td></tr>
-                <tr><th style="background:#f8f9fa;">Reason for Request</th><td id="vReason"></td></tr>
-              </table>
-            </div>
-
-            <div class="tab-pane fade" id="tab-kpp">
-              <div class="card p-3 bg-light border-0">
-                <h6 class="fw-bold" style="color: var(--pandayan-burgundy);">Kwento ng Pagkaunawa sa Pangyayari (KPP):</h6>
-                <div class="bg-white p-3 border rounded text-dark" id="vKpp" style="min-height: 120px; white-space: pre-wrap;"></div>
-              </div>
-            </div>
-
-            <div class="tab-pane fade" id="tab-files">
-              <div class="d-flex flex-column gap-2" id="vFilesContainer"></div>
-            </div>
-
-            <div class="tab-pane fade" id="tab-status">
-              <div class="table-responsive">
-                <table class="table table-bordered table-sm text-center small align-middle">
-                  <thead class="table-dark">
-                    <tr><th>Level</th><th>Status</th><th>Approver Name</th><th>Remarks</th><th>Timestamp</th></tr>
-                  </thead>
-                  <tbody id="vHistoryBody"></tbody>
-                </table>
-              </div>
-            </div>
-
-            <div class="tab-pane fade" id="tab-ssu">
-              <div class="card p-3 border-primary" style="background-color: #f0f7ff; border-radius: 8px;">
-                <h6 class="fw-bold text-primary mb-3"><i class="fa-solid fa-box-archive"></i> TINDAHAN SSU / RECEIVING RECORD</h6>
-                <table class="table table-bordered table-sm bg-white align-middle m-0" style="font-size:0.85rem;">
-                  <tr><th style="width:35%; background:#f8f9fa;">Date Received (Store)</th><td id="vSsuDate" class="fw-bold text-dark">-</td></tr>
-                  <tr><th style="background:#f8f9fa;">Received P.O. Attachment</th><td id="vSsuAttachment">-</td></tr>
-                  <tr><th style="background:#f8f9fa;">Store Receiving Remarks</th><td id="vSsuRemarks" class="text-secondary">-</td></tr>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <div id="vActionSection"></div>
-
-        </div>
-        <div class="modal-footer bg-light" id="actionModalFooter"></div>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     // PINAKABAGONG DEPLOYED API URL
     const API_URL = "https://script.google.com/macros/s/AKfycbwwnBJ7LAmgWluvWv5clVqDk36pqFKQTOJptzfEZEhJlMzuaCP64xuItiwNO_uQRrjLjA/exec";
-    let currentUser = null;
-    window.rawDashboardData = [];
-    window.filteredData = [];
-    window.kawanOptionsList = [];
-    let currentPage = 1;
-    const itemsPerPage = 10;
-    let selectedRequestIndex = null;
-    let currentActiveTab = "PENDING"; // DEFAULT TAB IS PENDING
 
-    function showSpinner() { document.getElementById("loadingOverlay").style.display = "flex"; }
-    function hideSpinner() { document.getElementById("loadingOverlay").style.display = "none"; }
+    function showSpinner(text = "PRO-PROSESO...") {
+      document.getElementById("loadingText").innerText = text;
+      document.getElementById("loadingOverlay").style.display = "flex";
+    }
+    function hideSpinner() {
+      document.getElementById("loadingOverlay").style.display = "none";
+    }
 
-    function updateClock() {
-      const
+    function togglePasswordVisibility(inputId, iconId) {
+      const passwordInput = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+      } else {
+        passwordInput.type = "password";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+      }
+    }
+
+    window.onload = function() {
+      const savedUser = localStorage.getItem("pandayan_user_session") || sessionStorage.getItem("pandayan_user_session");
+      if (savedUser) { window.location.href = "dashboard.html"; }
+    };
+
+    function showRegister() {
+      document.getElementById("loginForm").style.display = "none";
+      document.getElementById("registerForm").style.display = "block";
+      document.getElementById("toggleToRegister").style.display = "none";
+      document.getElementById("toggleToLogin").style.display = "block";
+    }
+
+    function showLogin() {
+      document.getElementById("registerForm").style.display = "none";
+      document.getElementById("loginForm").style.display = "block";
+      document.getElementById("toggleToLogin").style.display = "none";
+      document.getElementById("toggleToRegister").style.display = "block";
+    }
+
+    document.getElementById("loginForm").onsubmit = function(e) {
+      e.preventDefault();
+      const u = document.getElementById("loginUsername").value.trim();
+      const p = document.getElementById("loginPassword").value.trim();
+      const remember = document.getElementById("rememberMe").checked;
+
+      showSpinner("Loading...");
+
+      fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "login", payload: { username: u, password: p } })
+      })
+      .then(res => res.json())
+      .then(res => {
+        hideSpinner();
+        if (res.status === "success") {
+          if (remember) {
+            localStorage.setItem("pandayan_user_session", JSON.stringify(res.user));
+          } else {
+            sessionStorage.setItem("pandayan_user_session", JSON.stringify(res.user));
+          }
+
+          Swal.fire({
+            title: "Mabuhay!", text: "Maligayang pagbabalik, " + res.user.kapwaName + "!", icon: "success", confirmButtonColor: "#800020"
+          }).then(() => { window.location.href = "dashboard.html"; });
+        } else {
+          Swal.fire("Login Failed", res.message, "error");
+        }
+      })
+      .catch(err => { 
+        hideSpinner(); 
+        Swal.fire("Error", "Hindi makakonekta sa server. Paki-check ang internet connection.", "error"); 
+      });
+    };
+
+    document.getElementById("registerForm").onsubmit = function(e) {
+      e.preventDefault();
+      const k = document.getElementById("regKapwaName").value.trim();
+      const em = document.getElementById("regEmail").value.trim();
+      const u = document.getElementById("regUsername").value.trim();
+      const p = document.getElementById("regPassword").value.trim();
+
+      showSpinner("IPINAPADALA ANG ACCOUNT...");
+
+      fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "register", payload: { kapwaName: k, email: em, username: u, password: p } })
+      })
+      .then(res => res.json())
+      .then(res => {
+        hideSpinner();
+        if (res.status === "success") {
+          Swal.fire({ title: "Account Created!", text: res.message, icon: "success", confirmButtonColor: "#800020" }).then(() => {
+            document.getElementById("registerForm").reset(); showLogin();
+          });
+        } else { Swal.fire("Registration Error", res.message, "error"); }
+      })
+      .catch(err => { hideSpinner(); Swal.fire("Error", "Hindi makakonekta sa server.", "error"); });
+    };
+  </script>
+</body>
+</html>
