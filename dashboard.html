@@ -484,7 +484,7 @@
     let currentPage = 1;
     const itemsPerPage = 10;
     let selectedRequestIndex = null;
-    let currentActiveTab = "PENDING"; // DEFAULT TAB IS PENDING
+    let currentActiveTab = "PENDING"; 
 
     function showSpinner() { document.getElementById("loadingOverlay").style.display = "flex"; }
     function hideSpinner() { document.getElementById("loadingOverlay").style.display = "none"; }
@@ -539,7 +539,6 @@
         });
     }
 
-    // DYNAMIC KAWAN ROWS LOGIC
     function addKawanRow(savedKawan = "", savedPo = "") {
       const container = document.getElementById("kawanRowsContainer");
       const currentRows = container.children.length;
@@ -639,7 +638,6 @@
         .catch(() => hideSpinner());
     }
 
-    // SUB DASHBOARD SWITCHER
     function switchSubTab(tabName, btnEl) {
       currentActiveTab = tabName;
       document.querySelectorAll("#subDashboardTabs .nav-link").forEach(el => el.classList.remove("active"));
@@ -664,15 +662,14 @@
             return s === "APPROVED" ? "badge-approved" : "badge-disapproved";
           };
           
-          let pdfBtn = r.pdfUrl ? `<a href="${r.pdfUrl}" target="_blank" class="btn btn-pdf shadow-sm" title="Download Approved PDF"><i class="fa fa-file-pdf"></i></a>` : "";
+          let pdfBtn = (r.pdfUrl && r.pdfUrl.trim() !== "") ? `<a href="${r.pdfUrl}" target="_blank" class="btn btn-pdf shadow-sm" title="Download Approved PDF"><i class="fa fa-file-pdf"></i></a>` : "";
 
-          // STRICT SSU ACCESS: ONLY VIEWER / STORE AND ADMIN CAN SSU APPROVED REQUESTS
+          // STRICT SSU ACCESS: VIEWER/STORE & ADMIN ONLY
           const isStoreOrAdmin = (currentUser.role === "Viewer" || currentUser.role === "Admin");
           let ssuDirectBtn = (isStoreOrAdmin && r.kawanStatus === "APPROVED") 
             ? `<button class="btn btn-ssu-direct shadow-sm" onclick="openSSUModal(${originalIdx})" title="Receive / SSU Request">📦 SSU</button>` 
             : "";
 
-          // DISABLE CHECKBOX IF ALREADY ACTIONED OR APPROVED/DISAPPROVED
           let isActioned = false;
           if (currentUser.role === "GE" && r.geStatus !== "PENDING") isActioned = true;
           if (currentUser.role === "1st Approver" && r.hatidSundoStatus !== "PENDING") isActioned = true;
@@ -772,7 +769,6 @@
       } else { img.style.display = "none"; }
     }
 
-    // PROMPTS & FORM LOGIC FOR LIHAM PAHINTULOT FOR
     function handleLihamForChange(val) {
       const divBranch  = document.getElementById("divPasabayBranch");
       const divShuttle = document.getElementById("divShuttle");
@@ -929,7 +925,6 @@
       const rawItems = [];
       const seenKeys = {};
       
-      // DEDUPLICATION CONTROL ON FRONTEND
       document.querySelectorAll(".kawan-item-row").forEach(row => {
         const k = row.querySelector(".sel-kawan").value;
         const p = row.querySelector(".inp-po").value.trim();
@@ -969,7 +964,6 @@
         hideSpinner();
         if(res.status === "success") {
           clearDraft();
-          // AUTOMATIC MODAL CLOSE ON SUCCESS
           const modalEl = document.getElementById("requestModal");
           const modalInstance = bootstrap.Modal.getInstance(modalEl);
           if (modalInstance) modalInstance.hide();
@@ -987,7 +981,6 @@
       const colInputs = document.querySelectorAll(".search-col-input");
 
       window.filteredData = window.rawDashboardData.filter(r => {
-        // Sub-dashboard filtering
         let matchesSubTab = true;
         if (currentActiveTab === "PENDING") {
           matchesSubTab = (r.geStatus === "PENDING" || r.hatidSundoStatus === "PENDING" || r.kawanStatus === "PENDING") && (r.geStatus !== "DISAPPROVED" && r.hatidSundoStatus !== "DISAPPROVED" && r.kawanStatus !== "DISAPPROVED");
@@ -1033,17 +1026,18 @@
 
       document.getElementById("vKpp").innerText = r.kpp || 'Walang detalye.';
 
+      // ALL ATTACHMENTS VIEWING
       let filesHtml = "";
-      if(r.pdfUrl) {
-        filesHtml += `<a href="${r.pdfUrl}" target="_blank" class="btn btn-success btn-sm fw-bold text-start p-2">📄 Download Approved PDF Liham Pahintulot</a>`;
+      if(r.pdfUrl && r.pdfUrl.trim() !== "") {
+        filesHtml += `<a href="${r.pdfUrl}" target="_blank" class="btn btn-success btn-sm fw-bold text-start p-2"><i class="fa-solid fa-file-pdf me-2"></i> Download Approved PDF Liham Pahintulot</a>`;
       }
-      if(r.posReceipt) {
-        filesHtml += `<a href="${r.posReceipt}" target="_blank" class="btn btn-outline-primary btn-sm fw-bold text-start p-2">🖼️ View POS Receipt Screenshot</a>`;
+      if(r.posReceipt && r.posReceipt.trim() !== "") {
+        filesHtml += `<a href="${r.posReceipt}" target="_blank" class="btn btn-outline-primary btn-sm fw-bold text-start p-2"><i class="fa-solid fa-image me-2"></i> View POS Receipt Screenshot</a>`;
       }
-      if(r.rpoAttachment) {
-        filesHtml += `<a href="${r.rpoAttachment}" target="_blank" class="btn btn-outline-success btn-sm fw-bold text-start p-2">📦 View Received P.O. Attachment (SSU)</a>`;
+      if(r.rpoAttachment && r.rpoAttachment.trim() !== "") {
+        filesHtml += `<a href="${r.rpoAttachment}" target="_blank" class="btn btn-outline-success btn-sm fw-bold text-start p-2"><i class="fa-solid fa-box-open me-2"></i> View Received P.O. Attachment (SSU)</a>`;
       }
-      document.getElementById("vFilesContainer").innerHTML = filesHtml || '<p class="text-muted">Walang attachments.</p>';
+      document.getElementById("vFilesContainer").innerHTML = filesHtml || '<p class="text-muted">Walang attachments sa request na ito.</p>';
 
       let historyHtml = `
         <tr>
@@ -1066,8 +1060,8 @@
 
       document.getElementById("vSsuDate").innerText = r.ssuDate || 'Hindi pa na-SSU ng Tindahan';
       document.getElementById("vSsuRemarks").innerText = r.ssuRemarks || '-';
-      if(r.rpoAttachment) {
-        document.getElementById("vSsuAttachment").innerHTML = `<a href="${r.rpoAttachment}" target="_blank" class="btn btn-outline-primary btn-sm fw-bold">🖼️ View Received P.O. Screenshot</a>`;
+      if(r.rpoAttachment && r.rpoAttachment.trim() !== "") {
+        document.getElementById("vSsuAttachment").innerHTML = `<a href="${r.rpoAttachment}" target="_blank" class="btn btn-outline-primary btn-sm fw-bold"><i class="fa-solid fa-image me-1"></i> View Received P.O. Screenshot</a>`;
       } else {
         document.getElementById("vSsuAttachment").innerText = 'Walang Attachment';
       }
@@ -1108,7 +1102,6 @@
 
       let footerHtml = `<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Isara</button>`;
       
-      // STRICT SSU ACCESS FOR STORE / VIEWER AND ADMIN ONLY
       const isStoreOrAdmin = (currentUser.role === "Viewer" || currentUser.role === "Admin");
       if (isStoreOrAdmin && r.kawanStatus === "APPROVED") {
         footerHtml = `<button type="button" class="btn btn-warning btn-sm fw-bold shadow-sm" style="background-color:var(--pandayan-yellow); color:var(--pandayan-burgundy); border:1px solid var(--pandayan-burgundy);" onclick="openSSUModal(${idx})">📦 PASABAY SSU / CLOSE REQUEST</button> ` + footerHtml;
