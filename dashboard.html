@@ -477,7 +477,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwEBsVVvECUfmKgtUn9tLJchTU8PM-z6MPkrZQcJsw8CrJ0e7O9W7SXCSP6Lz9eqO7OSA/exec";
+    // LATEST DEPLOYED EXEC API URL
+    const API_URL = "https://script.google.com/macros/s/AKfycbxoTdP5rAQeUwNFk1jZLfFACzX5b2tb_zeZcap5U4kWL3bxkSkEN7JMXJAhUdjslT07Ww/exec";
     let currentUser = null;
     window.rawDashboardData = [];
     window.filteredData = [];
@@ -613,7 +614,7 @@
             window.rawDashboardData = res.data.sort((a, b) => {
               const getRank = (r) => {
                 if (r.geStatus === "PENDING" || r.hatidSundoStatus === "PENDING" || r.kawanStatus === "PENDING") return 1;
-                if (r.ssuDate && r.ssuDate.trim() !== "") return 3;
+                if (r.geStatus === "SSU" || r.hatidSundoStatus === "SSU" || r.kawanStatus === "SSU") return 3;
                 return 2;
               };
               return getRank(a) - getRank(b);
@@ -661,6 +662,7 @@
         pageData.forEach((r) => {
           const originalIdx = window.rawDashboardData.findIndex(item => item.requestId === r.requestId);
           const getBadge = (s) => {
+            if(s === "SSU") return "badge-ssu";
             if(s === "PENDING") return "badge-pending";
             return s === "APPROVED" ? "badge-approved" : "badge-disapproved";
           };
@@ -668,7 +670,7 @@
           let pdfBtn = (r.pdfUrl && r.pdfUrl.trim() !== "") ? `<a href="${r.pdfUrl}" target="_blank" class="btn btn-pdf shadow-sm" title="Download Approved PDF"><i class="fa fa-file-pdf"></i> PDF</a>` : "";
 
           const isStoreOrAdmin = (currentUser.role === "Viewer" || currentUser.role === "Admin");
-          let ssuDirectBtn = (isStoreOrAdmin && r.kawanStatus === "APPROVED" && (!r.ssuDate || r.ssuDate.trim() === "")) 
+          let ssuDirectBtn = (isStoreOrAdmin && r.kawanStatus === "APPROVED") 
             ? `<button class="btn btn-ssu-direct shadow-sm" onclick="openSSUModal(${originalIdx})" title="Receive / SSU Request">📦 SSU</button>` 
             : "";
 
@@ -676,7 +678,7 @@
           if (currentUser.role === "GE" && r.geStatus !== "PENDING") isActioned = true;
           if (currentUser.role === "1st Approver" && r.hatidSundoStatus !== "PENDING") isActioned = true;
           if (currentUser.role === "2nd Approver" && r.kawanStatus !== "PENDING") isActioned = true;
-          if (r.geStatus === "DISAPPROVED" || r.hatidSundoStatus === "DISAPPROVED" || r.kawanStatus === "DISAPPROVED") isActioned = true;
+          if (r.geStatus === "DISAPPROVED" || r.hatidSundoStatus === "DISAPPROVED" || r.kawanStatus === "DISAPPROVED" || r.kawanStatus === "SSU") isActioned = true;
 
           let checkboxHtml = isActioned 
             ? `<input type="checkbox" class="row-checkbox" disabled title="Naisagawa na ang aksyon sa request na ito">` 
@@ -907,12 +909,6 @@
       Swal.fire("Cleared", "Nabura na ang iyong form draft.", "info");
     }
 
-    const fileToBase64 = f => new Promise((res, rej) => {
-      if(!f) return res("");
-      const r = new FileReader(); r.readAsDataURL(f);
-      r.onload = () => res(r.result); r.onerror = e => rej(e);
-    });
-
     document.getElementById("lpForm").onsubmit = function(e) {
       e.preventDefault();
       
@@ -998,16 +994,14 @@
 
       window.filteredData = window.rawDashboardData.filter(r => {
         let matchesSubTab = true;
-        const hasSSU = r.ssuDate && r.ssuDate.trim() !== "";
-
         if (currentActiveTab === "PENDING") {
           matchesSubTab = (r.geStatus === "PENDING" || r.hatidSundoStatus === "PENDING" || r.kawanStatus === "PENDING") && (r.geStatus !== "DISAPPROVED" && r.hatidSundoStatus !== "DISAPPROVED" && r.kawanStatus !== "DISAPPROVED");
         } else if (currentActiveTab === "APPROVED") {
-          matchesSubTab = (r.kawanStatus === "APPROVED") && !hasSSU;
+          matchesSubTab = (r.kawanStatus === "APPROVED");
         } else if (currentActiveTab === "DISAPPROVED") {
           matchesSubTab = (r.geStatus === "DISAPPROVED" || r.hatidSundoStatus === "DISAPPROVED" || r.kawanStatus === "DISAPPROVED");
         } else if (currentActiveTab === "SSU") {
-          matchesSubTab = hasSSU;
+          matchesSubTab = (r.kawanStatus === "SSU" || r.hatidSundoStatus === "SSU" || r.geStatus === "SSU");
         }
 
         let matchesGeneral = (r.requestId + r.dateOfRequest + r.requestFrom + r.requestedTo + r.lihamPahintulotFor + (r.modeRemarks||'') + r.geStatus + r.hatidSundoStatus + r.kawanStatus).toUpperCase().indexOf(generalFilter) > -1;
@@ -1044,6 +1038,7 @@
 
       document.getElementById("vKpp").innerText = r.kpp || 'Walang detalye.';
 
+      // ATTACHMENTS PREVIEW (PDF, POS, SSU RPO)
       let filesHtml = "";
       if(r.pdfUrl && r.pdfUrl.trim() !== "") {
         filesHtml += `<a href="${r.pdfUrl}" target="_blank" class="btn btn-success btn-sm fw-bold text-start p-2"><i class="fa-solid fa-file-pdf me-2"></i> Download Approved PDF Liham Pahintulot</a>`;
@@ -1059,17 +1054,17 @@
       let historyHtml = `
         <tr>
           <td>Group Executive (GE)</td>
-          <td><span class="badge badge-pill ${r.geStatus==='APPROVED'?'bg-success':(r.geStatus==='DISAPPROVED'?'bg-danger':'bg-warning text-dark')}">${r.geStatus}</span></td>
+          <td><span class="badge badge-pill ${r.geStatus==='SSU'?'badge-ssu':(r.geStatus==='APPROVED'?'bg-success':(r.geStatus==='DISAPPROVED'?'bg-danger':'bg-warning text-dark'))}">${r.geStatus}</span></td>
           <td>${r.geApproverName || '-'}</td><td>${r.geRemarks || '-'}</td><td>${r.geTimestamp || '-'}</td>
         </tr>
         <tr>
           <td>Hatid-Sundo (1st)</td>
-          <td><span class="badge badge-pill ${r.hatidSundoStatus==='APPROVED'?'bg-success':(r.hatidSundoStatus==='DISAPPROVED'?'bg-danger':'bg-warning text-dark')}">${r.hatidSundoStatus}</span></td>
+          <td><span class="badge badge-pill ${r.hatidSundoStatus==='SSU'?'badge-ssu':(r.hatidSundoStatus==='APPROVED'?'bg-success':(r.hatidSundoStatus==='DISAPPROVED'?'bg-danger':'bg-warning text-dark'))}">${r.hatidSundoStatus}</span></td>
           <td>${r.approver1Name || '-'}</td><td>${r.remarks1 || '-'}</td><td>${r.timestamp1 || '-'}</td>
         </tr>
         <tr>
           <td>Kawan (2nd)</td>
-          <td><span class="badge badge-pill ${r.kawanStatus==='APPROVED'?'bg-success':(r.kawanStatus==='DISAPPROVED'?'bg-danger':'bg-warning text-dark')}">${r.kawanStatus}</span></td>
+          <td><span class="badge badge-pill ${r.kawanStatus==='SSU'?'badge-ssu':(r.kawanStatus==='APPROVED'?'bg-success':(r.kawanStatus==='DISAPPROVED'?'bg-danger':'bg-warning text-dark'))}">${r.kawanStatus}</span></td>
           <td>${r.approver2Name || '-'}</td><td>${r.remarks2 || '-'}</td><td>${r.timestamp2 || '-'}</td>
         </tr>
       `;
@@ -1120,7 +1115,7 @@
       let footerHtml = `<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Isara</button>`;
       
       const isStoreOrAdmin = (currentUser.role === "Viewer" || currentUser.role === "Admin");
-      if (isStoreOrAdmin && r.kawanStatus === "APPROVED" && (!r.ssuDate || r.ssuDate.trim() === "")) {
+      if (isStoreOrAdmin && r.kawanStatus === "APPROVED") {
         footerHtml = `<button type="button" class="btn btn-warning btn-sm fw-bold shadow-sm" style="background-color:var(--pandayan-yellow); color:var(--pandayan-burgundy); border:1px solid var(--pandayan-burgundy);" onclick="openSSUModal(${idx})">📦 PASABAY SSU / CLOSE REQUEST</button> ` + footerHtml;
       }
       document.getElementById("actionModalFooter").innerHTML = footerHtml;
@@ -1155,6 +1150,7 @@
       .catch(() => hideSpinner());
     }
 
+    // STRICT ASYNC FILE CONVERSION FOR SSU
     function openSSUModal(idx) {
       const r = window.rawDashboardData[idx];
       const modalEl = document.getElementById("actionModal");
