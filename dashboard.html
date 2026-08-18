@@ -140,7 +140,7 @@
 
   <div id="loadingOverlay">
     <div class="spinner-border text-warning mb-3" style="width: 3.5rem; height: 3.5rem;" role="status"></div>
-    <h5 class="fw-bold text-warning mb-1">Loading...</h5>
+    <h5 class="fw-bold text-warning mb-1" id="loadingText">Loading...</h5>
     <small class="text-white">Mangyaring maghintay nang ilang sandali.</small>
   </div>
 
@@ -301,7 +301,6 @@
                   <option value="Pasabay To">Pasabay To</option>
                   <option value="Pasabay to Shuttle">Pasabay to Shuttle</option>
                   <option value="Pickup to Central">Pickup to Central</option>
-                  <option value="Pickup to FE Ronnie">Pickup to FE Ronnie</option>
                   <option value="Thru Courier">Thru Courier</option>
                 </select>
               </div>
@@ -474,8 +473,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // DEPLOYED API URL
-    const API_URL = "https://script.google.com/macros/s/AKfycbx04OjSOwmm4DIzD2vBEJXKvw2OgKe9jV0ln-TD1Mcy6dOUOfq9vIjC_c0VD_Fmxovx7g/exec";
+    // LATEST DEPLOYED API URL
+    const API_URL = "https://script.google.com/macros/s/AKfycbw5btCeVZJ_78tYD1m3IW0T-D3KuADUa_plJ4lFHEFdktsesbuVclc1RBkc_lHvstHEkw/exec";
     let currentUser = null;
     window.rawDashboardData = [];
     window.filteredData = [];
@@ -485,7 +484,10 @@
     let selectedRequestIndex = null;
     let currentActiveTab = "PENDING"; 
 
-    function showSpinner() { document.getElementById("loadingOverlay").style.display = "flex"; }
+    function showSpinner(msg = "Loading...") { 
+      document.getElementById("loadingText").innerText = msg;
+      document.getElementById("loadingOverlay").style.display = "flex"; 
+    }
     function hideSpinner() { document.getElementById("loadingOverlay").style.display = "none"; }
 
     function updateClock() {
@@ -597,7 +599,7 @@
     }
 
     function fetchDashboard() {
-      showSpinner();
+      showSpinner("Ina-update ang Dashboard...");
       const url = `${API_URL}?action=getDashboard&role=${encodeURIComponent(currentUser.role)}&access=${encodeURIComponent(currentUser.access)}&kapwaName=${encodeURIComponent(currentUser.kapwaName)}`;
       fetch(url)
         .then(r => r.json())
@@ -663,7 +665,6 @@
           
           let pdfBtn = (r.pdfUrl && r.pdfUrl.trim() !== "") ? `<a href="${r.pdfUrl}" target="_blank" class="btn btn-pdf shadow-sm" title="Download Approved PDF"><i class="fa fa-file-pdf"></i></a>` : "";
 
-          // STRICT SSU ACCESS: VIEWER/STORE & ADMIN ONLY
           const isStoreOrAdmin = (currentUser.role === "Viewer" || currentUser.role === "Admin");
           let ssuDirectBtn = (isStoreOrAdmin && r.kawanStatus === "APPROVED") 
             ? `<button class="btn btn-ssu-direct shadow-sm" onclick="openSSUModal(${originalIdx})" title="Receive / SSU Request">📦 SSU</button>` 
@@ -733,7 +734,7 @@
       const remarks = document.getElementById("bulkRemarks").value.trim();
       if(status === "DISAPPROVED" && !remarks) return Swal.fire("Required", "Kailangan ng remarks kapag Disapproved.", "warning");
 
-      showSpinner();
+      showSpinner("Ina-apply ang Bulk Action...");
       const reqList = [];
       selected.forEach(cb => {
         const idx = cb.getAttribute("data-index");
@@ -807,14 +808,6 @@
           confirmButtonColor: "#800020"
         });
       }
-      else if (val === "Pickup to FE Ronnie") {
-        Swal.fire({
-          title: "Mabuhay!",
-          text: "Paalala, siguruhing approved at informed si FE Ronnie para sa ating pasabay. Salamat po!",
-          icon: "info",
-          confirmButtonColor: "#800020"
-        });
-      } 
       else if (val === "Thru Courier") {
         divCourier.style.display = "block";
         Swal.fire({
@@ -918,7 +911,7 @@
       r.onload = () => res(r.result); r.onerror = e => rej(e);
     });
 
-    document.getElementById("lpForm").onsubmit = async function(e) {
+    document.getElementById("lpForm").onsubmit = function(e) {
       e.preventDefault();
       
       const rawItems = [];
@@ -938,41 +931,63 @@
         return Swal.fire("Required", "Kailangang maglagay ng kahit isang valid na Kawan at P.O. Number.", "warning");
       }
 
-      showSpinner();
-      const lihamFor = document.getElementById("lihamPahintulotFor").value;
+      showSpinner("Ina-upload ang POS Receipt at Ina-apply ang Request...");
 
-      const posB64 = await fileToBase64(document.getElementById("posFile").files[0]);
+      const lihamFor = document.getElementById("lihamPahintulotFor").value;
+      const fileInput = document.getElementById("posFile");
+      const posFileObj = (fileInput && fileInput.files && fileInput.files[0]) ? fileInput.files[0] : null;
 
       let modeRemarks = "";
       if(lihamFor === "Pasabay To") modeRemarks = document.getElementById("pasabayTargetBranch").value;
       else if(lihamFor === "Pasabay to Shuttle") modeRemarks = document.getElementById("shuttleName").value;
       else if(lihamFor === "Thru Courier") modeRemarks = document.getElementById("courierOption").value;
 
-      const payload = {
-        kapwaName: currentUser.kapwaName, requestedBy: document.getElementById("requestedBy").value,
-        requestFrom: document.getElementById("requestFrom").value, lihamPahintulotFor: lihamFor, modeRemarks: modeRemarks,
-        items: rawItems,
-        reason: (document.getElementById("reason").value === "Others") ? document.getElementById("otherReason").value : document.getElementById("reason").value,
-        kpp: document.getElementById("kpp").value,
-        posFile: posB64
+      const processSubmission = function(posB64Data) {
+        const payload = {
+          kapwaName: currentUser.kapwaName, 
+          requestedBy: document.getElementById("requestedBy").value,
+          requestFrom: document.getElementById("requestFrom").value, 
+          lihamPahintulotFor: lihamFor, 
+          modeRemarks: modeRemarks,
+          items: rawItems,
+          reason: (document.getElementById("reason").value === "Others") ? document.getElementById("otherReason").value : document.getElementById("reason").value,
+          kpp: document.getElementById("kpp").value,
+          posFile: posB64Data || ""
+        };
+
+        fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "submitRequest", payload: payload }) })
+        .then(r => r.json())
+        .then(res => {
+          hideSpinner();
+          if(res.status === "success") {
+            clearDraft();
+            const modalEl = document.getElementById("requestModal");
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) modalInstance.hide();
+
+            Swal.fire({ title: "Mabuhay!", text: res.message + " (IDs: " + res.requestId + ")", icon: "success", confirmButtonColor: "#800020" }).then(() => { location.reload(); });
+          } else {
+            Swal.fire("Error", res.message, "error");
+          }
+        })
+        .catch(err => {
+          hideSpinner();
+          Swal.fire("Error", "Server Error: " + err.toString(), "error");
+        });
       };
 
-      fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "submitRequest", payload: payload }) })
-      .then(r => r.json())
-      .then(res => {
-        hideSpinner();
-        if(res.status === "success") {
-          clearDraft();
-          const modalEl = document.getElementById("requestModal");
-          const modalInstance = bootstrap.Modal.getInstance(modalEl);
-          if (modalInstance) modalInstance.hide();
-
-          Swal.fire({ title: "Mabuhay!", text: res.message + " (IDs: " + res.requestId + ")", icon: "success", confirmButtonColor: "#800020" }).then(() => { location.reload(); });
-        } else {
-          Swal.fire("Error", res.message, "error");
-        }
-      })
-      .catch(() => hideSpinner());
+      if (posFileObj) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          processSubmission(evt.target.result);
+        };
+        reader.onerror = function() {
+          processSubmission("");
+        };
+        reader.readAsDataURL(posFileObj);
+      } else {
+        processSubmission("");
+      }
     };
 
     function filterTable() {
@@ -1025,7 +1040,6 @@
 
       document.getElementById("vKpp").innerText = r.kpp || 'Walang detalye.';
 
-      // ALL ATTACHMENTS VIEWING
       let filesHtml = "";
       if(r.pdfUrl && r.pdfUrl.trim() !== "") {
         filesHtml += `<a href="${r.pdfUrl}" target="_blank" class="btn btn-success btn-sm fw-bold text-start p-2"><i class="fa-solid fa-file-pdf me-2"></i> Download Approved PDF Liham Pahintulot</a>`;
@@ -1118,7 +1132,7 @@
       const remarks = document.getElementById("appRemarks").value.trim();
       if(status === "DISAPPROVED" && !remarks) return Swal.fire("Required", "Kailangan ng remarks kapag Disapproved.", "warning");
 
-      showSpinner();
+      showSpinner("Ina-apply ang Approval...");
       const payload = {
         rowIndex: r.rowIndex, role: currentUser.role, approverName: currentUser.kapwaName,
         actionStatus: status, remarks: remarks
@@ -1182,7 +1196,7 @@
         }
       }).then((res) => {
         if(res.isConfirmed) {
-          showSpinner();
+          showSpinner("Isinasara ang Request at Ina-upload ang SSU Attachment...");
           fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "closeRequest", payload: res.value }) })
           .then(r => r.json())
           .then(resp => {
