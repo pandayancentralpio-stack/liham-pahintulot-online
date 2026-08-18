@@ -119,6 +119,7 @@
     </div>
     
     <div class="p-4">
+      <!-- LOGIN FORM -->
       <form id="loginForm">
         <h5 class="text-center mb-4 fw-bold" style="color: var(--pandayan-burgundy);">LOG IN</h5>
         
@@ -151,6 +152,7 @@
         <button type="submit" class="btn btn-pandayan shadow-sm" id="loginBtn">LOG IN</button>
       </form>
 
+      <!-- REGISTER FORM -->
       <form id="registerForm" style="display: none;">
         <h5 class="text-center mb-4 fw-bold" style="color: var(--pandayan-burgundy);">Gumawa ng Account</h5>
         
@@ -162,7 +164,7 @@
         <div class="mb-3">
           <label class="form-label small fw-bold">Email Address</label>
           <input type="email" id="regEmail" class="form-control" placeholder="halimbawa@pandayan.com.ph" required>
-          <small class="text-muted" style="font-size:0.72rem;">Dito ipapadala ang mga email status updates.</small>
+          <small class="text-muted" style="font-size:0.72rem;">Gagamitin bilang account reference.</small>
         </div>
 
         <div class="mb-3">
@@ -197,8 +199,8 @@
   </div>
 
   <script>
-    // DEPLOYED API URL
-    const API_URL = "https://script.google.com/macros/s/AKfycbx04OjSOwmm4DIzD2vBEJXKvw2OgKe9jV0ln-TD1Mcy6dOUOfq9vIjC_c0VD_Fmxovx7g/exec";
+    // LATEST DEPLOYED API URL
+    const API_URL = "https://script.google.com/macros/s/AKfycbw5btCeVZJ_78tYD1m3IW0T-D3KuADUa_plJ4lFHEFdktsesbuVclc1RBkc_lHvstHEkw/exec";
 
     function showSpinner(text = "PRO-PROSESO...") {
       document.getElementById("loadingText").innerText = text;
