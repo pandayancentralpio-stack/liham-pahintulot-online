@@ -145,7 +145,7 @@
     <small class="text-white">Mangyaring maghintay nang ilang sandali.</small>
   </div>
 
-  <div id="lowerClock">? Loading time...</div>
+  <div id="lowerClock">⏰ Loading time...</div>
 
   <div class="app-wrapper">
     
@@ -155,10 +155,10 @@
         <div class="sidebar-subtext">Liham Pahintulot Portal</div>
       </div>
 
-      <button class="nav-btn active">?? Dashboard</button>
+      <button class="nav-btn active">📊 Dashboard</button>
 
       <a href="https://www.canva.com/design/DAHO99_dbI4/uEJq-K6hj4-9IilTL0TYQA/view?utm_content=DAHO99_dbI4&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=ha0ebe4be46#12" target="_blank" class="manual-btn-bottom">
-        ? Paano gamitin ang App?<br><small>(User Manual Presentation)</small>
+        ❓ Paano gamitin ang App?<br><small>(User Manual Presentation)</small>
       </a>
     </div>
 
@@ -176,7 +176,7 @@
       </div>
 
       <div class="pending-alert-banner" id="pendingAlertBanner" style="display: none;">
-        ?? Mayroong <span id="pendingCountBadge" class="badge bg-danger">0</span> na pending request na naghihintay ng inyong aksyon.
+        🔔 Mayroong <span id="pendingCountBadge" class="badge bg-danger">0</span> na pending request na naghihintay ng inyong aksyon.
       </div>
 
       <!-- SUB DASHBOARD TABS -->
@@ -252,8 +252,8 @@
           <small class="fw-bold text-muted" id="pageIndicator">Showing 0 to 0 entries</small>
           <nav>
             <ul class="pagination pagination-sm m-0">
-              <li class="page-item" id="prevLi"><button class="page-link" id="prevBtn" onclick="changePage(-1)">?? Previous</button></li>
-              <li class="page-item" id="nextLi"><button class="page-link" id="nextBtn" onclick="changePage(1)">Next ??</button></li>
+              <li class="page-item" id="prevLi"><button class="page-link" id="prevBtn" onclick="changePage(-1)">⏮️ Previous</button></li>
+              <li class="page-item" id="nextLi"><button class="page-link" id="nextBtn" onclick="changePage(1)">Next ⏭️</button></li>
             </ul>
           </nav>
         </div>
@@ -382,7 +382,7 @@
 
           </div>
           <div class="modal-footer bg-light d-flex justify-content-between">
-            <button type="button" class="btn btn-outline-danger btn-sm fw-bold" onclick="clearDraft()">??? CLEAR FORM</button>
+            <button type="button" class="btn btn-outline-danger btn-sm fw-bold" onclick="clearDraft()">🗑️ CLEAR FORM</button>
             <div>
               <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Isara</button>
               <button type="submit" class="btn btn-danger btn-sm px-4 fw-bold" style="background-color: var(--pandayan-burgundy);" id="submitBtn">IPASA REQUEST</button>
@@ -405,19 +405,19 @@
           
           <ul class="nav nav-tabs mb-3" id="modalTab" role="tablist">
             <li class="nav-item">
-              <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#tab-info" type="button">?? General Info</button>
+              <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#tab-info" type="button">📌 General Info</button>
             </li>
             <li class="nav-item">
-              <button class="nav-link" id="kpp-tab" data-bs-toggle="tab" data-bs-target="#tab-kpp" type="button">?? KPP</button>
+              <button class="nav-link" id="kpp-tab" data-bs-toggle="tab" data-bs-target="#tab-kpp" type="button">📖 KPP</button>
             </li>
             <li class="nav-item">
-              <button class="nav-link" id="files-tab" data-bs-toggle="tab" data-bs-target="#tab-files" type="button">?? Attachments</button>
+              <button class="nav-link" id="files-tab" data-bs-toggle="tab" data-bs-target="#tab-files" type="button">📎 Attachments</button>
             </li>
             <li class="nav-item">
-              <button class="nav-link" id="status-tab" data-bs-toggle="tab" data-bs-target="#tab-status" type="button">??? Approval History</button>
+              <button class="nav-link" id="status-tab" data-bs-toggle="tab" data-bs-target="#tab-status" type="button">🛡️ Approval History</button>
             </li>
             <li class="nav-item">
-              <button class="nav-link" id="ssu-tab" data-bs-toggle="tab" data-bs-target="#tab-ssu" type="button">?? Pasabay SSU</button>
+              <button class="nav-link" id="ssu-tab" data-bs-toggle="tab" data-bs-target="#tab-ssu" type="button">📦 Pasabay SSU</button>
             </li>
           </ul>
 
@@ -559,7 +559,7 @@
         optHtml += `<option value="${k}" ${k === savedKawan ? 'selected' : ''}>${k}</option>`;
       });
 
-      const removeBtnHtml = currentRows > 0 ? `<button type="button" class="btn btn-danger btn-sm" onclick="removeKawanRow('${rowId}')">???</button>` : '';
+      const removeBtnHtml = currentRows > 0 ? `<button type="button" class="btn btn-danger btn-sm" onclick="removeKawanRow('${rowId}')">🗑️</button>` : '';
 
       const rowCard = document.createElement("div");
       rowCard.id = rowId;
@@ -672,7 +672,7 @@
 
           const isStoreOrAdmin = (currentUser.role === "Viewer" || currentUser.role === "Admin");
           let ssuDirectBtn = (isStoreOrAdmin && r.kawanStatus === "APPROVED") 
-            ? `<button class="btn btn-ssu-direct shadow-sm" onclick="openSSUModal(${originalIdx})" title="Receive / SSU Request">?? SSU</button>` 
+            ? `<button class="btn btn-ssu-direct shadow-sm" onclick="openSSUModal(${originalIdx})" title="Receive / SSU Request">📦 SSU</button>` 
             : "";
 
           let isActioned = false;
@@ -743,7 +743,7 @@
       const reqList = [];
       selected.forEach(cb => {
         const idx = cb.getAttribute("data-index");
-        reqList.push({ rowIndex: window.rawDashboardData[idx].rowIndex });
+        reqList.push({ rowIndex: window.rawDashboardData[idx].rowIndex, requestId: window.rawDashboardData[idx].requestId });
       });
 
       fetch(API_URL, {
@@ -1107,9 +1107,9 @@
           </div>
         `;
       } else if (is2ndApprover && r.geStatus === "PENDING") {
-        actionForm = `<div class="alert alert-warning text-center small mt-3">?? Naka-lock pa ang 2nd Approval. Kailangan munang ma-APPROVED ng 1st Approver (GE).</div>`;
+        actionForm = `<div class="alert alert-warning text-center small mt-3">⚠️ Naka-lock pa ang 2nd Approval. Kailangan munang ma-APPROVED ng 1st Approver (GE).</div>`;
       } else if (is3rdApprover && r.hatidSundoStatus === "PENDING") {
-        actionForm = `<div class="alert alert-warning text-center small mt-3">?? Naka-lock pa ang 3rd Approval. Kailangan munang ma-APPROVED ng 2nd Approver (Hatid-Sundo).</div>`;
+        actionForm = `<div class="alert alert-warning text-center small mt-3">⚠️ Naka-lock pa ang 3rd Approval. Kailangan munang ma-APPROVED ng 2nd Approver (Hatid-Sundo).</div>`;
       }
       document.getElementById("vActionSection").innerHTML = actionForm;
 
@@ -1117,7 +1117,7 @@
       
       const isStoreOrAdmin = (currentUser.role === "Viewer" || currentUser.role === "Admin");
       if (isStoreOrAdmin && r.kawanStatus === "APPROVED") {
-        footerHtml = `<button type="button" class="btn btn-warning btn-sm fw-bold shadow-sm" style="background-color:var(--pandayan-yellow); color:var(--pandayan-burgundy); border:1px solid var(--pandayan-burgundy);" onclick="openSSUModal(${idx})">?? PASABAY SSU / CLOSE REQUEST</button> ` + footerHtml;
+        footerHtml = `<button type="button" class="btn btn-warning btn-sm fw-bold shadow-sm" style="background-color:var(--pandayan-yellow); color:var(--pandayan-burgundy); border:1px solid var(--pandayan-burgundy);" onclick="openSSUModal(${idx})">📦 PASABAY SSU / CLOSE REQUEST</button> ` + footerHtml;
       }
       document.getElementById("actionModalFooter").innerHTML = footerHtml;
 
@@ -1134,8 +1134,12 @@
 
       showSpinner("Ina-apply ang Approval at Ina-generate ang PDF...");
       const payload = {
-        rowIndex: r.rowIndex, role: currentUser.role, approverName: currentUser.kapwaName,
-        actionStatus: status, remarks: remarks
+        rowIndex: r.rowIndex,
+        requestId: r.requestId, // PASSED REQUEST ID FOR ROW FINDER
+        role: currentUser.role, 
+        approverName: currentUser.kapwaName,
+        actionStatus: status, 
+        remarks: remarks
       };
 
       fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "processApproval", payload: payload }) })
@@ -1196,7 +1200,7 @@
             reader.onload = (e) => {
               resolve({
                 rowIndex: r.rowIndex, 
-                requestId: r.requestId, 
+                requestId: r.requestId, // PASSED REQUEST ID FOR ROW FINDER
                 dateReceived: date,
                 rpoFile: e.target.result, 
                 ssuRemarks: remarks
