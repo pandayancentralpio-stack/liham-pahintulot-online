@@ -56,6 +56,9 @@
       padding: 10px 12px;
       font-size: 0.9rem;
     }
+    .input-group-text {
+      cursor: pointer;
+    }
     .btn-pandayan {
       background-color: var(--pandayan-burgundy);
       color: white;
@@ -119,10 +122,21 @@
           <div class="input-group">
             <span class="input-group-text bg-light"><i class="fa-solid fa-lock text-secondary"></i></span>
             <input type="password" id="loginPassword" class="form-control" placeholder="Isulat ang password" required>
+            <span class="input-group-text bg-light" onclick="togglePasswordVisibility('loginPassword', 'eyeIconLogin')" title="Ipakita/Itago ang Password">
+              <i class="fa-solid fa-eye text-secondary" id="eyeIconLogin"></i>
+            </span>
           </div>
         </div>
 
-        <button type="submit" class="btn btn-pandayan mt-2 shadow-sm">LOG IN</button>
+        <!-- STAY LOGGED IN CHECKBOX -->
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="rememberMe" checked>
+          <label class="form-check-label small fw-bold text-secondary" for="rememberMe">
+            Manatiling Naka-login (Stay Logged In)
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-pandayan mt-1 shadow-sm">LOG IN</button>
 
         <div class="text-center mt-3 small">
           Wala pang account? <span class="toggle-link" onclick="toggleAuthForm('register')">Mag-register dito</span>
@@ -145,7 +159,12 @@
 
         <div class="mb-2">
           <label class="form-label small fw-bold">Password</label>
-          <input type="password" id="regPassword" class="form-control" placeholder="Password" required>
+          <div class="input-group">
+            <input type="password" id="regPassword" class="form-control" placeholder="Password" required>
+            <span class="input-group-text bg-light" onclick="togglePasswordVisibility('regPassword', 'eyeIconReg')" title="Ipakita/Itago ang Password">
+              <i class="fa-solid fa-eye text-secondary" id="eyeIconReg"></i>
+            </span>
+          </div>
         </div>
 
         <div class="mb-3">
@@ -185,6 +204,21 @@
       }
     }
 
+    // EYE ICON TOGGLE FOR PASSWORD VISIBILITY
+    function togglePasswordVisibility(inputId, eyeIconId) {
+      const inputEl = document.getElementById(inputId);
+      const eyeEl = document.getElementById(eyeIconId);
+      if (inputEl.type === "password") {
+        inputEl.type = "text";
+        eyeEl.classList.remove("fa-eye");
+        eyeEl.classList.add("fa-eye-slash");
+      } else {
+        inputEl.type = "password";
+        eyeEl.classList.remove("fa-eye-slash");
+        eyeEl.classList.add("fa-eye");
+      }
+    }
+
     // LOGIN PROCESS
     document.getElementById("loginForm").onsubmit = function(e) {
       e.preventDefault();
@@ -195,6 +229,8 @@
         password: document.getElementById("loginPassword").value.trim()
       };
 
+      const remember = document.getElementById("rememberMe").checked;
+
       fetch(API_URL, {
         method: "POST",
         body: JSON.stringify({ action: "login", payload: payload })
@@ -203,9 +239,14 @@
       .then(res => {
         hideSpinner();
         if (res.status === "success") {
-          // Save session
-          localStorage.setItem("pandayan_user_session", JSON.stringify(res.user));
-          sessionStorage.setItem("pandayan_user_session", JSON.stringify(res.user));
+          // SAVE SESSION BASED ON STAY LOGGED IN
+          if (remember) {
+            localStorage.setItem("pandayan_user_session", JSON.stringify(res.user));
+            sessionStorage.removeItem("pandayan_user_session");
+          } else {
+            sessionStorage.setItem("pandayan_user_session", JSON.stringify(res.user));
+            localStorage.removeItem("pandayan_user_session");
+          }
           
           Swal.fire({
             title: "Mabuhay!",
@@ -266,7 +307,7 @@
       });
     };
 
-    // Auto-check if logged in
+    // AUTO-CHECK IF ALREADY LOGGED IN
     window.onload = function() {
       const session = localStorage.getItem("pandayan_user_session") || sessionStorage.getItem("pandayan_user_session");
       if (session) {
