@@ -1,262 +1,572 @@
-/**
- * ============================================================================
- * PANDAYAN SUPERSTORES, INC. - LIHAM PAHINTULOT ONLINE SYSTEM (V2 FAST)
- * File: Code.gs
- * ============================================================================
- */
-
-const FOLDER_POS_RECEIPT = "1SmrooWzRLdmYBCmiHqbtYpof8odShLj-";
-const FOLDER_PDF_OUTPUT  = "1R8v1Y2VM_g8rHFEMnR_hG1eAnwqW0Vy5";
-const FOLDER_SSU_RPO     = "1AGb-D2rnADOQFzExLLPJVj-0QAJ3Aocy";
-
-function doGet(e) {
-  try {
-    var action = e ? e.parameter.action : "";
-    if (action === "getDropdowns") return jsonResponse(getDropdownData());
-    if (action === "getDashboard") return jsonResponse(getDashboardData(e.parameter.role, e.parameter.access, e.parameter.kapwaName));
-    return jsonResponse({ status: "error", message: "Invalid GET Action" });
-  } catch (err) {
-    return jsonResponse({ status: "error", message: err.toString() });
-  }
-}
-
-function doPost(e) {
-  try {
-    if (!e || !e.postData || !e.postData.contents) {
-      return jsonResponse({ status: "error", message: "No payload received." });
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liham Pahintulot Online - Portal</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    :root {
+      --pandayan-burgundy: #800020;
+      --pandayan-yellow: #FFD700;
+      --pandayan-blue: #0000FF;
+      --sidebar-width: 240px;
     }
+    body { background-color: #f4f7f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
+    .app-wrapper { display: flex; min-height: 100vh; }
     
-    var data = JSON.parse(e.postData.contents);
-    var action = data.action;
-    var payload = data.payload;
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--pandayan-burgundy);
+      color: white;
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; bottom: 0; left: 0;
+      z-index: 1000; padding: 20px 15px;
+      box-shadow: 4px 0 10px rgba(0,0,0,0.15);
+    }
+    .sidebar-brand { font-size: 1.2rem; font-weight: 900; letter-spacing: 1px; color: var(--pandayan-yellow); margin-bottom: 2px; }
+    .sidebar-subtext { font-size: 0.75rem; color: #f8f9fa; margin-bottom: 25px; opacity: 0.9; }
     
-    if (action === "register") return jsonResponse(registerAccount(payload));
-    if (action === "login") return jsonResponse(loginAccount(payload));
-    if (action === "submitRequest") return jsonResponse(submitRequest(payload));
-    if (action === "processApproval") return jsonResponse(processApproval(payload));
-    if (action === "closeRequest") return jsonResponse(closeRequestSSU(payload));
-    
-    return jsonResponse({ status: "error", message: "Invalid POST Action" });
-  } catch (err) {
-    return jsonResponse({ status: "error", message: "Server Error: " + err.toString() });
-  }
-}
+    .nav-btn {
+      background: transparent; border: 1px solid rgba(255,255,255,0.2);
+      color: white; font-weight: 700; padding: 10px 15px;
+      border-radius: 8px; text-align: left; margin-bottom: 10px; width: 100%;
+    }
+    .nav-btn.active {
+      background-color: var(--pandayan-yellow) !important;
+      color: var(--pandayan-burgundy) !important; border: none;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
 
-function jsonResponse(obj) {
-  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
-}
+    .manual-btn-bottom {
+      margin-top: auto; background: rgba(0,0,0,0.2);
+      border: 1px dashed var(--pandayan-yellow); color: white;
+      font-size: 0.75rem; padding: 10px; border-radius: 8px;
+      text-align: center; text-decoration: none;
+    }
 
-// OPTIMIZED FAST READ (USES GETVALUES INSTEAD OF HEAVY DISPLAY VALUES)
-function getDashboardData(role, access, kapwaName) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName("DATABASE");
-    if (!sheet) return { status: "success", data: [] };
+    .main-content {
+      margin-left: var(--sidebar-width); flex-grow: 1;
+      padding: 20px 25px; width: calc(100% - var(--sidebar-width));
+    }
 
-    var lastRow = sheet.getLastRow();
-    if (lastRow < 2) return { status: "success", data: [] };
+    .top-header-card {
+      background: white; border-radius: 12px;
+      padding: 15px 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 15px;
+    }
+    .header-title { color: var(--pandayan-burgundy); font-weight: 800; margin: 0; font-size: 1.25rem; }
+    .header-subtitle { color: #666; font-size: 0.8rem; margin: 0; }
+    .logout-btn { background-color: #dc3545; color: white; font-weight: bold; border-radius: 6px; padding: 6px 16px; border: none; }
 
-    var data = sheet.getRange(2, 1, lastRow - 1, 28).getValues();
-    var list = [];
-    var userAccessList = (access || "").split(",").map(function(item) { return item.trim().toLowerCase(); });
+    .table-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .table-burgundy-header th { background-color: var(--pandayan-burgundy) !important; color: white !important; font-size: 0.82rem; border: none; }
 
-    for (var i = 0; i < data.length; i++) {
-      var r = data[i];
-      var reqBranch = (r[3] || "").toString().trim().toLowerCase();
-      var showRecord = false;
+    .btn-view { font-size: 0.75rem; padding: 4px 10px; border-radius: 5px; background-color: var(--pandayan-blue); color: white; font-weight: bold; border: none; }
+    .btn-pdf { font-size: 0.75rem; padding: 4px 8px; border-radius: 5px; background-color: #198754; color: white; border: none; font-weight: bold; text-decoration: none; }
 
-      var geStatus  = r[11] ? r[11].toString() : "PENDING";
-      var hsStatus  = r[15] ? r[15].toString() : "PENDING";
-      var kwnStatus = r[19] ? r[19].toString() : "PENDING";
+    .sub-dashboard-tabs .nav-link {
+      color: var(--pandayan-burgundy);
+      font-weight: bold;
+      border: 1px solid #dee2e6;
+      border-bottom: none;
+      margin-right: 4px;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      font-size: 0.85rem;
+      background: #f8f9fa;
+    }
+    .sub-dashboard-tabs .nav-link.active {
+      background-color: var(--pandayan-burgundy) !important;
+      color: white !important;
+      border-color: var(--pandayan-burgundy);
+    }
 
-      if (role === "Admin") {
-        showRecord = true;
-      } else if (role === "1st Approver" || role === "GE") {
-        if (userAccessList.indexOf(reqBranch) !== -1 || userAccessList.indexOf("all") !== -1) showRecord = true;
-      } else if (role === "2nd Approver") {
-        if (geStatus === "APPROVED" || geStatus === "SSU") showRecord = true;
-      } else if (role === "3rd Approver" || role === "Kawan") {
-        if ((hsStatus === "APPROVED" || hsStatus === "SSU") && (userAccessList.indexOf((r[7] || "").toString().trim().toLowerCase()) !== -1 || userAccessList.indexOf("all") !== -1)) showRecord = true;
-      } else if (role === "Viewer") {
-        if (userAccessList.indexOf(reqBranch) !== -1 || r[1] === kapwaName || userAccessList.indexOf("all") !== -1) showRecord = true;
-      }
+    .form-section-title { background: #f8f9fa; padding: 8px 12px; border-left: 5px solid var(--pandayan-burgundy); font-weight: 800; color: var(--pandayan-burgundy); margin: 15px 0 10px 0; font-size: 0.85rem; }
+    .card-header-pandayan { background-color: var(--pandayan-burgundy); color: white; font-weight: bold; }
+    .conditional-field { display: none; }
 
-      if (showRecord) {
-        list.push({
-          rowIndex: i + 2,
-          dateOfRequest: formatDate(r[0]),
-          accountName: r[1], requestedBy: r[2], requestFrom: r[3],
-          lihamPahintulotFor: r[4], modeRemarks: r[5],
-          posReceipt: r[6] || "",
-          requestedTo: r[7], poNumber: r[8], reason: r[9], kpp: r[10],
-          geStatus: geStatus, geApproverName: r[12], geRemarks: r[13], geTimestamp: formatDate(r[14]),
-          hatidSundoStatus: hsStatus, approver1Name: r[16], remarks1: r[17], timestamp1: formatDate(r[18]),
-          kawanStatus: kwnStatus, approver2Name: r[20], remarks2: r[21], timestamp2: formatDate(r[22]),
-          ssuDate: formatDate(r[23]),
-          rpoAttachment: r[24] || "",
-          ssuRemarks: r[25],
-          requestId: r[26],
-          pdfUrl: r[27] || ""
+    #loadingOverlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(128, 0, 32, 0.88); z-index: 9999;
+      display: none; flex-direction: column; justify-content: center; align-items: center; color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loadingOverlay">
+    <div class="spinner-border text-warning mb-3" style="width: 3.5rem; height: 3.5rem;" role="status"></div>
+    <h5 class="fw-bold text-warning mb-1" id="loadingText">Loading...</h5>
+    <small class="text-white">Mangyaring maghintay nang ilang sandali.</small>
+  </div>
+
+  <div class="app-wrapper">
+    <div class="sidebar">
+      <div>
+        <div class="sidebar-brand">PANDAYAN</div>
+        <div class="sidebar-subtext">Liham Pahintulot Portal</div>
+      </div>
+      <button class="nav-btn active">?? Dashboard</button>
+      <a href="https://www.canva.com/design/DAHO99_dbI4/uEJq-K6hj4-9IilTL0TYQA/view" target="_blank" class="manual-btn-bottom">
+        ? Paano gamitin ang App?<br><small>(User Manual Presentation)</small>
+      </a>
+    </div>
+
+    <div class="main-content">
+      <div class="top-header-card d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+          <h5 class="header-title">PANDAYAN SUPERSTORES</h5>
+          <p class="header-subtitle">Liham Pahintulot Online Portal</p>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <span id="userInfo" class="small fw-bold text-secondary">Welcome, Kapwa</span>
+          <button class="logout-btn btn-sm" onclick="logout()">LOG OUT</button>
+        </div>
+      </div>
+
+      <ul class="nav nav-tabs sub-dashboard-tabs mb-2 border-bottom-0" id="subDashboardTabs">
+        <li class="nav-item"><button class="nav-link active" onclick="switchSubTab('PENDING', this)"><i class="fa-solid fa-clock-rotate-left text-warning"></i> Pending Request</button></li>
+        <li class="nav-item"><button class="nav-link" onclick="switchSubTab('APPROVED', this)"><i class="fa-solid fa-circle-check text-success"></i> Approved Request</button></li>
+        <li class="nav-item"><button class="nav-link" onclick="switchSubTab('DISAPPROVED', this)"><i class="fa-solid fa-circle-xmark text-danger"></i> Disapproved Request</button></li>
+        <li class="nav-item"><button class="nav-link" onclick="switchSubTab('SSU', this)"><i class="fa-solid fa-box text-primary"></i> SSU Request</button></li>
+      </ul>
+
+      <div class="table-container p-3">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-danger btn-sm fw-bold shadow-sm px-3" style="background-color: var(--pandayan-burgundy);" data-bs-toggle="modal" data-bs-target="#requestModal">
+              <i class="fa-solid fa-pen-to-square"></i> + REQUEST FORM
+            </button>
+          </div>
+          <div class="input-group input-group-sm" style="width: 250px;">
+            <span class="input-group-text bg-white border-end-0"><i class="fa fa-search text-muted"></i></span>
+            <input type="text" id="generalSearch" class="form-control border-start-0" placeholder="General Search..." onkeyup="filterTable()">
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle text-center m-0" id="mainTable">
+            <thead>
+              <tr class="table-burgundy-header">
+                <th>#</th>
+                <th>Date</th>
+                <th>Request ID</th>
+                <th>Request From</th>
+                <th>Requested To</th>
+                <th>Liham For</th>
+                <th>1st Approver (GE)</th>
+                <th>2nd Approver (Hatid-Sundo)</th>
+                <th>3rd Approver (Kawan)</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="dashBody" class="small">
+              <tr><td colspan="10" class="p-4 text-center text-muted">Nagloload ng data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REQUEST FORM MODAL -->
+  <div class="modal fade" id="requestModal" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content" style="border-radius: 16px; overflow: hidden; border: 3px solid var(--pandayan-burgundy);">
+        <div class="modal-header text-white card-header-pandayan">
+          <h5 class="modal-title fw-bold"><i class="fa-solid fa-pen-to-square"></i> Request Liham Pahintulot Form</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="lpForm">
+          <div class="modal-body p-4 bg-white" style="max-height: 75vh; overflow-y: auto;">
+            <div class="form-section-title">PASABAY CATEGORY</div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">1. LIHAM PAHINTULOT FOR</label>
+              <select id="lihamPahintulotFor" class="form-select form-select-sm" onchange="handleLihamForChange(this.value)" required>
+                <option value="">-Pumili ng Kategorya-</option>
+                <option value="Pasabay To">Pasabay To</option>
+                <option value="Pasabay to Shuttle">Pasabay to Shuttle</option>
+                <option value="Pickup to Central">Pickup to Central</option>
+                <option value="Thru Courier">Thru Courier</option>
+              </select>
+            </div>
+
+            <div id="divPasabayBranch" class="mb-3 conditional-field card p-2 bg-light border-0">
+              <label class="form-label small fw-bold text-primary">Piliin ang Target Branch na pagsasabayan:</label>
+              <select id="pasabayTargetBranch" class="form-select form-select-sm"><option value="">-Target Branch-</option></select>
+            </div>
+
+            <div id="divShuttle" class="mb-3 conditional-field card p-2 bg-light border-0">
+              <label class="form-label small fw-bold text-primary">Anong Shuttle ang pagsasabayan?:</label>
+              <input type="text" id="shuttleName" class="form-control form-control-sm" placeholder="Plaka / Shuttle name">
+            </div>
+
+            <div id="divCourier" class="mb-3 conditional-field card p-2 bg-light border-0">
+              <label class="form-label small fw-bold text-primary">Courier Option:</label>
+              <select id="courierOption" class="form-select form-select-sm" onchange="handleCourierChange(this.value)">
+                <option value="">-Select Courier Option-</option>
+                <option value="Direct Delivery to Panauhin">Direct Delivery to Panauhin</option>
+                <option value="Drop to Branch">Drop to Branch</option>
+              </select>
+            </div>
+
+            <div class="form-section-title">REQUESTER'S INFORMATION</div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">2. REQUESTED BY</label>
+                <input type="text" id="requestedBy" class="form-control form-control-sm" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">3. REQUEST FROM</label>
+                <select id="requestFrom" class="form-select form-select-sm" required><option value="">-Pumili ng Branch-</option></select>
+              </div>
+            </div>
+
+            <div class="form-section-title d-flex justify-content-between align-items-center">
+              <span>LIST OF KAWAN & P.O. NUMBERS</span>
+              <button type="button" class="btn btn-warning btn-sm fw-bold text-dark px-3" onclick="addKawanRow()">+ Magdagdag ng Kawan</button>
+            </div>
+            <div id="kawanRowsContainer" class="mb-3"></div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">4. REASON FOR REQUEST</label>
+              <select id="reason" class="form-select form-select-sm" required>
+                <option value="">-Pumili ng Dahilan-</option>
+                <option value="Regular Stock">Regular Stock</option>
+                <option value="Panauhin Order">Panauhin Order</option>
+                <option value="Short Stock">Short Stock</option>
+                <option value="Others">Others</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-bold" style="color: var(--pandayan-burgundy);">5. KPP (KWENTO)</label>
+              <textarea id="kpp" class="form-control form-control-sm" rows="3" required></textarea>
+            </div>
+
+            <div class="form-section-title conditional-field" id="secAttachmentsTitle">ATTACHMENT (POS RECEIPT)</div>
+            <div class="mb-3 conditional-field" id="divPosFile">
+              <input type="file" id="posFile" class="form-control form-control-sm" accept="image/*">
+            </div>
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Isara</button>
+            <button type="submit" class="btn btn-danger btn-sm px-4 fw-bold" style="background-color: var(--pandayan-burgundy);">IPASA REQUEST</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW / ACTION MODAL -->
+  <div class="modal fade" id="actionModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content" style="border-radius: 12px; overflow: hidden; border: 3px solid var(--pandayan-burgundy);">
+        <div class="modal-header text-white card-header-pandayan">
+          <h6 class="modal-title fw-bold" id="actionModalTitle">Request Details</h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4" style="max-height: 75vh; overflow-y: auto;">
+          <ul class="nav nav-tabs mb-3" id="modalTab" role="tablist">
+            <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-info">?? General Info</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-files">?? Attachments</button></li>
+          </ul>
+
+          <div class="tab-content">
+            <div class="tab-pane fade show active" id="tab-info">
+              <table class="table table-bordered table-sm align-middle m-0" style="font-size:0.85rem;">
+                <tr><th style="width:35%; background:#f8f9fa;">Request ID</th><td><b class="text-danger" id="vId"></b></td></tr>
+                <tr><th style="background:#f8f9fa;">Date of Request</th><td id="vDate"></td></tr>
+                <tr><th style="background:#f8f9fa;">Requested By / From</th><td><b id="vBy"></b> (<span id="vFrom"></span>)</td></tr>
+                <tr><th style="background:#f8f9fa;">Requested To</th><td id="vTo"></td></tr>
+                <tr><th style="background:#f8f9fa;">Liham Pahintulot For</th><td id="vMode"></td></tr>
+                <tr><th style="background:#f8f9fa;">P.O. Number</th><td id="vPo"></td></tr>
+                <tr><th style="background:#f8f9fa;">Reason / KPP</th><td id="vReason"></td></tr>
+              </table>
+            </div>
+
+            <div class="tab-pane fade" id="tab-files">
+              <div class="d-flex flex-column gap-2" id="vFilesContainer"></div>
+            </div>
+          </div>
+
+          <div id="vActionSection" class="mt-3"></div>
+        </div>
+        <div class="modal-footer bg-light" id="actionModalFooter">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Isara</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbyDAsLnXQDkxVFrEKOrxxVJgf2Hoh5CzZhhKNENGcZGisu2-Mcj6WxnpFs8RwfZEa3Uhg/exec";
+    let currentUser = null;
+    window.rawDashboardData = [];
+    window.filteredData = [];
+    window.kawanOptionsList = [];
+    let currentActiveTab = "PENDING";
+    let selectedRequest = null;
+
+    function showSpinner(msg = "Loading...") { 
+      document.getElementById("loadingText").innerText = msg;
+      document.getElementById("loadingOverlay").style.display = "flex"; 
+    }
+    function hideSpinner() { document.getElementById("loadingOverlay").style.display = "none"; }
+
+    window.onload = function() {
+      const session = localStorage.getItem("pandayan_user_session") || sessionStorage.getItem("pandayan_user_session");
+      if(!session) { window.location.href = "index.html"; return; }
+      currentUser = JSON.parse(session);
+      document.getElementById("userInfo").innerText = `Welcome, ${currentUser.kapwaName} (${currentUser.role})`;
+      fetchDropdowns();
+      fetchDashboard();
+    };
+
+    function logout() {
+      localStorage.clear(); sessionStorage.clear(); window.location.href = "index.html";
+    }
+
+    function fetchDropdowns() {
+      fetch(`${API_URL}?action=getDropdowns`).then(r=>r.json()).then(d=>{
+        if(d.status==="success"){
+          const reqFrom = document.getElementById("requestFrom");
+          const pasTarget = document.getElementById("pasabayTargetBranch");
+          d.branches.forEach(b => {
+            reqFrom.options[reqFrom.options.length] = new Option(b, b);
+            pasTarget.options[pasTarget.options.length] = new Option(b, b);
+          });
+          window.kawanOptionsList = d.kawans || [];
+          addKawanRow();
+        }
+      });
+    }
+
+    function addKawanRow() {
+      const container = document.getElementById("kawanRowsContainer");
+      if (container.children.length >= 5) return;
+      let optHtml = `<option value="">-Pumili ng Kawan-</option>`;
+      window.kawanOptionsList.forEach(k => { optHtml += `<option value="${k}">${k}</option>`; });
+
+      const rowCard = document.createElement("div");
+      rowCard.className = "card p-2 mb-2 bg-light border-0 kawan-item-row";
+      rowCard.innerHTML = `
+        <div class="row align-items-center">
+          <div class="col-md-6 mb-2 mb-md-0"><select class="form-select form-select-sm sel-kawan" required>${optHtml}</select></div>
+          <div class="col-md-6"><input type="text" class="form-control form-control-sm inp-po" placeholder="P.O. Number..." required></div>
+        </div>`;
+      container.appendChild(rowCard);
+    }
+
+    function fetchDashboard() {
+      showSpinner("Ina-update ang Dashboard...");
+      const url = `${API_URL}?action=getDashboard&role=${encodeURIComponent(currentUser.role)}&access=${encodeURIComponent(currentUser.access)}&kapwaName=${encodeURIComponent(currentUser.kapwaName)}`;
+      fetch(url).then(r=>r.json()).then(res=>{
+        hideSpinner();
+        if(res.status === "success") {
+          window.rawDashboardData = res.data;
+          filterTable();
+        }
+      }).catch(()=>hideSpinner());
+    }
+
+    function switchSubTab(tabName, btnEl) {
+      currentActiveTab = tabName;
+      document.querySelectorAll("#subDashboardTabs .nav-link").forEach(el=>el.classList.remove("active"));
+      btnEl.classList.add("active");
+      filterTable();
+    }
+
+    function filterTable() {
+      window.filteredData = window.rawDashboardData.filter(r => {
+        if (currentActiveTab === "PENDING") return (r.geStatus === "PENDING" || r.hatidSundoStatus === "PENDING" || r.kawanStatus === "PENDING") && (r.geStatus !== "DISAPPROVED" && r.hatidSundoStatus !== "DISAPPROVED" && r.kawanStatus !== "DISAPPROVED");
+        if (currentActiveTab === "APPROVED") return (r.kawanStatus === "APPROVED");
+        if (currentActiveTab === "DISAPPROVED") return (r.geStatus === "DISAPPROVED" || r.hatidSundoStatus === "DISAPPROVED" || r.kawanStatus === "DISAPPROVED");
+        if (currentActiveTab === "SSU") return (r.kawanStatus === "SSU" || r.hatidSundoStatus === "SSU" || r.geStatus === "SSU");
+        return true;
+      });
+      renderTable();
+    }
+
+    function renderTable() {
+      let html = "";
+      if (window.filteredData.length === 0) {
+        html = "<tr><td colspan='10' class='p-4 text-center text-muted'>Walang nakitang records.</td></tr>";
+      } else {
+        window.filteredData.forEach((r, idx) => {
+          let pdfBtn = r.pdfUrl ? `<a href="${r.pdfUrl}" target="_blank" class="btn btn-pdf"><i class="fa fa-file-pdf"></i> PDF</a>` : "";
+          html += `<tr>
+            <td>${idx + 1}</td>
+            <td><small>${r.dateOfRequest}</small></td>
+            <td><b class="text-primary">${r.requestId}</b></td>
+            <td>${r.requestFrom}</td>
+            <td>${r.requestedTo}</td>
+            <td><small>${r.lihamPahintulotFor}</small></td>
+            <td><span class="badge badge-pill bg-secondary">${r.geStatus}</span></td>
+            <td><span class="badge badge-pill bg-secondary">${r.hatidSundoStatus}</span></td>
+            <td><span class="badge badge-pill bg-secondary">${r.kawanStatus}</span></td>
+            <td>
+              <button class="btn btn-view" onclick="viewDetails('${r.requestId}')">View</button>
+              ${pdfBtn}
+            </td>
+          </tr>`;
         });
       }
+      document.getElementById("dashBody").innerHTML = html;
     }
-    return { status: "success", data: list };
-  } catch (err) {
-    return { status: "error", message: err.toString() };
-  }
-}
 
-function formatDate(val) {
-  if (!val) return "";
-  if (val instanceof Date) {
-    return Utilities.formatDate(val, "GMT+8", "yyyy-MM-dd HH:mm:ss");
-  }
-  return val.toString();
-}
+    function viewDetails(reqId) {
+      const r = window.rawDashboardData.find(item => item.requestId === reqId);
+      selectedRequest = r;
+      document.getElementById("actionModalTitle").innerText = `Request Details: ${r.requestId}`;
+      document.getElementById("vId").innerText = r.requestId;
+      document.getElementById("vDate").innerText = r.dateOfRequest;
+      document.getElementById("vBy").innerText = r.requestedBy;
+      document.getElementById("vFrom").innerText = r.requestFrom;
+      document.getElementById("vTo").innerText = r.requestedTo;
+      document.getElementById("vMode").innerText = r.lihamPahintulotFor;
+      document.getElementById("vPo").innerText = r.poNumber;
+      document.getElementById("vReason").innerText = `${r.reason} - ${r.kpp}`;
 
-function findRowByReqId(sheet, reqId) {
-  var data = sheet.getRange(1, 27, sheet.getLastRow(), 1).getValues(); // Column AA
-  for (var i = 1; i < data.length; i++) {
-    if (data[i][0] && data[i][0].toString().trim() === reqId.toString().trim()) {
-      return i + 1;
-    }
-  }
-  return -1;
-}
+      let filesHtml = "";
+      if (r.pdfUrl) filesHtml += `<a href="${r.pdfUrl}" target="_blank" class="btn btn-success btn-sm"><i class="fa fa-file-pdf"></i> Download PDF Liham Pahintulot</a>`;
+      if (r.posReceipt) filesHtml += `<a href="${r.posReceipt}" target="_blank" class="btn btn-primary btn-sm"><i class="fa fa-image"></i> View POS Receipt Screenshot</a>`;
+      if (r.rpoAttachment) filesHtml += `<a href="${r.rpoAttachment}" target="_blank" class="btn btn-info btn-sm text-white"><i class="fa fa-box"></i> View SSU Received Attachment</a>`;
+      
+      document.getElementById("vFilesContainer").innerHTML = filesHtml || '<p class="text-muted">Walang attachments.</p>';
 
-function processApproval(p) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName("DATABASE");
-    var row = findRowByReqId(sheet, p.requestId);
-    if (row === -1) return { status: "error", message: "Request ID not found in sheet: " + p.requestId };
+      let actionHtml = "";
+      const canAction1st = (currentUser.role === "1st Approver" || currentUser.role === "GE" || currentUser.role === "Admin") && r.geStatus === "PENDING";
+      const canAction2nd = (currentUser.role === "2nd Approver" || currentUser.role === "Admin") && r.geStatus === "APPROVED" && r.hatidSundoStatus === "PENDING";
+      const canAction3rd = (currentUser.role === "3rd Approver" || currentUser.role === "Kawan" || currentUser.role === "Admin") && r.hatidSundoStatus === "APPROVED" && r.kawanStatus === "PENDING";
 
-    var now = Utilities.formatDate(new Date(), "GMT+8", "yyyy-MM-dd HH:mm:ss");
-
-    if (p.role === "1st Approver" || p.role === "GE" || p.role === "Admin") {
-      sheet.getRange(row, 12, 1, 4).setValues([[p.actionStatus, p.approverName, p.remarks || "", now]]);
-    } else if (p.role === "2nd Approver" || p.role === "Admin") {
-      sheet.getRange(row, 16, 1, 4).setValues([[p.actionStatus, p.approverName, p.remarks || "", now]]);
-    } else if (p.role === "3rd Approver" || p.role === "Kawan" || p.role === "Admin") {
-      sheet.getRange(row, 20, 1, 4).setValues([[p.actionStatus, p.approverName, p.remarks || "", now]]);
-
-      if (p.actionStatus === "APPROVED") {
-        SpreadsheetApp.flush();
-        var rowData = sheet.getRange(row, 1, 1, 28).getValues()[0];
-        var pdfUrl = generatePDF(rowData);
-        if (pdfUrl) {
-          sheet.getRange(row, 28).setValue(pdfUrl); // Direct Write Col AB
-        }
+      if (canAction1st || canAction2nd || canAction3rd) {
+        actionHtml = `
+          <div class="card p-3 bg-light border-danger">
+            <textarea id="appRemarks" class="form-control mb-2" placeholder="Remarks..."></textarea>
+            <div class="d-flex gap-2">
+              <button class="btn btn-success btn-sm flex-grow-1" onclick="submitApproval('APPROVED')">APPROVE</button>
+              <button class="btn btn-danger btn-sm flex-grow-1" onclick="submitApproval('DISAPPROVED')">DISAPPROVE</button>
+            </div>
+          </div>`;
       }
-    }
-    SpreadsheetApp.flush();
-    return { status: "success", message: "Approval processed successfully!" };
-  } catch (err) {
-    return { status: "error", message: err.toString() };
-  }
-}
 
-function closeRequestSSU(p) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName("DATABASE");
-    var row = findRowByReqId(sheet, p.requestId);
-    if (row === -1) return { status: "error", message: "Request ID not found: " + p.requestId };
+      const isStoreOrAdmin = (currentUser.role === "Viewer" || currentUser.role === "Admin");
+      if (isStoreOrAdmin && r.kawanStatus === "APPROVED") {
+        actionHtml += `<button class="btn btn-warning btn-sm w-100 fw-bold mt-2" onclick="openSSUModal('${r.requestId}')">?? PASABAY SSU / CLOSE REQUEST</button>`;
+      }
 
-    var rpoUrl = "";
-    if (p.rpoFile) {
-      rpoUrl = saveFileToDrive(p.rpoFile, FOLDER_SSU_RPO, "SSU_PO_" + p.requestId);
+      document.getElementById("vActionSection").innerHTML = actionHtml;
+      new bootstrap.Modal(document.getElementById("actionModal")).show();
     }
 
-    sheet.getRange(row, 12).setValue("SSU");
-    sheet.getRange(row, 16).setValue("SSU");
-    sheet.getRange(row, 20).setValue("SSU");
-    sheet.getRange(row, 24).setValue(p.dateReceived);
-    sheet.getRange(row, 25).setValue(rpoUrl); // Direct Write Col Y
-    sheet.getRange(row, 26).setValue(p.ssuRemarks || "");
-
-    SpreadsheetApp.flush();
-    return { status: "success", message: "SSU Closed and Attachment Saved!" };
-  } catch (err) {
-    return { status: "error", message: err.toString() };
-  }
-}
-
-function submitRequest(p) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName("DATABASE");
-    var now = Utilities.formatDate(new Date(), "GMT+8", "yyyy-MM-dd HH:mm:ss");
-    var dateCode = Utilities.formatDate(new Date(), "GMT+8", "yyyyMMdd");
-    
-    var posUrl = "";
-    if (p.posFile) {
-      posUrl = saveFileToDrive(p.posFile, FOLDER_POS_RECEIPT, "POS_" + dateCode + "_" + Math.floor(Math.random()*1000));
+    function submitApproval(status) {
+      showSpinner("Ina-apply ang approval...");
+      fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "processApproval",
+          payload: { requestId: selectedRequest.requestId, role: currentUser.role, approverName: currentUser.kapwaName, actionStatus: status, remarks: document.getElementById("appRemarks").value }
+        })
+      }).then(r=>r.json()).then(res=>{
+        hideSpinner();
+        if (res.status === "success") {
+          Swal.fire("Mabuhay!", "Naiproseso ang approval!", "success").then(()=>location.reload());
+        }
+      });
     }
 
-    var items = p.items || [];
-    var baseLastRow = sheet.getLastRow();
-
-    for (var k = 0; k < items.length; k++) {
-      var seriesNum = ("0000" + ((baseLastRow - 1) + (k + 1))).slice(-4);
-      var reqId = "LP-" + dateCode + "-" + seriesNum;
-
-      sheet.appendRow([
-        now, p.kapwaName, p.requestedBy, p.requestFrom, p.lihamPahintulotFor, p.modeRemarks,
-        posUrl, items[k].requestedTo, items[k].poNumber, p.reason, p.kpp,
-        "PENDING", "", "", "",
-        "PENDING", "", "", "",
-        "PENDING", "", "", "",
-        "", "", "", reqId, ""
-      ]);
+    function openSSUModal(reqId) {
+      Swal.fire({
+        title: "Pasabay SSU / Close Request",
+        html: `
+          <input type="date" id="ssuDate" class="form-control mb-2">
+          <input type="file" id="ssuFile" class="form-control mb-2" accept="image/*">
+          <textarea id="ssuRemarks" class="form-control" placeholder="Remarks..."></textarea>`,
+        showCancelButton: true,
+        confirmButtonText: "Submit SSU",
+        preConfirm: () => {
+          const date = document.getElementById("ssuDate").value;
+          const file = document.getElementById("ssuFile").files[0];
+          if (!date || !file) return Swal.showValidationMessage("Lagyan ng Date at File Attachment!");
+          
+          return new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onload = e => resolve({ requestId: reqId, dateReceived: date, rpoFile: e.target.result, ssuRemarks: document.getElementById("ssuRemarks").value });
+            reader.readAsDataURL(file);
+          });
+        }
+      }).then(res => {
+        if (res.isConfirmed && res.value) {
+          showSpinner("Isinasara ang Request at Ina-upload ang SSU Attachment...");
+          fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "closeRequest", payload: res.value }) })
+          .then(r=>r.json()).then(resp => {
+            hideSpinner();
+            if (resp.status === "success") {
+              Swal.fire("Success!", "Naisara na ang SSU request!", "success").then(()=>location.reload());
+            }
+          });
+        }
+      });
     }
-    SpreadsheetApp.flush();
-    return { status: "success", message: "Request Submitted Successfully!" };
-  } catch (err) {
-    return { status: "error", message: err.toString() };
-  }
-}
 
-function saveFileToDrive(base64Data, folderId, fileName) {
-  try {
-    if (!base64Data || base64Data.length < 10) return "";
-    var folder = DriveApp.getFolderById(folderId);
-    var parts = base64Data.split(",");
-    var contentType = parts[0].match(/:(.*?);/)[1] || "image/png";
-    var bytes = Utilities.base64Decode(parts[1]);
-    var blob = Utilities.newBlob(bytes, contentType, fileName);
-    var file = folder.createFile(blob);
-    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-    return file.getUrl();
-  } catch (e) {
-    Logger.log("Save Drive Error: " + e.toString());
-    return "";
-  }
-}
+    function handleLihamForChange(val) {
+      document.getElementById("divPasabayBranch").style.display = val === "Pasabay To" ? "block" : "none";
+      document.getElementById("divShuttle").style.display = val === "Pasabay to Shuttle" ? "block" : "none";
+      document.getElementById("divCourier").style.display = val === "Thru Courier" ? "block" : "none";
+    }
 
-function generatePDF(row) {
-  try {
-    var folder = DriveApp.getFolderById(FOLDER_PDF_OUTPUT);
-    var reqId = row[26];
-    var htmlContent = `
-      <html><body style="font-family:Arial;padding:20px;">
-        <h2 style="color:#800020;">PANDAYAN SUPERSTORES - LIHAM PAHINTULOT</h2>
-        <p><b>Request ID:</b> ${reqId}</p>
-        <p><b>Date:</b> ${row[0]} | <b>Requested By:</b> ${row[2]}</p>
-        <p><b>From:</b> ${row[3]} | <b>To:</b> ${row[7]}</p>
-        <p><b>PO Number:</b> ${row[8]}</p>
-        <hr>
-        <p><b>GE Status:</b> ${row[11]} | <b>Hatid-Sundo:</b> ${row[15]} | <b>Kawan:</b> ${row[19]}</p>
-      </body></html>`;
-    var blob = Utilities.newBlob(htmlContent, "text/html", "LP_" + reqId + ".html");
-    var pdfFile = folder.createFile(blob.getAs("application/pdf").setName("LP_" + reqId + ".pdf"));
-    pdfFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-    return pdfFile.getUrl();
-  } catch (e) {
-    return "";
-  }
-}
+    function handleCourierChange(val) {
+      const show = val === "Direct Delivery to Panauhin";
+      document.getElementById("secAttachmentsTitle").style.display = show ? "block" : "none";
+      document.getElementById("divPosFile").style.display = show ? "block" : "none";
+    }
 
-function registerAccount(p) { /* Standard account functions */ }
-function loginAccount(p) { /* Standard account functions */ }
-function getDropdownData() { /* Standard dropdown functions */ }
+    document.getElementById("lpForm").onsubmit = function(e) {
+      e.preventDefault();
+      const rawItems = [];
+      document.querySelectorAll(".kawan-item-row").forEach(row => {
+        const k = row.querySelector(".sel-kawan").value;
+        const p = row.querySelector(".inp-po").value.trim();
+        if(k && p) rawItems.push({ requestedTo: k, poNumber: p });
+      });
+
+      const fileInput = document.getElementById("posFile");
+      const posFileObj = fileInput.files[0];
+
+      const sendReq = (posB64) => {
+        showSpinner("Isina-save ang Request...");
+        fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "submitRequest",
+            payload: {
+              kapwaName: currentUser.kapwaName,
+              requestedBy: document.getElementById("requestedBy").value,
+              requestFrom: document.getElementById("requestFrom").value,
+              lihamPahintulotFor: document.getElementById("lihamPahintulotFor").value,
+              items: rawItems,
+              reason: document.getElementById("reason").value,
+              kpp: document.getElementById("kpp").value,
+              posFile: posB64 || ""
+            }
+          })
+        }).then(r=>r.json()).then(res=>{
+          hideSpinner();
+          if(res.status==="success") Swal.fire("Mabuhay!", "Naipasa ang request!", "success").then(()=>location.reload());
+        });
+      };
+
+      if (posFileObj) {
+        const reader = new FileReader();
+        reader.onload = e => sendReq(e.target.result);
+        reader.readAsDataURL(posFileObj);
+      } else { sendReq(""); }
+    };
+  </script>
+</body>
+</html>
